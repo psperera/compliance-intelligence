@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Compliance Intelligence — Global Regulatory Intelligence</title>
+<style>
+:root{
+  --navy:#0e1b2c; --navy2:#13263d; --navy3:#1b3550;
+  --ink:#1c2733; --muted:#64748b; --muted2:#94a3b8; --line:#e3e8ef; --line2:#eef2f7;
+  --bg:#f5f7fa; --card:#ffffff;
+  --blue:#1f5fd6; --blue-d:#1747a6; --blue-bg:#eaf1fd;
+  --teal:#0d9488; --teal-bg:#e0f5f2;
+  --amber:#c2810a; --amber-bg:#fdf3df;
+  --red:#c2362f; --red-bg:#fbe9e8;
+  --green:#1f8f4e; --green-bg:#e6f5ec;
+  --purple:#6d4bb6; --purple-bg:#efeafb;
+  --r:10px; --shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.05);
+  --shadow-lg:0 8px 28px rgba(16,24,40,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px;border:2px solid var(--bg)}
+
+/* Layout */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.sidebar{background:linear-gradient(180deg,var(--navy),var(--navy2));color:#cdd9e8;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:18px 18px 14px}
+.brand .logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#2f7df0,#1f5fd6);display:grid;place-items:center;color:#fff;font-weight:800;font-size:16px;box-shadow:0 2px 8px rgba(31,95,214,.5)}
+.brand b{color:#fff;font-size:15px;font-weight:700;letter-spacing:.2px;display:block;line-height:1.1}
+.brand span{font-size:10.5px;color:#7f93ab;letter-spacing:.4px;text-transform:uppercase}
+.navsec{padding:6px 12px}
+.navsec .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#62768c;padding:12px 10px 6px;font-weight:600}
+.nav a{display:flex;align-items:center;gap:11px;padding:8.5px 12px;border-radius:8px;color:#bccadb;font-weight:500;font-size:13.5px;margin:1px 0;transition:.12s}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav a.active{background:var(--blue);color:#fff;box-shadow:0 2px 10px rgba(31,95,214,.4)}
+.nav a .ic{width:18px;height:18px;flex:none;opacity:.92}
+.nav a .badge{margin-left:auto;background:rgba(255,255,255,.16);color:#fff;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px}
+.nav a.active .badge{background:rgba(255,255,255,.25)}
+.sb-foot{margin-top:auto;padding:14px;border-top:1px solid rgba(255,255,255,.07);font-size:11.5px;color:#7f93ab}
+.sb-foot .who{display:flex;align-items:center;gap:9px;color:#cdd9e8}
+.sb-foot .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#3a9,#176);display:grid;place-items:center;color:#fff;font-weight:700;font-size:12px}
+
+/* Topbar */
+.main{display:flex;flex-direction:column;min-width:0}
+.topbar{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;padding:10px 22px}
+.search{flex:1;max-width:440px;position:relative}
+.search input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--line);border-radius:9px;background:#f8fafc;font-size:13px}
+.search input:focus{outline:none;border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px var(--blue-bg)}
+.search .si{position:absolute;left:11px;top:9px;color:var(--muted2)}
+.tb-select{display:flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:12.5px;color:var(--ink);font-weight:500}
+.tb-select b{color:var(--blue)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.iconbtn{position:relative;width:38px;height:38px;border:1px solid var(--line);border-radius:9px;background:#fff;display:grid;place-items:center;color:var(--muted)}
+.iconbtn:hover{background:#f8fafc;color:var(--ink)}
+.iconbtn .dot{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid #fff}
+
+/* Content */
+.content{padding:22px;max-width:1500px;width:100%}
+.crumbs{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12.5px;margin-bottom:10px}
+.crumbs b{color:var(--ink)}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.pagehead h1{font-size:22px;margin:0 0 3px;letter-spacing:-.3px}
+.pagehead p{margin:0;color:var(--muted);font-size:13px}
+.ph-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8.5px 14px;border-radius:9px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;color:var(--ink)}
+.btn:hover{background:#f8fafc}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:var(--blue-d)}
+.btn.sm{padding:6px 10px;font-size:12px}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.danger{background:var(--red);border-color:var(--red);color:#fff}
+
+/* Cards & grid */
+.grid{display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card .ch{padding:14px 16px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card .ch h3{margin:0;font-size:14.5px;font-weight:700}
+.card .ch .sub{font-size:11.5px;color:var(--muted);font-weight:500}
+.card .cb{padding:16px}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi .t{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.2px}
+.kpi .v{font-size:30px;font-weight:800;letter-spacing:-1px;margin:6px 0 2px}
+.kpi .d{font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
+.kpi .d.up{color:var(--green)} .kpi .d.dn{color:var(--red)} .kpi .d.flat{color:var(--muted)}
+.kpi .spark{position:absolute;right:12px;bottom:10px;opacity:.85}
+.ring{--p:0;width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--rc,var(--blue)) calc(var(--p)*1%),var(--line2) 0);display:grid;place-items:center;flex:none}
+.ring .inner{width:48px;height:48px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
+
+/* Pills / status */
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2.5px 9px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.pill .pd{width:6px;height:6px;border-radius:50%}
+.p-red{background:var(--red-bg);color:var(--red)} .p-red .pd{background:var(--red)}
+.p-amber{background:var(--amber-bg);color:var(--amber)} .p-amber .pd{background:var(--amber)}
+.p-green{background:var(--green-bg);color:var(--green)} .p-green .pd{background:var(--green)}
+.p-teal{background:var(--teal-bg);color:var(--teal)} .p-teal .pd{background:var(--teal)}
+.p-blue{background:var(--blue-bg);color:var(--blue)} .p-blue .pd{background:var(--blue)}
+.p-purple{background:var(--purple-bg);color:var(--purple)} .p-purple .pd{background:var(--purple)}
+.p-grey{background:#eef2f7;color:var(--muted)} .p-grey .pd{background:var(--muted2)}
+.tag{display:inline-block;padding:2px 8px;border:1px solid var(--line);border-radius:6px;font-size:11px;color:var(--muted);font-weight:600;background:#f8fafc}
+
+/* Tables */
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;padding:10px 12px;border-bottom:1px solid var(--line);background:#fafbfc;position:sticky;top:0}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--line2);vertical-align:middle}
+.tbl tr:hover td{background:#f8fafc}
+.tbl .ttl{font-weight:600;color:var(--ink)}
+.tbl .ttl:hover{color:var(--blue);cursor:pointer}
+.tbl .sm{font-size:11.5px;color:var(--muted)}
+.tablewrap{overflow:auto;max-height:none}
+
+/* Filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.chip{padding:6px 12px;border:1px solid var(--line);border-radius:20px;background:#fff;font-size:12.5px;font-weight:600;color:var(--muted)}
+.chip.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip:hover:not(.active){background:#f1f5f9;color:var(--ink)}
+.fselect{padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:12.5px;color:var(--ink);font-weight:500}
+
+/* Split / change control */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff}
+.split .pane{min-width:0}
+.split .pane:first-child{border-right:1px solid var(--line)}
+.pane .ph2{padding:12px 16px;border-bottom:1px solid var(--line2);background:#fafbfc;display:flex;align-items:center;justify-content:space-between}
+.pane .ph2 .vlabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.pane .ph2 .vno{font-weight:700;font-size:13.5px}
+.legaltext{padding:16px 18px;font-size:13px;line-height:1.75;color:#33415c;max-height:560px;overflow:auto;font-family:'Iowan Old Style',Georgia,'Times New Roman',serif}
+.legaltext .cl{margin-bottom:14px}
+.legaltext .cn{font-weight:700;color:var(--navy);font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:.3px}
+.ins{background:var(--green-bg);color:#10632f;border-radius:3px;padding:1px 2px;box-shadow:inset 0 -1px 0 #9ad3ad}
+.del{background:var(--red-bg);color:#8f231d;text-decoration:line-through;border-radius:3px;padding:1px 2px}
+.amd{background:var(--amber-bg);color:#7a5208;border-radius:3px;padding:1px 2px;box-shadow:inset 0 -1px 0 #e3c87a}
+
+/* Misc */
+.row{display:flex;gap:16px;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.divider{height:1px;background:var(--line2);margin:14px 0}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:8px 14px;font-size:13px}
+.kv .k{color:var(--muted);font-weight:600}
+.barrow{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.barrow .bl{width:130px;font-size:12.5px;font-weight:600;flex:none}
+.barrow .bt{flex:1;height:9px;background:var(--line2);border-radius:6px;overflow:hidden}
+.barrow .bf{height:100%;border-radius:6px}
+.barrow .bv{width:42px;text-align:right;font-size:12px;font-weight:700;flex:none}
+.heat{display:grid;gap:6px}
+.heatcell{padding:9px 10px;border-radius:7px;color:#fff;font-weight:600;font-size:12px;display:flex;justify-content:space-between;align-items:center}
+.timeline{position:relative;padding-left:6px}
+.tlitem{display:grid;grid-template-columns:96px 22px 1fr;gap:10px;align-items:start;padding-bottom:18px;position:relative}
+.tlitem .tldate{font-size:11.5px;font-weight:700;color:var(--muted);text-align:right;padding-top:2px}
+.tlitem .tldot{display:flex;flex-direction:column;align-items:center}
+.tlitem .tldot .d{width:13px;height:13px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px currentColor;margin-top:3px}
+.tlitem .tldot .ln{flex:1;width:2px;background:var(--line);margin-top:3px;min-height:30px}
+.tlitem:last-child .tldot .ln{display:none}
+.tlcard{background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 14px;box-shadow:var(--shadow)}
+.tlcard h4{margin:0 0 4px;font-size:13.5px}
+
+/* Kanban */
+.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;align-items:start}
+.kcol{background:#f1f4f8;border-radius:10px;padding:10px;min-height:120px}
+.kcol .kh{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;color:var(--ink);padding:2px 4px 9px}
+.kcol .kh .cnt{background:#fff;color:var(--muted);border-radius:10px;padding:0 7px;font-size:11px}
+.kcard{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:9px;box-shadow:var(--shadow);border-left:3px solid var(--blue)}
+.kcard h5{margin:0 0 6px;font-size:12.5px;line-height:1.35}
+.kcard .meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:7px}
+.kcard .av{width:22px;height:22px;border-radius:50%;background:var(--navy3);color:#fff;display:grid;place-items:center;font-size:9.5px;font-weight:700}
+
+/* Email preview */
+.email{max-width:620px;margin:0 auto;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--shadow-lg)}
+.email .eh{background:var(--navy);color:#fff;padding:16px 20px;display:flex;align-items:center;gap:10px}
+.email .eb{padding:22px 24px}
+.email .alertbar{background:var(--red-bg);border:1px solid #f1c2bf;color:var(--red);border-radius:8px;padding:10px 13px;font-weight:700;font-size:13px;margin-bottom:16px;display:flex;gap:8px;align-items:center}
+
+/* AI box */
+.aibox{background:linear-gradient(135deg,#f4f0fc,#eef3fe);border:1px solid #e0d8f5;border-radius:10px;padding:14px 16px}
+.aibox .aih{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--purple);margin-bottom:8px}
+.conf{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--amber);background:#fff;border:1px solid #ecd9a8;padding:2px 8px;border-radius:20px}
+
+/* matrix status dots */
+.mstat{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:12px}
+.mstat .d{width:9px;height:9px;border-radius:50%}
+
+.empty{text-align:center;padding:40px;color:var(--muted)}
+.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin:4px 0 10px}
+
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(2,1fr)}.kanban{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:860px){.app{grid-template-columns:1fr}.sidebar{display:none}.split{grid-template-columns:1fr}.split .pane:first-child{border-right:none;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">CI</div>
+      <div><b>Compliance Intelligence</b><span>Waygate Technologies</span></div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="sb-foot">
+      <div class="who">
+        <div class="av">TH</div>
+        <div><div style="color:#fff;font-weight:600">Tony Hammond</div><div>Group HS&amp;E Director</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="search">
+        <span class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+        <input id="globalsearch" placeholder="Search regulations, clauses, sites, actions, evidence…" />
+      </div>
+      <div class="tb-select">Jurisdiction: <b id="selJur">All</b></div>
+      <div class="tb-select">Site: <b id="selSite">All</b></div>
+      <div class="tb-right">
+        <button class="iconbtn" title="Help"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4"/><path d="M12 17h.01"/></svg></button>
+        <button class="iconbtn" title="Notifications" onclick="go('alerts')"><span class="dot"></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+        <div class="av" style="width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#3a9,#176);display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px">TH</div>
+      </div>
+    </header>
+    <main class="content" id="view"></main>
+  </div>
+</div>
+
+<script>
+/* ============================ SEED DATA (Waygate footprint) ============================ */
+const SITES=[
+ {id:'hurth',name:'Hürth',country:'Germany',cc:'DE',jur:'Germany (EU)',type:'Technology Centre',role:'Ultrasound HQ',line:'Ultrasound Technologies',emp:224,score:91,risk:'Medium',open:6,permits:5},
+ {id:'wunstorf',name:'Wunstorf',country:'Germany',cc:'DE',jur:'Germany (EU)',type:'Technology Centre',role:'Radiography HQ & R&D',line:'Radiography & CT Systems',emp:162,score:84,risk:'High',open:11,permits:7},
+ {id:'skaneateles',name:'Skaneateles',country:'USA',cc:'US',jur:'United States',type:'Technology Centre',role:'RVI HQ & R&D',line:'Remote Visual Inspection',emp:169,score:88,risk:'Medium',open:7,permits:4},
+ {id:'ahrensburg',name:'Ahrensburg',country:'Germany',cc:'DE',jur:'Germany (EU)',type:'Manufacturing',role:'Manufacturing',line:'Manufacturing Operations',emp:146,score:79,risk:'High',open:14,permits:9},
+ {id:'novemesto',name:'Nové Mesto',country:'Slovakia',cc:'SK',jur:'Slovakia (EU)',type:'Technology Centre',role:'Services & UT',line:'Field Services',emp:101,score:86,risk:'Medium',open:5,permits:3},
+ {id:'contrex',name:'Contrexéville',country:'France',cc:'FR',jur:'France (EU)',type:'Manufacturing',role:'Manufacturing & Office',line:'Manufacturing Operations',emp:13,score:82,risk:'Medium',open:4,permits:4},
+ {id:'zurich',name:'Zurich',country:'Switzerland',cc:'CH',jur:'Switzerland',type:'Office',role:'R&D (Automation)',line:'Digital & AI',emp:19,score:94,risk:'Low',open:1,permits:1},
+ {id:'berchem',name:'Berchem',country:'Belgium',cc:'BE',jur:'Belgium (EU)',type:'Office',role:'R&D (Imaging Solutions)',line:'Digital & AI',emp:8,score:93,risk:'Low',open:1,permits:1},
+ {id:'changzhou',name:'Changzhou',country:'China',cc:'CN',jur:'China',type:'Manufacturing',role:'Manufacturing',line:'Manufacturing Operations',emp:37,score:74,risk:'High',open:13,permits:8},
+ {id:'mountolive',name:'Mount Olive',country:'USA',cc:'US',jur:'United States',type:'Office',role:'Repair & Operations',line:'Field Services',emp:24,score:87,risk:'Medium',open:3,permits:2},
+ {id:'bengaluru',name:'Bengaluru',country:'India',cc:'IN',jur:'India',type:'Spoke / Partner',role:'Digital & AI Technologies',line:'Digital & AI',emp:58,score:85,risk:'Medium',open:4,permits:2},
+ {id:'coventry',name:'Coventry',country:'United Kingdom',cc:'GB',jur:'United Kingdom',type:'Spoke / Partner',role:'Horizon 3 — Battery & Composites',line:'Manufacturing Operations',emp:16,score:80,risk:'High',open:9,permits:5},
+ {id:'saopaulo',name:'São Paulo',country:'Brazil',cc:'BR',jur:'Brazil',type:'Office',role:'LATAM Regional Office & Service',line:'Field Services',emp:18,score:83,risk:'Medium',open:5,permits:3},
+ {id:'singapore',name:'Singapore',country:'Singapore',cc:'SG',jur:'Singapore',type:'Office',role:'APAC Regional Office',line:'Field Services',emp:14,score:90,risk:'Low',open:2,permits:2},
+ {id:'dubai',name:'Dubai',country:'UAE',cc:'AE',jur:'United Arab Emirates',type:'Office',role:'MENAT Regional Office',line:'Field Services',emp:11,score:81,risk:'Medium',open:6,permits:4},
+ {id:'cincinnati',name:'Cincinnati',country:'USA',cc:'US',jur:'United States',type:'Customer Solution Centre',role:'Flagship CSC — 26,000 sq ft',line:'Customer Solutions',emp:22,score:89,risk:'Medium',open:3,permits:3},
+ {id:'pangyo',name:'Pangyo',country:'South Korea',cc:'KR',jur:'South Korea',type:'Customer Solution Centre',role:'CSC — CT & X-ray Inspection',line:'Customer Solutions',emp:21,score:88,risk:'Medium',open:3,permits:3},
+ {id:'garching',name:'Garching',country:'Germany',cc:'DE',jur:'Germany (EU)',type:'Customer Solution Centre',role:'CSC — 500m² X-ray & CT Lab',line:'Customer Solutions',emp:15,score:90,risk:'Low',open:2,permits:3},
+];
+const LINES=['Radiography & CT Systems','Ultrasound Technologies','Remote Visual Inspection','Manufacturing Operations','Digital & AI','Field Services','Customer Solutions'];
+const JURS=['Germany (EU)','United States','Slovakia (EU)','France (EU)','Switzerland','Belgium (EU)','China','India','United Kingdom','Brazil','Singapore','United Arab Emirates','South Korea'];
+const TOPICS=['Radiation Safety','Occupational H&S','Process Safety','Chemicals & Hazardous Substances','Waste & Circularity','Air Emissions','Water Discharge','Energy & Carbon','Product Stewardship','Transport & Logistics','Fire Safety','Building & Facilities','Labour & Worker Welfare','Sustainability Disclosure','Emergency Response','Industrial Permits'];
+
+function reg(id,title,jur,topic,agency,status,eff,risk,comp,owner,site,watch,changed){
+ return {id,title,jur,topic,agency,status,eff,risk,comp,owner,sites:site,watch,changed};
+}
+const REGS=[
+ reg('DE-RAD-04','Radiation Protection Ordinance (StrlSchV) — industrial radiography','Germany (EU)','Radiation Safety','BfS / BMUV','In force','2018-12-31','Critical','Compliant','A. Brandt',['wunstorf','garching'],true,'2026-05-18'),
+ reg('US-OSHA-1910','OSHA 29 CFR 1910 — Occupational Safety & Health Standards','United States','Occupational H&S','OSHA','In force','1971-05-29','High','Partially compliant','R. Maddox',['skaneateles','cincinnati','mountolive'],true,'2026-06-02'),
+ reg('US-RIDDOR-EQ','Ionizing Radiation rules — industrial X-ray (10 CFR 20)','United States','Radiation Safety','NRC','In force','1991-05-21','Critical','Compliant','R. Maddox',['skaneateles','cincinnati'],true,'2026-04-11'),
+ reg('UK-RIDDOR','RIDDOR 2013 — Reporting of Injuries, Diseases & Dangerous Occurrences','United Kingdom','Occupational H&S','HSE','In force','2013-10-01','High','Under review','J. Whitfield',['coventry'],true,'2026-06-10'),
+ reg('DE-TA-LUFT','TA Luft — Technical Instructions on Air Quality Control','Germany (EU)','Air Emissions','BMUV','In force','2021-12-01','High','Partially compliant','M. Keller',['ahrensburg','wunstorf'],true,'2026-06-12'),
+ reg('US-EPA-TRI','EPCRA §313 — Toxics Release Inventory reporting','United States','Chemicals & Hazardous Substances','US EPA','In force','1987-01-01','High','Under review','R. Maddox',['skaneateles','cincinnati'],true,'2026-06-09'),
+ reg('EU-CSRD','Corporate Sustainability Reporting Directive (CSRD/ESRS)','Germany (EU)','Sustainability Disclosure','EU Commission','In force','2024-01-05','High','Partially compliant','S. Vogel',['hurth','wunstorf','ahrensburg','contrex','novemesto','berchem','garching'],true,'2026-06-15'),
+ reg('SG-WSH','Workplace Safety & Health Act','Singapore','Occupational H&S','MOM','In force','2006-03-01','Medium','Compliant','L. Tan',['singapore'],true,'2026-05-30'),
+ reg('DE-VerpackG','Packaging Act (VerpackG) — superseded provisions','Germany (EU)','Waste & Circularity','ZSVR','Repealed','2019-01-01','Low','Not applicable','M. Keller',[],false,'2025-02-01'),
+ reg('CN-EP-LAW','Environmental Protection Law of the PRC','China','Air Emissions','MEE','In force','2015-01-01','High','Partially compliant','W. Li',['changzhou'],true,'2026-05-22'),
+ reg('CN-WSAFE','Work Safety Law of the PRC (2021 amendment)','China','Occupational H&S','MEM','In force','2021-09-01','High','Under review','W. Li',['changzhou'],true,'2026-06-08'),
+ reg('DE-BImSchG','Federal Immission Control Act (BImSchG) permit','Germany (EU)','Industrial Permits','BMUV','In force','1974-03-15','High','Compliant','M. Keller',['ahrensburg'],true,'2026-03-14'),
+ reg('EU-REACH','REACH (EC 1907/2006) — chemicals registration','Germany (EU)','Chemicals & Hazardous Substances','ECHA','In force','2007-06-01','High','Compliant','S. Vogel',['ahrensburg','contrex','wunstorf'],true,'2026-04-28'),
+ reg('EU-RoHS','RoHS 3 (2015/863) — restricted substances in EEE','Germany (EU)','Product Stewardship','EU Commission','In force','2019-07-22','Medium','Compliant','S. Vogel',['hurth','wunstorf','skaneateles'],false,'2026-02-19'),
+ reg('EU-CLP','CLP Regulation (EC 1272/2008) — classification & labelling','Germany (EU)','Chemicals & Hazardous Substances','ECHA','In force','2009-01-20','Medium','Compliant','S. Vogel',['ahrensburg','contrex'],false,'2026-01-30'),
+ reg('FR-ICPE','ICPE — Classified Installations for Environmental Protection','France (EU)','Industrial Permits','DREAL','In force','2013-06-01','Medium','Compliant','P. Moreau',['contrex'],true,'2026-05-04'),
+ reg('IN-FACT','Factories Act 1948 & state rules','India','Occupational H&S','DISH','In force','1948-04-01','Medium','Partially compliant','A. Rao',['bengaluru'],true,'2026-06-01'),
+ reg('IN-EWASTE','E-Waste Management Rules 2022','India','Waste & Circularity','CPCB','In force','2023-04-01','Medium','Under review','A. Rao',['bengaluru'],true,'2026-05-27'),
+ reg('AE-OSHAD','OSHAD-SF — Abu Dhabi OSH framework','United Arab Emirates','Occupational H&S','OSHAD','In force','2017-01-01','Medium','Compliant','K. Haddad',['dubai'],false,'2026-03-22'),
+ reg('KR-OSHA','Occupational Safety & Health Act (Serious Accidents Act)','South Korea','Occupational H&S','MOEL','In force','2022-01-27','High','Partially compliant','Y. Park',['pangyo'],true,'2026-06-05'),
+ reg('BR-NR12','NR-12 — Machinery & Equipment Safety','Brazil','Occupational H&S','MTE','In force','2010-12-01','Medium','Compliant','C. Almeida',['saopaulo'],false,'2026-02-11'),
+ reg('SK-AIR','Act on Air Protection (No. 137/2010)','Slovakia (EU)','Air Emissions','MŽP SR','In force','2010-06-01','Low','Compliant','J. Novak',['novemesto'],false,'2026-01-15'),
+ reg('CH-StFV','Major Accidents Ordinance (StFV)','Switzerland','Process Safety','FOEN','In force','1991-04-01','Low','Compliant','T. Frei',['zurich'],false,'2025-12-20'),
+ reg('EU-CBAM','Carbon Border Adjustment Mechanism (EU 2023/956)','Germany (EU)','Energy & Carbon','EU Commission','In force','2023-10-01','Medium','Under review','S. Vogel',['ahrensburg','wunstorf','contrex'],true,'2026-06-14'),
+ reg('US-DOT-HAZ','49 CFR — Hazardous Materials Transport','United States','Transport & Logistics','PHMSA','In force','1976-01-03','Medium','Compliant','R. Maddox',['skaneateles','cincinnati','mountolive'],false,'2026-02-28'),
+ reg('DE-GefStoffV','Hazardous Substances Ordinance (GefStoffV)','Germany (EU)','Chemicals & Hazardous Substances','BAuA','In force','2010-12-01','Medium','Compliant','A. Brandt',['hurth','ahrensburg'],false,'2026-03-05'),
+ reg('DE-BetrSichV','Industrial Safety Ordinance (BetrSichV)','Germany (EU)','Process Safety','BAuA','In force','2015-06-01','Medium','Compliant','M. Keller',['ahrensburg','wunstorf'],false,'2026-02-08'),
+ reg('EU-WFD','Waste Framework Directive (2008/98/EC)','Germany (EU)','Waste & Circularity','EU Commission','In force','2008-12-12','Low','Compliant','M. Keller',['ahrensburg','hurth'],false,'2026-01-22'),
+ reg('SG-EPMA','Environmental Protection & Management Act','Singapore','Air Emissions','NEA','In force','1999-04-01','Low','Compliant','L. Tan',['singapore'],false,'2026-01-09'),
+ reg('CN-RAD','Regulations on Radioisotopes & Radiation Devices','China','Radiation Safety','MEE','In force','2005-12-01','High','Under review','W. Li',['changzhou'],true,'2026-06-03'),
+ reg('US-CLEAN-AIR','Clean Air Act — Title V permit','United States','Air Emissions','US EPA','In force','1990-11-15','Medium','Compliant','R. Maddox',['skaneateles'],false,'2026-02-14'),
+ reg('FR-CODE-TRAV','Code du travail — santé & sécurité','France (EU)','Occupational H&S','DREETS','In force','2008-05-01','Medium','Compliant','P. Moreau',['contrex'],false,'2026-01-18'),
+ reg('UK-EPR','Environmental Permitting Regulations 2016','United Kingdom','Industrial Permits','Environment Agency','In force','2016-12-01','Medium','Compliant','J. Whitfield',['coventry'],true,'2026-04-30'),
+ reg('UK-COSHH','COSHH 2002 — Control of Substances Hazardous to Health','United Kingdom','Chemicals & Hazardous Substances','HSE','In force','2002-11-21','Medium','Compliant','J. Whitfield',['coventry'],false,'2026-02-02'),
+ reg('DE-EnEfG','Energy Efficiency Act (EnEfG)','Germany (EU)','Energy & Carbon','BMWK','In force','2023-11-18','Medium','Under review','S. Vogel',['ahrensburg','hurth','wunstorf'],true,'2026-05-12'),
+ reg('IN-AIR-ACT','Air (Prevention & Control of Pollution) Act','India','Air Emissions','CPCB','In force','1981-03-29','Low','Compliant','A. Rao',['bengaluru'],false,'2026-01-25'),
+ reg('KR-CHEM','Chemicals Control Act (K-REACH)','South Korea','Chemicals & Hazardous Substances','ME','In force','2015-01-01','Medium','Compliant','Y. Park',['pangyo'],false,'2026-02-20'),
+ reg('BR-PNRS','National Solid Waste Policy (PNRS)','Brazil','Waste & Circularity','IBAMA','In force','2010-08-02','Low','Compliant','C. Almeida',['saopaulo'],false,'2026-01-11'),
+ reg('AE-FIRE','UAE Fire & Life Safety Code','United Arab Emirates','Fire Safety','Civil Defence','In force','2018-01-01','Medium','Compliant','K. Haddad',['dubai'],false,'2026-03-01'),
+ reg('SG-FIRE','SCDF Fire Safety Act','Singapore','Fire Safety','SCDF','In force','1993-04-01','Low','Compliant','L. Tan',['singapore'],false,'2026-01-07'),
+ reg('EU-SEVESO','Seveso III Directive (2012/18/EU)','Germany (EU)','Process Safety','EU Commission','In force','2015-06-01','Medium','Compliant','M. Keller',['ahrensburg'],false,'2026-02-26'),
+ reg('US-EMERGENCY','EPCRA §302 — Emergency Planning','United States','Emergency Response','US EPA','In force','1986-10-17','Low','Compliant','R. Maddox',['skaneateles','cincinnati'],false,'2026-01-29'),
+ reg('DE-AwSV','Ordinance on Installations Handling Substances Hazardous to Water (AwSV)','Germany (EU)','Water Discharge','BMUV','In force','2017-08-01','Low','Compliant','M. Keller',['ahrensburg'],false,'2026-01-14'),
+ reg('CN-WATER','Water Pollution Prevention & Control Law','China','Water Discharge','MEE','In force','2018-01-01','Medium','Partially compliant','W. Li',['changzhou'],true,'2026-05-19'),
+ reg('SK-WASTE','Waste Act (No. 79/2015)','Slovakia (EU)','Waste & Circularity','MŽP SR','In force','2016-01-01','Low','Compliant','J. Novak',['novemesto'],false,'2025-12-12'),
+ reg('EU-MACHINE','Machinery Regulation (EU 2023/1230)','Germany (EU)','Building & Facilities','EU Commission','Enacted','2027-01-20','Medium','Under review','M. Keller',['ahrensburg','contrex','wunstorf'],true,'2026-06-11'),
+ reg('US-NIOSH','NIOSH respiratory protection guidance','United States','Occupational H&S','NIOSH','In force','2020-01-01','Low','Compliant','R. Maddox',['skaneateles'],false,'2026-01-20'),
+ reg('IN-LABOUR','OSH Code 2020 (labour welfare)','India','Labour & Worker Welfare','MoLE','Enacted','2026-10-01','Medium','Under review','A. Rao',['bengaluru'],true,'2026-06-07'),
+ reg('CH-RADIO','Radiological Protection Ordinance (StSV)','Switzerland','Radiation Safety','FOPH','In force','2018-01-01','Low','Compliant','T. Frei',['zurich'],false,'2025-12-18'),
+ reg('EU-BATTERY','EU Batteries Regulation (2023/1542)','United Kingdom','Product Stewardship','EU Commission','Enacted','2025-08-18','Medium','Under review','J. Whitfield',['coventry'],true,'2026-06-13'),
+];
+
+/* change events: each links to a regulation, with two versions of clause text */
+const CHANGES=[
+ {id:'CHG-2041',regId:'UK-RIDDOR',title:'RIDDOR reporting threshold for over-7-day incapacitation revised',jur:'United Kingdom',topic:'Occupational H&S',sev:'High',cat:'Tightened requirement',impact:'Action required before effective date',status:'Expert review required',eff:'2026-09-01',sites:['coventry'],line:'Manufacturing Operations',owner:'J. Whitfield',date:'2026-06-10',conf:'Medium'},
+ {id:'CHG-2038',regId:'DE-TA-LUFT',title:'TA Luft particulate emission limit reduced for surface treatment',jur:'Germany (EU)',topic:'Air Emissions',sev:'Critical',cat:'Tightened requirement',impact:'Immediate action required',status:'Action plan created',eff:'2026-08-15',sites:['ahrensburg','wunstorf'],line:'Manufacturing Operations',owner:'M. Keller',date:'2026-06-12',conf:'High'},
+ {id:'CHG-2035',regId:'US-EPA-TRI',title:'TRI Form R submission deadline moved earlier; PFAS threshold added',jur:'United States',topic:'Chemicals & Hazardous Substances',sev:'High',cat:'Reporting change',impact:'Action required before effective date',status:'Approved',eff:'2026-07-01',sites:['skaneateles','cincinnati'],line:'Field Services',owner:'R. Maddox',date:'2026-06-09',conf:'High'},
+ {id:'CHG-2033',regId:'EU-CSRD',title:'ESRS E1 climate disclosure scope expanded to Scope 3 categories',jur:'Germany (EU)',topic:'Sustainability Disclosure',sev:'High',cat:'Scope change',impact:'Action required before effective date',status:'Expert review required',eff:'2027-01-01',sites:['hurth','wunstorf','ahrensburg'],line:'Digital & AI',owner:'S. Vogel',date:'2026-06-15',conf:'Medium'},
+ {id:'CHG-2030',regId:'SG-WSH',title:'WSH guidance update — mandatory radiography competency training',jur:'Singapore',topic:'Occupational H&S',sev:'Medium',cat:'Guidance clarification',impact:'Monitor only',status:'Marked as reviewed',eff:'2026-07-15',sites:['singapore'],line:'Field Services',owner:'L. Tan',date:'2026-05-30',conf:'High'},
+ {id:'CHG-2028',regId:'CN-RAD',title:'Radioisotope device licensing renewal period shortened to 3 years',jur:'China',topic:'Radiation Safety',sev:'High',cat:'Permit change',impact:'Immediate action required',status:'Action plan created',eff:'2026-08-01',sites:['changzhou'],line:'Manufacturing Operations',owner:'W. Li',date:'2026-06-03',conf:'High'},
+ {id:'CHG-2026',regId:'KR-OSHA',title:'Serious Accidents Act — penalty ceiling raised; CEO duty clarified',jur:'South Korea',topic:'Occupational H&S',sev:'High',cat:'Penalty change',impact:'Expert review required',status:'Expert review required',eff:'2026-09-15',sites:['pangyo'],line:'Customer Solutions',owner:'Y. Park',date:'2026-06-05',conf:'Medium'},
+ {id:'CHG-2024',regId:'EU-CBAM',title:'CBAM definitive regime — quarterly embedded-emissions report required',jur:'Germany (EU)',topic:'Energy & Carbon',sev:'Medium',cat:'Reporting change',impact:'Action required before effective date',status:'Action plan created',eff:'2026-12-31',sites:['ahrensburg','wunstorf'],line:'Manufacturing Operations',owner:'S. Vogel',date:'2026-06-14',conf:'High'},
+ {id:'CHG-2021',regId:'IN-EWASTE',title:'E-Waste Rules — EPR target raised to 80% with revised record retention',jur:'India',topic:'Waste & Circularity',sev:'Medium',cat:'Tightened requirement',impact:'Action required before effective date',status:'Expert review required',eff:'2026-10-01',sites:['bengaluru'],line:'Digital & AI',owner:'A. Rao',date:'2026-05-27',conf:'Medium'},
+ {id:'CHG-2019',regId:'CN-WSAFE',title:'Work Safety Law — dual prevention mechanism made mandatory',jur:'China',topic:'Process Safety',sev:'Medium',cat:'New obligation',impact:'Action required before effective date',status:'Expert review required',eff:'2026-09-01',sites:['changzhou'],line:'Manufacturing Operations',owner:'W. Li',date:'2026-06-08',conf:'Medium'},
+ {id:'CHG-2016',regId:'EU-MACHINE',title:'Machinery Regulation replaces Directive — new digital docs & AI provisions',jur:'Germany (EU)',topic:'Building & Facilities',sev:'Medium',cat:'Scope change',impact:'Monitor only',status:'Marked as reviewed',eff:'2027-01-20',sites:['ahrensburg','contrex','wunstorf'],line:'Manufacturing Operations',owner:'M. Keller',date:'2026-06-11',conf:'High'},
+ {id:'CHG-2013',regId:'EU-BATTERY',title:'Batteries Regulation — carbon footprint declaration for industrial cells',jur:'United Kingdom',topic:'Product Stewardship',sev:'Medium',cat:'New obligation',impact:'Action required before effective date',status:'Expert review required',eff:'2026-08-18',sites:['coventry'],line:'Manufacturing Operations',owner:'J. Whitfield',date:'2026-06-13',conf:'Medium'},
+ {id:'CHG-2010',regId:'DE-EnEfG',title:'EnEfG — energy management system threshold lowered to 7.5 GWh/yr',jur:'Germany (EU)',topic:'Energy & Carbon',sev:'Medium',cat:'Tightened requirement',impact:'Action required before effective date',status:'Action plan created',eff:'2026-07-18',sites:['ahrensburg','wunstorf','hurth'],line:'Manufacturing Operations',owner:'S. Vogel',date:'2026-05-12',conf:'High'},
+ {id:'CHG-2007',regId:'US-OSHA-1910',title:'OSHA electronic recordkeeping (Form 300A) e-submission expanded',jur:'United States',topic:'Occupational H&S',sev:'Low',cat:'Administrative change',impact:'Monitor only',status:'Approved',eff:'2026-07-01',sites:['skaneateles','cincinnati','mountolive'],line:'Field Services',owner:'R. Maddox',date:'2026-06-02',conf:'High'},
+ {id:'CHG-2004',regId:'IN-LABOUR',title:'OSH Code 2020 — implementation date confirmed; welfare provisions live',jur:'India',topic:'Labour & Worker Welfare',sev:'Medium',cat:'Effective-date change',impact:'Action required before effective date',status:'Expert review required',eff:'2026-10-01',sites:['bengaluru'],line:'Digital & AI',owner:'A. Rao',date:'2026-06-07',conf:'Medium'},
+];
+
+/* diff content for the headline change (CHG-2038 TA Luft) used in Change Control */
+const DIFF={
+ prev:[
+  {n:'§5.2.1',html:'Total dust emissions from surface treatment installations shall not exceed <span class="amd">10 mg/m³</span> as a daily mean value, measured at the point of release.'},
+  {n:'§5.2.2',html:'Continuous monitoring shall be required for installations with a mass flow exceeding <span class="del">0.20 kg/h</span>.'},
+  {n:'§5.2.4',html:'Operators shall submit emission measurement reports to the competent authority <span class="amd">annually</span>.'},
+  {n:'§5.3.0',html:'<span class="del">Periodic measurements may be performed by an internally accredited testing body.</span>'},
+  {n:'§6.1.1',html:'Records of all emission measurements shall be retained and made available to the authority on request.'},
+ ],
+ curr:[
+  {n:'§5.2.1',html:'Total dust emissions from surface treatment installations shall not exceed <span class="amd">5 mg/m³</span> as a daily mean value, measured at the point of release.'},
+  {n:'§5.2.2',html:'Continuous monitoring shall be required for installations with a mass flow exceeding <span class="ins">0.10 kg/h</span>.'},
+  {n:'§5.2.3',html:'<span class="ins">Installations shall be fitted with a high-efficiency particulate abatement system achieving ≥ 99% separation efficiency.</span>'},
+  {n:'§5.2.4',html:'Operators shall submit emission measurement reports to the competent authority <span class="amd">quarterly</span>.'},
+  {n:'§6.1.1',html:'Records of all emission measurements shall be retained <span class="ins">for a minimum of 10 years</span> and made available to the authority on request.'},
+ ]
+};
+
+const ACTIONS=[
+ {id:'ACT-881',title:'Install high-efficiency particulate abatement on Line 3',reg:'DE-TA-LUFT',chg:'CHG-2038',site:'ahrensburg',line:'Manufacturing Operations',pri:'Critical',owner:'M. Keller',due:'2026-08-01',status:'In progress',ev:'Required'},
+ {id:'ACT-879',title:'Recalibrate continuous dust monitor to 0.10 kg/h threshold',reg:'DE-TA-LUFT',chg:'CHG-2038',site:'wunstorf',line:'Radiography & CT Systems',pri:'High',owner:'A. Brandt',due:'2026-07-20',status:'In progress',ev:'Required'},
+ {id:'ACT-876',title:'Update RIDDOR reporting SOP for revised threshold',reg:'UK-RIDDOR',chg:'CHG-2041',site:'coventry',line:'Manufacturing Operations',pri:'High',owner:'J. Whitfield',due:'2026-08-20',status:'Not started',ev:'Required'},
+ {id:'ACT-872',title:'Submit TRI Form R with new PFAS data',reg:'US-EPA-TRI',chg:'CHG-2035',site:'skaneateles',line:'Field Services',pri:'High',owner:'R. Maddox',due:'2026-06-28',status:'Awaiting approval',ev:'Attached'},
+ {id:'ACT-868',title:'Renew radioisotope device licence (3-yr cycle)',reg:'CN-RAD',chg:'CHG-2028',site:'changzhou',line:'Manufacturing Operations',pri:'Critical',owner:'W. Li',due:'2026-07-25',status:'Blocked',ev:'Required'},
+ {id:'ACT-865',title:'Map Scope 3 categories for ESRS E1 disclosure',reg:'EU-CSRD',chg:'CHG-2033',site:'hurth',line:'Digital & AI',pri:'High',owner:'S. Vogel',due:'2026-10-15',status:'In progress',ev:'Required'},
+ {id:'ACT-861',title:'Deploy CBAM quarterly emissions reporting workflow',reg:'EU-CBAM',chg:'CHG-2024',site:'ahrensburg',line:'Manufacturing Operations',pri:'Medium',owner:'S. Vogel',due:'2026-09-30',status:'In progress',ev:'Required'},
+ {id:'ACT-858',title:'Implement dual prevention mechanism register',reg:'CN-WSAFE',chg:'CHG-2019',site:'changzhou',line:'Manufacturing Operations',pri:'Medium',owner:'W. Li',due:'2026-08-15',status:'Not started',ev:'Required'},
+ {id:'ACT-855',title:'Establish ISO 50001 energy management system',reg:'DE-EnEfG',chg:'CHG-2010',site:'ahrensburg',line:'Manufacturing Operations',pri:'Medium',owner:'S. Vogel',due:'2026-07-15',status:'Awaiting evidence',ev:'Required'},
+ {id:'ACT-852',title:'Revise e-waste EPR record retention to new target',reg:'IN-EWASTE',chg:'CHG-2021',site:'bengaluru',line:'Digital & AI',pri:'Medium',owner:'A. Rao',due:'2026-09-20',status:'Not started',ev:'Required'},
+ {id:'ACT-849',title:'CEO duty-of-care attestation under Serious Accidents Act',reg:'KR-OSHA',chg:'CHG-2026',site:'pangyo',line:'Customer Solutions',pri:'High',owner:'Y. Park',due:'2026-09-10',status:'Not started',ev:'Required'},
+ {id:'ACT-846',title:'Battery carbon footprint declaration template',reg:'EU-BATTERY',chg:'CHG-2013',site:'coventry',line:'Manufacturing Operations',pri:'Medium',owner:'J. Whitfield',due:'2026-08-10',status:'In progress',ev:'Required'},
+ {id:'ACT-843',title:'Update OSHA 300A e-submission for 2025 records',reg:'US-OSHA-1910',chg:'CHG-2007',site:'cincinnati',line:'Customer Solutions',pri:'Low',owner:'R. Maddox',due:'2026-06-30',status:'Awaiting approval',ev:'Attached'},
+ {id:'ACT-840',title:'Overdue: water discharge permit variance — Changzhou',reg:'CN-WATER',chg:'',site:'changzhou',line:'Manufacturing Operations',pri:'High',owner:'W. Li',due:'2026-06-05',status:'Overdue',ev:'Missing'},
+ {id:'ACT-837',title:'Overdue: COSHH assessment refresh — composites cell',reg:'UK-COSHH',chg:'',site:'coventry',line:'Manufacturing Operations',pri:'Medium',owner:'J. Whitfield',due:'2026-05-28',status:'Overdue',ev:'Missing'},
+ // completed
+ {id:'ACT-820',title:'BImSchG permit periodic review filed',reg:'DE-BImSchG',chg:'',site:'ahrensburg',line:'Manufacturing Operations',pri:'High',owner:'M. Keller',due:'2026-03-14',status:'Complete',ev:'Attached'},
+ {id:'ACT-815',title:'REACH SVHC notification updated',reg:'EU-REACH',chg:'',site:'ahrensburg',line:'Manufacturing Operations',pri:'Medium',owner:'S. Vogel',due:'2026-04-28',status:'Complete',ev:'Attached'},
+ {id:'ACT-808',title:'NRC radiation safety audit closeout',reg:'US-RIDDOR-EQ',chg:'',site:'skaneateles',line:'Remote Visual Inspection',pri:'High',owner:'R. Maddox',due:'2026-04-11',status:'Complete',ev:'Attached'},
+ {id:'ACT-801',title:'ICPE declaration renewal — Contrexéville',reg:'FR-ICPE',chg:'',site:'contrex',line:'Manufacturing Operations',pri:'Medium',owner:'P. Moreau',due:'2026-05-04',status:'Complete',ev:'Attached'},
+ {id:'ACT-795',title:'WSH competency training rollout — Singapore',reg:'SG-WSH',chg:'CHG-2030',site:'singapore',line:'Field Services',pri:'Medium',owner:'L. Tan',due:'2026-05-30',status:'Complete',ev:'Attached'},
+];
+
+const WATCHLISTS=[
+ {id:'WL-01',name:'EU air & emissions — manufacturing sites',scope:'Germany, France, Slovakia · Air Emissions, Industrial Permits',freq:'Immediate',regs:8,owner:'M. Keller',recipients:['M. Keller','Ahrensburg HSE','Wunstorf HSE'],active:true},
+ {id:'WL-02',name:'Radiation safety — all radiography & CT',scope:'Global · Radiation Safety',freq:'Immediate',regs:6,owner:'A. Brandt',recipients:['A. Brandt','R. Maddox','W. Li'],active:true},
+ {id:'WL-03',name:'Sustainability disclosure (CSRD/CBAM/ESRS)',scope:'EU · Sustainability, Energy & Carbon',freq:'Weekly digest',regs:5,owner:'S. Vogel',recipients:['S. Vogel','Group Finance','Exec LT'],active:true},
+ {id:'WL-04',name:'APAC occupational H&S',scope:'Singapore, S. Korea, China, India · Occupational H&S',freq:'Daily digest',regs:9,owner:'L. Tan',recipients:['L. Tan','Y. Park','W. Li','A. Rao'],active:true},
+ {id:'WL-05',name:'US chemical & TRI reporting',scope:'United States · Chemicals, Reporting',freq:'Immediate',regs:4,owner:'R. Maddox',recipients:['R. Maddox','Cincinnati HSE'],active:true},
+ {id:'WL-06',name:'High-risk obligations — group',scope:'Global · Risk = Critical/High',freq:'Daily digest',regs:14,owner:'Tony Hammond',recipients:['Exec LT','Regional HSE Leads'],active:true},
+ {id:'WL-07',name:'Coventry battery & composites',scope:'United Kingdom · Product Stewardship, COSHH',freq:'Weekly digest',regs:4,owner:'J. Whitfield',recipients:['J. Whitfield'],active:true},
+ {id:'WL-08',name:'China manufacturing — environmental',scope:'China · Air, Water, Waste',freq:'Immediate',regs:5,owner:'W. Li',recipients:['W. Li','Changzhou Plant Mgr'],active:true},
+ {id:'WL-09',name:'Process safety (Seveso/StFV/PSM)',scope:'Germany, Switzerland · Process Safety',freq:'Weekly digest',regs:3,owner:'M. Keller',recipients:['M. Keller','T. Frei'],active:false},
+ {id:'WL-10',name:'Executive monthly horizon',scope:'Global · All forecaster items',freq:'Monthly digest',regs:32,owner:'Tony Hammond',recipients:['Exec LT','Board HSE Committee'],active:true},
+];
+
+const EVIDENCE=[
+ {id:'EV-512',name:'Ahrensburg BImSchG permit certificate 2026',type:'Permit',site:'ahrensburg',reg:'DE-BImSchG',status:'Current',expires:'2029-03-14',by:'M. Keller'},
+ {id:'EV-509',name:'NRC radiation safety audit report',type:'Audit report',site:'skaneateles',reg:'US-RIDDOR-EQ',status:'Current',expires:'2027-04-11',by:'R. Maddox'},
+ {id:'EV-505',name:'TRI Form R 2025 submission receipt',type:'Filing',site:'skaneateles',reg:'US-EPA-TRI',status:'Pending approval',expires:'2027-07-01',by:'R. Maddox'},
+ {id:'EV-501',name:'REACH SVHC declaration of conformity',type:'Declaration',site:'ahrensburg',reg:'EU-REACH',status:'Current',expires:'2027-04-28',by:'S. Vogel'},
+ {id:'EV-498',name:'WSH radiography competency certificates',type:'Training record',site:'singapore',reg:'SG-WSH',status:'Current',expires:'2028-05-30',by:'L. Tan'},
+ {id:'EV-494',name:'Changzhou radioisotope device licence',type:'Licence',site:'changzhou',reg:'CN-RAD',status:'Expiring soon',expires:'2026-08-01',by:'W. Li'},
+ {id:'EV-490',name:'Contrexéville ICPE declaration',type:'Declaration',site:'contrex',reg:'FR-ICPE',status:'Current',expires:'2027-05-04',by:'P. Moreau'},
+ {id:'EV-486',name:'COSHH assessment — composites cell',type:'Assessment',site:'coventry',reg:'UK-COSHH',status:'Expired',expires:'2026-05-28',by:'J. Whitfield'},
+ {id:'EV-482',name:'Changzhou water discharge monitoring log',type:'Monitoring log',site:'changzhou',reg:'CN-WATER',status:'Missing',expires:'—',by:'—'},
+ {id:'EV-478',name:'OSHA 300A log 2025 — Cincinnati',type:'Recordkeeping',site:'cincinnati',reg:'US-OSHA-1910',status:'Pending approval',expires:'2027-02-01',by:'R. Maddox'},
+ {id:'EV-474',name:'ISO 14001 certificate — Hürth',type:'Certification',site:'hurth',reg:'EU-WFD',status:'Current',expires:'2027-09-01',by:'A. Brandt'},
+ {id:'EV-470',name:'Energy audit report (EnEfG) — Ahrensburg',type:'Audit report',site:'ahrensburg',reg:'DE-EnEfG',status:'Pending approval',expires:'2030-07-18',by:'S. Vogel'},
+];
+
+const PERMITS=[
+ {id:'PM-01',name:'BImSchG operating permit',site:'ahrensburg',reg:'DE-BImSchG',status:'Active',expires:'2029-03-14'},
+ {id:'PM-02',name:'Radioisotope device licence',site:'changzhou',reg:'CN-RAD',status:'Renewal due',expires:'2026-08-01'},
+ {id:'PM-03',name:'ICPE classified installation',site:'contrex',reg:'FR-ICPE',status:'Active',expires:'2027-05-04'},
+ {id:'PM-04',name:'Title V air permit',site:'skaneateles',reg:'US-CLEAN-AIR',status:'Active',expires:'2028-02-14'},
+ {id:'PM-05',name:'Environmental permit (EPR)',site:'coventry',reg:'UK-EPR',status:'Active',expires:'2027-04-30'},
+ {id:'PM-06',name:'StrlSchV radiography permit',site:'wunstorf',reg:'DE-RAD-04',status:'Active',expires:'2028-12-31'},
+ {id:'PM-07',name:'Water discharge consent',site:'changzhou',reg:'CN-WATER',status:'Variance pending',expires:'2026-06-05'},
+ {id:'PM-08',name:'Fire safety certificate',site:'dubai',reg:'AE-FIRE',status:'Active',expires:'2027-03-01'},
+ {id:'PM-09',name:'NEA emissions licence',site:'singapore',reg:'SG-EPMA',status:'Active',expires:'2028-01-01'},
+ {id:'PM-10',name:'Hazardous waste handling permit',site:'bengaluru',reg:'IN-EWASTE',status:'Renewal due',expires:'2026-10-01'},
+];
+
+const GUIDES=[
+ {id:'G-DE',title:'Germany manufacturing — EHS regulatory guide',jur:'Germany (EU)',topics:'Air, water, permits, radiation, process safety',updated:'2026-06-01',read:'24 min'},
+ {id:'G-US',title:'United States chemical & radiation compliance guide',jur:'United States',topics:'OSHA, EPA TRI, NRC, DOT hazmat',updated:'2026-05-20',read:'21 min'},
+ {id:'G-CN',title:'China industrial site EHS guide',jur:'China',topics:'Work safety, environmental, radiation licensing',updated:'2026-05-12',read:'19 min'},
+ {id:'G-SG',title:'Singapore workplace safety & health guide',jur:'Singapore',topics:'WSH Act, NEA, SCDF fire',updated:'2026-04-30',read:'15 min'},
+ {id:'G-AE',title:'UAE industrial health & safety guide',jur:'United Arab Emirates',topics:'OSHAD-SF, Civil Defence fire code',updated:'2026-03-22',read:'14 min'},
+];
+
+const USERS=[
+ {name:'Tony Hammond',role:'Group HS&E Director',scope:'Global',email:'thammond@vassalenterprises.com',status:'Active'},
+ {name:'S. Vogel',role:'Corporate Compliance Director',scope:'Global',email:'s.vogel@…',status:'Active'},
+ {name:'M. Keller',role:'Regional HS&E Manager — DACH',scope:'Germany, Switzerland',email:'m.keller@…',status:'Active'},
+ {name:'R. Maddox',role:'Regional HS&E Manager — Americas',scope:'USA, Brazil',email:'r.maddox@…',status:'Active'},
+ {name:'A. Brandt',role:'Regulatory Analyst — Radiation',scope:'Global radiation',email:'a.brandt@…',status:'Active'},
+ {name:'W. Li',role:'Site Manager — Changzhou',scope:'Changzhou',email:'w.li@…',status:'Active'},
+ {name:'J. Whitfield',role:'Site Manager — Coventry',scope:'Coventry',email:'j.whitfield@…',status:'Active'},
+ {name:'L. Tan',role:'Regional HS&E Manager — APAC',scope:'Singapore, S. Korea',email:'l.tan@…',status:'Active'},
+ {name:'A. Rao',role:'Business Line Leader — Digital & AI',scope:'Bengaluru',email:'a.rao@…',status:'Active'},
+ {name:'External Reviewer (DLA)',role:'External Expert Reviewer',scope:'Read + approve assessments',email:'ehs@dla.example',status:'Invited'},
+];
+
+const AUDIT=[
+ {ts:'2026-06-15 14:22',user:'S. Vogel',action:'Created change assessment',obj:'CHG-2033 ESRS E1 scope expansion',type:'Assessment'},
+ {ts:'2026-06-14 09:41',user:'M. Keller',action:'Published approved assessment',obj:'CHG-2038 TA Luft particulate limit',type:'Approval'},
+ {ts:'2026-06-14 09:38',user:'External Reviewer (DLA)',action:'Approved impact assessment',obj:'CHG-2038 TA Luft particulate limit',type:'Approval'},
+ {ts:'2026-06-13 16:05',user:'System',action:'Sent critical alert email',obj:'WL-01 → 3 recipients',type:'Notification'},
+ {ts:'2026-06-12 11:50',user:'M. Keller',action:'Assigned action ACT-881',obj:'Abatement system → Ahrensburg',type:'Action'},
+ {ts:'2026-06-12 11:20',user:'AI Service',action:'Generated draft impact summary',obj:'CHG-2038 (confidence: High)',type:'AI'},
+ {ts:'2026-06-10 08:15',user:'J. Whitfield',action:'Requested legal review',obj:'CHG-2041 RIDDOR threshold',type:'Workflow'},
+ {ts:'2026-06-09 15:33',user:'R. Maddox',action:'Uploaded evidence EV-505',obj:'TRI Form R receipt',type:'Evidence'},
+ {ts:'2026-06-05 10:02',user:'System',action:'Escalated overdue action',obj:'ACT-840 → Group HS&E Director',type:'Escalation'},
+ {ts:'2026-06-02 13:47',user:'R. Maddox',action:'Marked change as reviewed',obj:'CHG-2007 OSHA e-recordkeeping',type:'Workflow'},
+];
+
+/* ===================== helpers ===================== */
+const $=s=>document.querySelector(s);
+const REGBY=Object.fromEntries(REGS.map(r=>[r.id,r]));
+const SITEBY=Object.fromEntries(SITES.map(s=>[s.id,s]));
+function sevPill(s){const m={Critical:'p-red',High:'p-amber',Medium:'p-blue',Low:'p-grey',Informational:'p-grey'};return `<span class="pill ${m[s]||'p-grey'}"><span class="pd"></span>${s}</span>`;}
+function statusPill(s){const m={'Compliant':'p-green','Partially compliant':'p-amber','Non-compliant':'p-red','Under review':'p-blue','Not applicable':'p-grey','Evidence missing':'p-red','Approved':'p-green','Expert review required':'p-amber','Action plan created':'p-blue','Marked as reviewed':'p-teal'};return `<span class="pill ${m[s]||'p-grey'}"><span class="pd"></span>${s}</span>`;}
+function actPill(s){const m={'Not started':'p-grey','In progress':'p-blue','Awaiting evidence':'p-amber','Awaiting approval':'p-purple','Blocked':'p-red','Complete':'p-green','Overdue':'p-red','Closed':'p-grey'};return `<span class="pill ${m[s]||'p-grey'}"><span class="pd"></span>${s}</span>`;}
+function evPill(s){const m={'Current':'p-green','Pending approval':'p-purple','Expiring soon':'p-amber','Expired':'p-red','Missing':'p-red'};return `<span class="pill ${m[s]||'p-grey'}"><span class="pd"></span>${s}</span>`;}
+function scoreColor(v){return v>=90?'var(--green)':v>=85?'var(--teal)':v>=78?'var(--amber)':'var(--red)';}
+function initials(n){return n.replace(/[^A-Za-z ]/g,'').split(' ').filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();}
+function flag(cc){return cc.toUpperCase().replace(/./g,c=>String.fromCodePoint(127397+c.charCodeAt()));}
+
+/* ===================== navigation + router ===================== */
+const NAV=[
+ {sec:'Overview',items:[
+   {id:'dashboard',label:'Executive Overview',icon:'grid'},
+ ]},
+ {sec:'Regulatory Intelligence',items:[
+   {id:'baseline',label:'Regulatory Baseline',icon:'book',badge:String(REGS.filter(r=>r.status!=='Repealed').length)},
+   {id:'change',label:'Change Control',icon:'compare',badge:String(CHANGES.length)},
+   {id:'forecaster',label:'Regulatory Forecaster',icon:'radar'},
+   {id:'guides',label:'Regulatory Guides',icon:'compass'},
+ ]},
+ {sec:'Accountability',items:[
+   {id:'watchlists',label:'Watchlists',icon:'eye'},
+   {id:'alerts',label:'Alerts & Notifications',icon:'bell',badge:'5'},
+   {id:'sites',label:'Sites',icon:'pin'},
+   {id:'actions',label:'Actions',icon:'check',badge:String(ACTIONS.filter(a=>['Overdue'].includes(a.status)).length)},
+   {id:'evidence',label:'Evidence',icon:'doc'},
+ ]},
+ {sec:'Insight & Control',items:[
+   {id:'reporting',label:'Reporting & Analytics',icon:'chart'},
+   {id:'admin',label:'Administration',icon:'shield'},
+   {id:'audit',label:'Audit Log',icon:'history'},
+ ]},
+];
+const ICONS={
+ grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+ book:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M19 3v18"/>',
+ compare:'<path d="M12 3v18"/><path d="M5 7l-2 3 2 3"/><path d="M19 7l2 3-2 3"/><rect x="3" y="4" width="6" height="12" rx="1"/><rect x="15" y="4" width="6" height="12" rx="1"/>',
+ radar:'<circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/><path d="M12 12v-5"/>',
+ compass:'<circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/>',
+ eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+ pin:'<path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+ check:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+ doc:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/>',
+ chart:'<path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/>',
+ shield:'<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/>',
+ history:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/>',
+};
+function renderNav(active){
+ $('#nav').innerHTML=NAV.map(g=>`<div class="navsec"><div class="lbl">${g.sec}</div>${g.items.map(it=>`<a href="#${it.id}" class="${it.id===active?'active':''}"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[it.icon]}</svg></span>${it.label}${it.badge?`<span class="badge">${it.badge}</span>`:''}</a>`).join('')}</div>`).join('');
+}
+function go(id){location.hash=id;}
+const ROUTES={};
+function router(){
+ const parts=(location.hash.replace('#','')||'dashboard').split('/');
+ const id=parts[0]; const arg=parts[1];
+ renderNav(id);
+ const fn=ROUTES[id]||ROUTES.dashboard;
+ $('#view').innerHTML=fn(arg);
+ window.scrollTo(0,0);
+ if(window._after){const f=window._after;window._after=null;f();}
+}
+window.addEventListener('hashchange',router);
+window.go=go;
+
+/* ===================== tiny chart helpers (inline SVG) ===================== */
+function barChart(data,opt={}){
+ const max=Math.max(...data.map(d=>d.v))*1.1;
+ return data.map(d=>`<div class="barrow"><div class="bl">${d.l}</div><div class="bt"><div class="bf" style="width:${(d.v/max*100).toFixed(0)}%;background:${d.c||'var(--blue)'}"></div></div><div class="bv">${opt.suffix?d.v+opt.suffix:d.v}</div></div>`).join('');
+}
+function lineChart(vals,w=560,h=160,color='var(--blue)'){
+ const max=Math.max(...vals),min=Math.min(...vals)-2;
+ const pts=vals.map((v,i)=>[20+i*((w-30)/(vals.length-1)),h-18-((v-min)/(max-min))*(h-36)]);
+ const path=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+ const area=path+` L ${pts[pts.length-1][0].toFixed(1)} ${h-18} L 20 ${h-18} Z`;
+ return `<svg width="100%" viewBox="0 0 ${w} ${h}"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".22"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+ ${[0,1,2,3].map(i=>`<line x1="20" x2="${w-10}" y1="${18+i*((h-36)/3)}" y2="${18+i*((h-36)/3)}" stroke="var(--line2)"/>`).join('')}
+ <path d="${area}" fill="url(#lg)"/><path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+ ${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="#fff" stroke="${color}" stroke-width="2"/>`).join('')}</svg>`;
+}
+function donut(segs,size=120){
+ let off=0,c=2*Math.PI*45;
+ const arcs=segs.map(s=>{const len=s.v/100*c;const el=`<circle cx="${size/2}" cy="${size/2}" r="45" fill="none" stroke="${s.c}" stroke-width="14" stroke-dasharray="${len} ${c-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${size/2} ${size/2})"/>`;off+=len;return el;}).join('');
+ return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${arcs}</svg>`;
+}
+
+/* ===================== VIEW: Executive Dashboard ===================== */
+ROUTES.dashboard=()=>{
+ const crit=CHANGES.filter(c=>c.sev==='Critical'||c.sev==='High');
+ const overdue=ACTIONS.filter(a=>a.status==='Overdue');
+ const regionScores=[
+   {l:'Europe (DACH)',v:86,c:'var(--teal)'},{l:'Europe (West)',v:88,c:'var(--teal)'},
+   {l:'Americas',v:87,c:'var(--teal)'},{l:'Greater China',v:74,c:'var(--red)'},
+   {l:'South Asia',v:85,c:'var(--amber)'},{l:'APAC / MENAT',v:88,c:'var(--teal)'}];
+ const lineScores=LINES.map(l=>{const ss=SITES.filter(s=>s.line===l);const a=ss.length?Math.round(ss.reduce((x,s)=>x+s.score,0)/ss.length):85;return{l,v:a,c:scoreColor(a)};});
+ const topicVol=[{l:'Occupational H&S',v:5},{l:'Air Emissions',v:3},{l:'Chemicals',v:2},{l:'Energy & Carbon',v:2},{l:'Radiation',v:1},{l:'Sustainability',v:1},{l:'Waste',v:1}].map(d=>({...d,c:'var(--blue)'}));
+ const exposed=[...SITES].sort((a,b)=>(b.open*(b.risk==='High'?2:1))-(a.open*(a.risk==='High'?2:1))).slice(0,6);
+ return `
+ ${crumb('Executive Overview')}
+ <div class="pagehead"><div><h1>Global compliance overview</h1><p>Waygate Technologies · 18 sites · 10 countries · ${REGS.filter(r=>r.status!=='Repealed').length} tracked regulations · as of 23 Jun 2026</p></div>
+  <div class="ph-actions"><button class="btn" onclick="go('reporting')">Monthly exec pack</button><button class="btn primary" onclick="go('change')">Review changes (${CHANGES.length})</button></div></div>
+
+ <div class="kpis" style="margin-bottom:16px">
+   ${kpi('Global compliance score','86%','up','+2.4 pts vs Q1',[78,80,79,82,83,84,85,86])}
+   ${kpi('Open regulatory changes',String(CHANGES.length),'flat','7 need expert review')}
+   ${kpi('Overdue actions',String(overdue.length),'dn','+1 this week — 2 escalated')}
+   ${kpi('Entering force ≤ 90 days','9','up','3 critical / high')}
+ </div>
+
+ <div class="grid" style="grid-template-columns:2fr 1fr;margin-bottom:16px">
+   <div class="card"><div class="ch"><h3>Compliance trend — last 12 months</h3><span class="sub">Group weighted score</span></div><div class="cb">${lineChart([78,79,80,79,81,82,82,83,84,84,85,86])}</div></div>
+   <div class="card"><div class="ch"><h3>Group posture</h3></div><div class="cb" style="display:flex;gap:16px;align-items:center">
+     <div style="position:relative">${donut([{v:62,c:'var(--green)'},{v:23,c:'var(--amber)'},{v:9,c:'var(--blue)'},{v:6,c:'var(--red)'}])}<div style="position:absolute;inset:0;display:grid;place-items:center;text-align:center"><div><div style="font-size:22px;font-weight:800">86%</div><div class="muted" style="font-size:10px">COMPLIANT</div></div></div></div>
+     <div style="font-size:12.5px;line-height:2">
+       <div><span class="pill p-green"><span class="pd"></span>Compliant 62%</span></div>
+       <div><span class="pill p-amber"><span class="pd"></span>Partial 23%</span></div>
+       <div><span class="pill p-blue"><span class="pd"></span>Under review 9%</span></div>
+       <div><span class="pill p-red"><span class="pd"></span>Non-compliant 6%</span></div>
+     </div></div></div>
+ </div>
+
+ <div class="grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:16px">
+   <div class="card"><div class="ch"><h3>Score by region</h3></div><div class="cb">${barChart(regionScores,{suffix:'%'})}</div></div>
+   <div class="card"><div class="ch"><h3>Score by business line</h3></div><div class="cb">${barChart(lineScores,{suffix:'%'})}</div></div>
+   <div class="card"><div class="ch"><h3>Change volume by topic — 90 days</h3></div><div class="cb">${barChart(topicVol)}</div></div>
+ </div>
+
+ <div class="grid" style="grid-template-columns:1.4fr 1fr">
+   <div class="card"><div class="ch"><h3>High-priority regulatory changes</h3><a class="btn sm" href="#change">View all</a></div>
+     <div class="tablewrap"><table class="tbl"><thead><tr><th>Change</th><th>Jurisdiction</th><th>Severity</th><th>Effective</th><th>Status</th></tr></thead><tbody>
+       ${crit.slice(0,7).map(c=>`<tr><td class="ttl" onclick="go('change/${c.id}')">${c.title}<div class="sm">${c.id} · ${REGBY[c.regId]?REGBY[c.regId].title.split('—')[0].trim():c.regId}</div></td><td>${flag(jurCC(c.jur))} ${c.jur}</td><td>${sevPill(c.sev)}</td><td>${fmt(c.eff)}</td><td>${statusPill(c.status)}</td></tr>`).join('')}
+     </tbody></table></div></div>
+   <div class="card"><div class="ch"><h3>Sites with highest exposure</h3><a class="btn sm" href="#sites">All sites</a></div>
+     <div class="cb" style="padding:8px">${exposed.map(s=>`<div onclick="go('sites/${s.id}')" style="display:flex;align-items:center;gap:12px;padding:9px 8px;border-radius:8px;cursor:pointer" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+       <div class="ring" style="--p:${s.score};--rc:${scoreColor(s.score)};width:46px;height:46px"><div class="inner" style="width:34px;height:34px;font-size:12px">${s.score}</div></div>
+       <div style="flex:1"><div style="font-weight:600">${flag(s.cc)} ${s.name} <span class="muted" style="font-weight:400">· ${s.country}</span></div><div class="sm muted">${s.type} · ${s.role}</div></div>
+       <div style="text-align:right"><div>${riskPill(s.risk)}</div><div class="sm muted" style="margin-top:3px">${s.open} open</div></div></div>`).join('')}</div></div>
+ </div>`;
+};
+function kpi(t,v,dir,note,spark){
+ const arrow=dir==='up'?'▲':dir==='dn'?'▼':'▬';
+ const sp=spark?`<svg class="spark" width="84" height="34" viewBox="0 0 84 34">${(()=>{const mx=Math.max(...spark),mn=Math.min(...spark);const p=spark.map((x,i)=>[i*(84/(spark.length-1)),32-((x-mn)/(mx-mn||1))*28]);return `<path d="${p.map((q,i)=>(i?'L':'M')+q[0].toFixed(0)+' '+q[1].toFixed(0)).join(' ')}" fill="none" stroke="var(--blue)" stroke-width="2"/>`;})()}</svg>`:'';
+ return `<div class="kpi"><div class="t">${t}</div><div class="v">${v}</div><div class="d ${dir}">${arrow} ${note}</div>${sp}</div>`;
+}
+function riskPill(r){return `<span class="pill ${r==='High'?'p-red':r==='Medium'?'p-amber':'p-green'}"><span class="pd"></span>${r} risk</span>`;}
+function crumb(...p){return `<div class="crumbs"><span>Compliance Intelligence</span>${p.map((x,i)=>` <span>›</span> ${i===p.length-1?'<b>'+x+'</b>':x}`).join('')}</div>`;}
+function fmt(d){if(!d||d==='—')return '—';const[y,m,dd]=d.split('-');return `${dd} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]} ${y}`;}
+function jurCC(j){const m={'Germany (EU)':'DE','United States':'US','Slovakia (EU)':'SK','France (EU)':'FR','Switzerland':'CH','Belgium (EU)':'BE','China':'CN','India':'IN','United Kingdom':'GB','Brazil':'BR','Singapore':'SG','United Arab Emirates':'AE','South Korea':'KR'};return m[j]||'EU';}
+
+/* ===================== VIEW: Regulatory Baseline ===================== */
+let BL={view:'all',jur:'All',topic:'All',status:'All',q:''};
+const SAVED=[['all','All regulations'],['mine','My assigned'],['high','High-risk obligations'],['changed','Changed this month'],['force','Entering force ≤ 90d'],['watch','On my watchlists'],['env','Global environmental']];
+ROUTES.baseline=()=>{
+ return `${crumb('Regulatory Baseline')}
+ <div class="pagehead"><div><h1>Regulatory Baseline</h1><p>The regulations, permits and obligations that apply to Waygate — work directly within the regulatory record.</p></div>
+   <div class="ph-actions"><button class="btn">Export</button><button class="btn primary">+ Add regulation</button></div></div>
+ <div class="filters">${SAVED.map(([k,l])=>`<button class="chip ${BL.view===k?'active':''}" onclick="BL.view='${k}';router()">${l}</button>`).join('')}</div>
+ <div class="filters">
+   <select class="fselect" onchange="BL.jur=this.value;router()"><option>All</option>${JURS.map(j=>`<option ${BL.jur===j?'selected':''}>${j}</option>`).join('')}</select>
+   <select class="fselect" onchange="BL.topic=this.value;router()"><option>All</option>${TOPICS.map(t=>`<option ${BL.topic===t?'selected':''}>${t}</option>`).join('')}</select>
+   <select class="fselect" onchange="BL.status=this.value;router()"><option>All</option>${['In force','Enacted','Under review','Repealed'].map(s=>`<option ${BL.status===s?'selected':''}>${s}</option>`).join('')}</select>
+   <input class="fselect" style="min-width:200px" placeholder="Filter by title…" value="${BL.q}" oninput="BL.q=this.value;clearTimeout(window._t);window._t=setTimeout(router,250)"/>
+   <span class="muted" style="margin-left:auto;font-size:12.5px" id="blcount"></span>
+ </div>
+ <div class="card"><div class="tablewrap"><table class="tbl"><thead><tr>
+   <th>Regulation</th><th>Jurisdiction</th><th>Topic</th><th>Agency</th><th>Status</th><th>Effective</th><th>Sites</th><th>Owner</th><th>Risk</th><th>Compliance</th><th></th></tr></thead>
+   <tbody id="blbody"></tbody></table></div></div>`;
+};
+function blRows(){
+ let rows=REGS.filter(r=>{
+   if(BL.view==='mine'&&r.owner!=='M. Keller'&&r.owner!=='S. Vogel')return false;
+   if(BL.view==='high'&&!['Critical','High'].includes(r.risk))return false;
+   if(BL.view==='changed'&&!(r.changed>='2026-06-01'))return false;
+   if(BL.view==='force'&&!(r.status==='Enacted'))return false;
+   if(BL.view==='watch'&&!r.watch)return false;
+   if(BL.view==='env'&&!['Air Emissions','Water Discharge','Waste & Circularity','Energy & Carbon'].includes(r.topic))return false;
+   if(BL.jur!=='All'&&r.jur!==BL.jur)return false;
+   if(BL.topic!=='All'&&r.topic!==BL.topic)return false;
+   if(BL.status!=='All'&&r.status!==BL.status)return false;
+   if(BL.q&&!r.title.toLowerCase().includes(BL.q.toLowerCase()))return false;
+   return true;
+ });
+ const c=$('#blcount'); if(c)c.textContent=rows.length+' regulations';
+ const b=$('#blbody'); if(!b)return;
+ b.innerHTML=rows.map(r=>`<tr>
+   <td class="ttl" onclick="go('baseline/${r.id}')">${r.title}<div class="sm">${r.id}</div></td>
+   <td>${flag(r.jur==='—'?'AU':jurCC(r.jur))} ${r.jur}</td><td><span class="tag">${r.topic}</span></td><td class="sm">${r.agency}</td>
+   <td>${r.status==='In force'?'<span class="pill p-green"><span class="pd"></span>In force</span>':r.status==='Enacted'?'<span class="pill p-blue"><span class="pd"></span>Enacted</span>':r.status==='Under review'?'<span class="pill p-amber"><span class="pd"></span>Under review</span>':'<span class="pill p-grey"><span class="pd"></span>'+r.status+'</span>'}</td>
+   <td>${fmt(r.eff)}</td><td class="sm">${r.sites.length}</td><td class="sm">${r.owner}</td><td>${sevPill(r.risk)}</td><td>${statusPill(r.comp)}</td>
+   <td>${r.watch?'<span title="On a watchlist" style="color:var(--blue)">★</span>':''}</td></tr>`).join('')||`<tr><td colspan="11" class="empty">No regulations match these filters.</td></tr>`;
+}
+window._after=null;
+const _origBaseline=ROUTES.baseline; ROUTES.baseline=(a)=>{window._after=blRows;return _origBaseline(a);};
+
+/* regulation detail */
+ROUTES['baseline']=ROUTES.baseline; // alias safety
+function regDetail(id){
+ const r=REGBY[id]; if(!r)return `${crumb('Regulatory Baseline','Not found')}<div class="empty">Regulation not found.</div>`;
+ const acts=ACTIONS.filter(a=>a.reg===id); const chg=CHANGES.filter(c=>c.regId===id);
+ return `${crumb('Regulatory Baseline',r.id)}
+ <div class="pagehead"><div><h1 style="max-width:760px">${r.title}</h1><p>${r.id} · ${r.agency} · ${flag(jurCC(r.jur))} ${r.jur}</p></div>
+   <div class="ph-actions">${chg.length?`<button class="btn" onclick="go('change/${chg[0].id}')">View change history</button>`:''}<button class="btn primary">Add to watchlist ★</button></div></div>
+ <div class="grid" style="grid-template-columns:2fr 1fr">
+   <div class="card"><div class="ch"><h3>Regulatory record</h3><span class="sub">Full text · clause-level</span></div>
+     <div class="legaltext">
+       <div class="cl"><div class="cn">Purpose</div>This regulation establishes binding requirements for ${r.topic.toLowerCase()} applicable to industrial installations within the jurisdiction of ${r.jur}. Operators shall ensure ongoing conformity and maintain documentary evidence of compliance.</div>
+       <div class="cl"><div class="cn">§1 Scope</div>Applies to all installations conducting activities listed in Annex I, including inspection, testing, manufacturing and ancillary operations carried out by the operator at the registered site.</div>
+       <div class="cl"><div class="cn">§2 General obligations</div>The operator shall implement and maintain a management system proportionate to the nature and scale of the activity, appoint a responsible person, and conduct periodic reviews against the applicable limits and reporting duties.</div>
+       <div class="cl"><div class="cn">§3 Monitoring &amp; records</div>Measurements shall be performed at the intervals prescribed by the competent authority. Records shall be retained and made available on request and for the statutory retention period.</div>
+       <div class="cl"><div class="cn">§4 Reporting</div>Operators shall submit returns to the competent authority within the deadlines set out in the implementing rules, in the prescribed format and language.</div>
+       <div class="muted" style="font-size:12px">Source: ${r.agency} · <a style="color:var(--blue)">Open original legal text ↗</a></div>
+     </div></div>
+   <div>
+     <div class="card" style="margin-bottom:16px"><div class="ch"><h3>Metadata</h3></div><div class="cb"><div class="kv">
+       <div class="k">Status</div><div>${r.status==='In force'?'<span class="pill p-green"><span class="pd"></span>In force</span>':statusPill(r.status)}</div>
+       <div class="k">Risk rating</div><div>${sevPill(r.risk)}</div>
+       <div class="k">Compliance</div><div>${statusPill(r.comp)}</div>
+       <div class="k">Effective date</div><div>${fmt(r.eff)}</div>
+       <div class="k">Last changed</div><div>${fmt(r.changed)}</div>
+       <div class="k">Owner</div><div>${r.owner}</div>
+       <div class="k">Topic</div><div><span class="tag">${r.topic}</span></div>
+       <div class="k">Watchlist</div><div>${r.watch?'<span class="pill p-blue"><span class="pd"></span>Monitored</span>':'Not monitored'}</div>
+     </div></div></div>
+     <div class="card"><div class="ch"><h3>Applicable sites (${r.sites.length})</h3></div><div class="cb" style="padding:8px">
+       ${r.sites.map(s=>{const st=SITEBY[s];return st?`<div onclick="go('sites/${st.id}')" style="display:flex;justify-content:space-between;padding:8px;border-radius:7px;cursor:pointer" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''"><span>${flag(st.cc)} ${st.name}</span><span class="sm muted">${st.country}</span></div>`:''}).join('')||'<div class="muted" style="padding:8px">No applicable sites.</div>'}
+     </div></div>
+   </div></div>
+   ${chg.length?`<div class="card" style="margin-top:16px"><div class="ch"><h3>Recent changes</h3></div><div class="tablewrap"><table class="tbl"><thead><tr><th>Change</th><th>Category</th><th>Severity</th><th>Effective</th><th>Status</th></tr></thead><tbody>${chg.map(c=>`<tr><td class="ttl" onclick="go('change/${c.id}')">${c.title}<div class="sm">${c.id}</div></td><td><span class="tag">${c.cat}</span></td><td>${sevPill(c.sev)}</td><td>${fmt(c.eff)}</td><td>${statusPill(c.status)}</td></tr>`).join('')}</tbody></table></div></div>`:''}
+   ${acts.length?`<div class="card" style="margin-top:16px"><div class="ch"><h3>Related actions</h3></div><div class="tablewrap"><table class="tbl"><thead><tr><th>Action</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead><tbody>${acts.map(a=>`<tr><td class="ttl">${a.title}<div class="sm">${a.id}</div></td><td class="sm">${a.owner}</td><td>${fmt(a.due)}</td><td>${actPill(a.status)}</td></tr>`).join('')}</tbody></table></div></div>`:''}`;
+}
+
+/* ===================== VIEW: Change Control ===================== */
+let CC={sel:'CHG-2038'};
+ROUTES.change=(arg)=>{
+ if(arg)CC.sel=arg;
+ const c=CHANGES.find(x=>x.id===CC.sel)||CHANGES[0];
+ const list=`<div class="card" style="margin-bottom:16px"><div class="ch"><h3>Change register</h3><span class="sub">${CHANGES.length} detected changes · ${CHANGES.filter(x=>x.status==='Expert review required').length} awaiting expert review</span></div>
+   <div class="tablewrap"><table class="tbl"><thead><tr><th>ID</th><th>Change</th><th>Jurisdiction</th><th>Category</th><th>Severity</th><th>Impact</th><th>Effective</th><th>Status</th><th>Conf.</th></tr></thead><tbody>
+   ${CHANGES.map(x=>`<tr style="${x.id===c.id?'background:var(--blue-bg)':''}"><td class="sm" style="font-weight:700">${x.id}</td><td class="ttl" onclick="go('change/${x.id}')">${x.title}</td><td>${flag(jurCC(x.jur))} ${x.jur}</td><td><span class="tag">${x.cat}</span></td><td>${sevPill(x.sev)}</td><td class="sm">${x.impact}</td><td>${fmt(x.eff)}</td><td>${statusPill(x.status)}</td><td><span class="conf">${x.conf}</span></td></tr>`).join('')}
+   </tbody></table></div></div>`;
+ return `${crumb('Change Control',c.id)}
+ <div class="pagehead"><div><h1>Regulatory Change Control</h1><p>Version-controlled comparison · every change is traceable, every impact has an owner, every decision is auditable.</p></div></div>
+ ${list}
+ <div class="card" style="margin-bottom:16px;border-left:4px solid ${c.sev==='Critical'?'var(--red)':c.sev==='High'?'var(--amber)':'var(--blue)'}"><div class="cb" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+   <div style="flex:1;min-width:280px"><div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted)">${c.id} · ${REGBY[c.regId]?REGBY[c.regId].title:c.regId}</div><div style="font-size:17px;font-weight:700;margin:3px 0">${c.title}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">${sevPill(c.sev)}<span class="tag">${c.cat}</span><span class="pill p-amber"><span class="pd"></span>${c.impact}</span>${statusPill(c.status)}</div></div>
+   <div style="text-align:right"><div class="muted sm">Effective</div><div style="font-size:18px;font-weight:800">${fmt(c.eff)}</div><div class="sm muted">Owner: ${c.owner}</div></div>
+ </div></div>
+
+ <div class="section-title">Side-by-side comparison — ${REGBY[c.regId]?REGBY[c.regId].id:''}</div>
+ <div class="split" style="margin-bottom:8px">
+   <div class="pane"><div class="ph2"><span class="vlabel">Previous version</span><span class="vno">v2021.2 · adopted 01 Dec 2021</span></div>
+     <div class="legaltext">${DIFF.prev.map(x=>`<div class="cl"><div class="cn">${x.n}</div>${x.html}</div>`).join('')}</div></div>
+   <div class="pane"><div class="ph2"><span class="vlabel">Current version</span><span class="vno">v2026.1 · effective ${fmt(c.eff)}</span></div>
+     <div class="legaltext">${DIFF.curr.map(x=>`<div class="cl"><div class="cn">${x.n}</div>${x.html}</div>`).join('')}</div></div>
+ </div>
+ <div style="display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:16px"><span><span class="ins">&nbsp;&nbsp;</span> Added</span><span><span class="amd">&nbsp;&nbsp;</span> Amended</span><span><span class="del">&nbsp;&nbsp;</span> Removed</span></div>
+
+ <div class="grid" style="grid-template-columns:1.5fr 1fr">
+   <div>
+     <div class="aibox" style="margin-bottom:16px"><div class="aih"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="3.5"/></svg> AI-assisted impact analysis <span class="pill p-amber" style="margin-left:6px"><span class="pd"></span>Draft · Requires expert review</span><span class="conf" style="margin-left:auto">Confidence: ${c.conf}</span></div>
+       <p style="margin:0 0 8px;font-size:13px;line-height:1.65">The amended ordinance <b>halves the permissible total dust limit</b> for surface-treatment installations (10 → 5 mg/m³ daily mean) and <b>tightens the continuous-monitoring trigger</b> from 0.20 to 0.10 kg/h. A new clause (§5.2.3) mandates high-efficiency particulate abatement at ≥99% separation efficiency. Reporting frequency moves from annual to <b>quarterly</b>, and record retention is extended to <b>10 years</b>.</p>
+       <p style="margin:0;font-size:13px;line-height:1.65"><b>Likely business impact:</b> Ahrensburg Line 3 and Wunstorf coating operations exceed the new monitoring trigger and require abatement upgrades before 15 Aug 2026. Estimated capital action with a compressed timeline — recommend immediate engineering assessment and a permit variation check under BImSchG.</p>
+       <div style="font-size:11px;color:var(--muted);margin-top:8px;border-top:1px solid #e0d8f5;padding-top:8px">Generated by AI Service · grouped from deterministic text-diff · raw diff stored separately · not a final compliance decision.</div>
+     </div>
+     <div class="card"><div class="ch"><h3>Materiality &amp; applicability</h3></div><div class="cb">
+       <div class="kv" style="grid-template-columns:170px 1fr">
+         <div class="k">Change categories</div><div><span class="tag">Tightened requirement</span> <span class="tag">New obligation</span> <span class="tag">Reporting change</span></div>
+         <div class="k">Severity</div><div>${sevPill(c.sev)}</div>
+         <div class="k">Compliance impact</div><div><span class="pill p-red"><span class="pd"></span>${c.impact}</span></div>
+         <div class="k">Affected sites</div><div>${c.sites.map(s=>`<span class="tag">${flag(SITEBY[s].cc)} ${SITEBY[s].name}</span>`).join(' ')}</div>
+         <div class="k">Affected business line</div><div>${c.line}</div>
+         <div class="k">Related policies</div><div><span class="tag">Emissions Management Policy</span> <span class="tag">Permit Compliance SOP</span></div>
+       </div></div></div>
+   </div>
+   <div>
+     <div class="card" style="margin-bottom:16px"><div class="ch"><h3>Decision &amp; workflow</h3></div><div class="cb">
+       <div style="display:flex;flex-direction:column;gap:8px">
+         <button class="btn" onclick="toast('Marked as reviewed')">Mark as reviewed</button>
+         <button class="btn" onclick="toast('Legal review requested from External Reviewer (DLA)')">Request legal review</button>
+         <button class="btn primary" onclick="go('actions')">Create action plan</button>
+         <button class="btn" onclick="toast('Escalated to Executive LT')">Escalate to executive</button>
+         <button class="btn" style="background:var(--green);color:#fff;border-color:var(--green)" onclick="toast('Approved assessment published — audit log updated')">Publish approved assessment</button>
+       </div>
+       <div class="divider"></div>
+       <div class="section-title">Required actions</div>
+       ${ACTIONS.filter(a=>a.chg===c.id).map(a=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line2)"><div><div style="font-weight:600;font-size:12.5px">${a.title}</div><div class="sm muted">${a.owner} · due ${fmt(a.due)}</div></div>${actPill(a.status)}</div>`).join('')||'<div class="muted sm">No actions yet — create an action plan.</div>'}
+     </div></div>
+     <div class="card"><div class="ch"><h3>Audit trail</h3></div><div class="cb" style="font-size:12.5px">
+       ${AUDIT.filter(a=>a.obj.includes('TA Luft')||a.obj.includes(c.id)).map(a=>`<div style="display:flex;gap:9px;padding:6px 0;border-bottom:1px solid var(--line2)"><span style="color:var(--blue)">●</span><div><b>${a.user}</b> ${a.action}<div class="sm muted">${a.ts}</div></div></div>`).join('')||'<div class="muted">No entries yet.</div>'}
+     </div></div>
+   </div>
+ </div>`;
+};
+
+/* ===================== VIEW: Forecaster ===================== */
+ROUTES.forecaster=()=>{
+ const fc=[...CHANGES].filter(c=>c.eff>='2026-06-23').sort((a,b)=>a.eff.localeCompare(b.eff));
+ const buckets=[['≤ 30 days',c=>c.eff<='2026-07-23'],['31–90 days',c=>c.eff>'2026-07-23'&&c.eff<='2026-09-21'],['3–6 months',c=>c.eff>'2026-09-21'&&c.eff<='2026-12-23'],['6–12 months',c=>c.eff>'2026-12-23']];
+ const likeli={Critical:'Adopted',High:'Very likely',Medium:'Likely',Low:'Proposed'};
+ return `${crumb('Regulatory Forecaster')}
+ <div class="pagehead"><div><h1>Regulatory Forecaster</h1><p>See regulatory change before it comes into force — understand impact, prepare ahead, reduce disruption.</p></div>
+   <div class="ph-actions"><button class="btn">Filter region</button><button class="btn primary" onclick="go('alerts')">Weekly digest settings</button></div></div>
+ <div class="kpis" style="margin-bottom:18px">
+   ${kpi('Items on horizon',String(fc.length),'flat','across 8 jurisdictions')}
+   ${kpi('Entering force ≤ 30d','2','dn','1 critical')}
+   ${kpi('Need readiness plan','6','up','assign analyst')}
+   ${kpi('Consultations open','3','flat','deadlines this quarter')}
+ </div>
+ <div class="section-title">Regulatory horizon</div>
+ ${buckets.map(([label,f])=>{const items=fc.filter(f);if(!items.length)return '';return `
+   <div class="card" style="margin-bottom:14px"><div class="ch"><h3>${label}</h3><span class="sub">${items.length} item${items.length>1?'s':''}</span></div>
+   <div class="cb" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px">
+   ${items.map(c=>`<div onclick="go('change/${c.id}')" style="border:1px solid var(--line);border-radius:9px;padding:13px;cursor:pointer;border-top:3px solid ${c.sev==='Critical'?'var(--red)':c.sev==='High'?'var(--amber)':'var(--blue)'}" onmouseover="this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.boxShadow=''">
+     <div style="display:flex;justify-content:space-between;align-items:start;gap:8px"><span class="sm" style="font-weight:700;color:var(--muted)">${flag(jurCC(c.jur))} ${c.jur}</span>${sevPill(c.sev)}</div>
+     <div style="font-weight:700;font-size:13.5px;margin:7px 0 5px;line-height:1.35">${c.title}</div>
+     <div class="kv" style="grid-template-columns:auto 1fr;gap:3px 10px;font-size:12px"><div class="k">Stage</div><div>${c.status==='Approved'?'Final rule':'Proposed / consultation'}</div><div class="k">Effective</div><div>${fmt(c.eff)}</div><div class="k">Likelihood</div><div>${likeli[c.sev]}</div><div class="k">Impact</div><div>${c.impact}</div><div class="k">Analyst</div><div>${c.owner}</div></div>
+     <div style="margin-top:8px;font-size:12px;color:var(--blue);font-weight:600">→ ${c.status==='Marked as reviewed'?'Monitoring':'Build readiness plan'}</div>
+   </div>`).join('')}</div></div>`;}).join('')}`;
+};
+
+/* ===================== VIEW: Watchlists ===================== */
+ROUTES.watchlists=()=>{
+ return `${crumb('Watchlists')}
+ <div class="pagehead"><div><h1>Watchlists</h1><p>Monitor the regulations that matter to you and get notified when they change.</p></div>
+   <div class="ph-actions"><button class="btn primary">+ New watchlist</button></div></div>
+ <div class="cb" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;padding:0">
+ ${WATCHLISTS.map(w=>`<div class="card"><div class="cb">
+   <div style="display:flex;justify-content:space-between;align-items:start"><div style="font-weight:700;font-size:14.5px;max-width:220px">${w.name}</div>${w.active?'<span class="pill p-green"><span class="pd"></span>Active</span>':'<span class="pill p-grey"><span class="pd"></span>Paused</span>'}</div>
+   <div class="muted sm" style="margin:6px 0 10px">${w.scope}</div>
+   <div class="kv" style="grid-template-columns:auto 1fr;gap:5px 12px;font-size:12.5px"><div class="k">Regulations</div><div><b>${w.regs}</b> monitored</div><div class="k">Frequency</div><div><span class="pill ${w.freq.includes('Immediate')?'p-red':w.freq.includes('Daily')?'p-amber':w.freq.includes('Weekly')?'p-blue':'p-grey'}"><span class="pd"></span>${w.freq}</span></div><div class="k">Owner</div><div>${w.owner}</div><div class="k">Recipients</div><div>${w.recipients.join(', ')}</div></div>
+   <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm" onclick="go('alerts')">Preview alert</button><button class="btn sm">Edit rules</button></div>
+ </div></div>`).join('')}
+ </div>`;
+};
+
+/* ===================== VIEW: Alerts (incl. email preview) ===================== */
+ROUTES.alerts=()=>{
+ const c=CHANGES.find(x=>x.id==='CHG-2038');
+ return `${crumb('Alerts & Notifications')}
+ <div class="pagehead"><div><h1>Alerts &amp; Notifications</h1><p>Automated email and in-platform alerts to accountable HS&amp;E and business leaders — before risks become incidents.</p></div>
+   <div class="ph-actions"><button class="btn">Notification rules</button><button class="btn primary">Send test</button></div></div>
+ <div class="grid" style="grid-template-columns:1fr 1.1fr">
+   <div>
+     <div class="card" style="margin-bottom:16px"><div class="ch"><h3>Recent notifications</h3></div><div class="cb" style="padding:6px">
+       ${[['Critical','CHG-2038 TA Luft particulate limit','Sent to 3 recipients · 13 Jun','p-red'],['Escalation','ACT-840 overdue 18 days → Group HS&E Director','Auto-escalated · 05 Jun','p-amber'],['High','CHG-2041 RIDDOR threshold revised','Sent to J. Whitfield · 10 Jun','p-amber'],['Digest','APAC weekly H&S digest','Delivered to 4 leaders · 16 Jun','p-blue'],['High','CHG-2026 Serious Accidents Act penalty','Sent to Y. Park · 05 Jun','p-amber']].map(n=>`<div style="display:flex;gap:10px;align-items:start;padding:10px 8px;border-bottom:1px solid var(--line2)"><span class="pill ${n[3]}" style="flex:none"><span class="pd"></span>${n[0]}</span><div><div style="font-weight:600;font-size:13px">${n[1]}</div><div class="sm muted">${n[2]}</div></div></div>`).join('')}
+     </div></div>
+     <div class="card"><div class="ch"><h3>Notification rules</h3></div><div class="cb" style="font-size:13px">
+       ${['Send immediate notification when a Critical change affects a site','Escalate if no owner is assigned within 48 hours','Escalate if an action is overdue by more than 7 days','Send weekly digest to regional HS&E leaders','Send monthly executive summary to corporate leadership'].map(r=>`<div style="display:flex;gap:9px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line2)"><span style="color:var(--green)">✓</span> ${r}</div>`).join('')}
+     </div></div>
+   </div>
+   <div><div class="section-title">Email alert preview</div>
+   <div class="email"><div class="eh"><div class="logo" style="width:30px;height:30px;border-radius:7px;background:var(--blue);display:grid;place-items:center;font-weight:800">CI</div><div><div style="font-weight:700">Compliance Intelligence</div><div style="font-size:11px;color:#9fb3c9">Automated regulatory alert · ${fmt(c.eff)}</div></div></div>
+     <div class="eb">
+       <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.4px">SUBJECT</div>
+       <div style="font-size:16px;font-weight:700;margin:3px 0 14px">Action required: High-impact EHS regulatory change affecting German manufacturing sites</div>
+       <div class="alertbar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg> Critical severity · immediate action required</div>
+       <div class="kv" style="grid-template-columns:130px 1fr;font-size:13px">
+         <div class="k">Regulation</div><div>TA Luft — Technical Instructions on Air Quality Control</div>
+         <div class="k">Jurisdiction</div><div>🇩🇪 Germany (EU) · BMUV</div>
+         <div class="k">What changed</div><div>Particulate limit halved (10→5 mg/m³); monitoring trigger tightened to 0.10 kg/h; new abatement obligation; quarterly reporting.</div>
+         <div class="k">Why it matters</div><div>Ahrensburg &amp; Wunstorf coating operations exceed the new trigger and require abatement upgrades before the effective date.</div>
+         <div class="k">Affected sites</div><div>Ahrensburg, Wunstorf</div>
+         <div class="k">Required action</div><div>Install high-efficiency particulate abatement on Line 3 (ACT-881)</div>
+         <div class="k">Action owner</div><div>M. Keller — Regional HS&amp;E Manager, DACH</div>
+         <div class="k">Due date</div><div><b style="color:var(--red)">01 Aug 2026</b></div>
+         <div class="k">Escalation</div><div>Group HS&amp;E Director if unassigned in 48h</div>
+       </div>
+       <div style="margin-top:18px;display:flex;gap:10px"><a class="btn primary" href="#change/CHG-2038">Open side-by-side comparison →</a><a class="btn" href="#actions">View action</a></div>
+       <div style="margin-top:16px;font-size:11px;color:var(--muted);border-top:1px solid var(--line2);padding-top:10px">You are receiving this because you own watchlist <b>WL-01 — EU air &amp; emissions</b>. Manage preferences in Compliance Intelligence.</div>
+     </div></div></div>
+ </div>`;
+};
+
+/* ===================== VIEW: Sites + detail ===================== */
+ROUTES.sites=(arg)=>{
+ if(arg)return siteDetail(arg);
+ return `${crumb('Sites')}
+ <div class="pagehead"><div><h1>Sites</h1><p>Site-level accountability across Waygate's 18 locations — from corporate frameworks to local ordinances.</p></div></div>
+ <div class="card"><div class="tablewrap"><table class="tbl"><thead><tr><th>Site</th><th>Country</th><th>Type</th><th>Business line</th><th>Employees</th><th>Permits</th><th>Open actions</th><th>Risk</th><th>Compliance score</th></tr></thead><tbody>
+ ${[...SITES].sort((a,b)=>a.score-b.score).map(s=>`<tr><td class="ttl" onclick="go('sites/${s.id}')">${flag(s.cc)} ${s.name}<div class="sm">${s.role}</div></td><td class="sm">${s.country}</td><td><span class="tag">${s.type}</span></td><td class="sm">${s.line}</td><td class="sm">${s.emp||'—'}</td><td class="sm">${s.permits}</td><td>${s.open}</td><td>${riskPill(s.risk)}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="bt" style="width:80px;height:8px;background:var(--line2);border-radius:6px;overflow:hidden"><div style="height:100%;width:${s.score}%;background:${scoreColor(s.score)}"></div></div><b>${s.score}</b></div></td></tr>`).join('')}
+ </tbody></table></div></div>`;
+};
+function siteDetail(id){
+ const s=SITEBY[id]; if(!s)return `<div class="empty">Site not found.</div>`;
+ const regs=REGS.filter(r=>r.sites.includes(id));
+ const acts=ACTIONS.filter(a=>a.site===id);
+ const perms=PERMITS.filter(p=>p.site===id);
+ const evs=EVIDENCE.filter(e=>e.site===id);
+ const matrix=regs.slice(0,9).map(r=>({req:r.title.split('—')[0].trim(),reg:r.id,type:r.topic,owner:r.owner,ctrl:r.comp,ev:evStatusFor(id,r.id),risk:r.risk}));
+ return `${crumb('Sites',s.name)}
+ <div class="pagehead"><div><h1>${flag(s.cc)} ${s.name} — ${s.country}</h1><p>${s.type} · ${s.role} · ${s.line} · ${s.emp||'—'} employees · ${s.jur}</p></div>
+   <div class="ph-actions"><button class="btn">Site report</button><button class="btn primary" onclick="go('actions')">View actions (${acts.length})</button></div></div>
+ <div class="kpis" style="margin-bottom:16px">
+   ${kpi('Compliance score',s.score+'%',s.score>=85?'up':'dn',s.score>=85?'above group target':'below group target')}
+   ${kpi('Applicable regulations',String(regs.length),'flat',regs.filter(r=>['Critical','High'].includes(r.risk)).length+' high-risk')}
+   ${kpi('Open actions',String(acts.filter(a=>!['Complete','Closed'].includes(a.status)).length),acts.some(a=>a.status==='Overdue')?'dn':'flat',acts.filter(a=>a.status==='Overdue').length+' overdue')}
+   ${kpi('Permits & licences',String(perms.length),'flat',perms.filter(p=>p.status!=='Active').length+' need attention')}
+ </div>
+ <div class="card" style="margin-bottom:16px"><div class="ch"><h3>Compliance matrix</h3><span class="sub">Requirement-level control &amp; evidence status</span></div>
+   <div class="tablewrap"><table class="tbl"><thead><tr><th>Requirement</th><th>Regulation</th><th>Type</th><th>Owner</th><th>Control status</th><th>Evidence</th><th>Risk</th></tr></thead><tbody>
+   ${matrix.map(m=>`<tr><td class="ttl">${m.req}</td><td class="sm" onclick="go('baseline/${m.reg}')" style="cursor:pointer;color:var(--blue)">${m.reg}</td><td><span class="tag">${m.type}</span></td><td class="sm">${m.owner}</td><td>${statusPill(m.ctrl)}</td><td>${evPill(m.ev)}</td><td>${sevPill(m.risk)}</td></tr>`).join('')}
+   </tbody></table></div></div>
+ <div class="grid" style="grid-template-columns:1fr 1fr">
+   <div class="card"><div class="ch"><h3>Permits &amp; licences</h3></div><div class="tablewrap"><table class="tbl"><thead><tr><th>Permit</th><th>Status</th><th>Expires</th></tr></thead><tbody>${perms.map(p=>`<tr><td class="ttl">${p.name}<div class="sm">${p.id}</div></td><td>${p.status==='Active'?'<span class="pill p-green"><span class="pd"></span>Active</span>':'<span class="pill p-amber"><span class="pd"></span>'+p.status+'</span>'}</td><td>${fmt(p.expires)}</td></tr>`).join('')||'<tr><td colspan=3 class="muted" style="padding:14px">No permits recorded.</td></tr>'}</tbody></table></div></div>
+   <div class="card"><div class="ch"><h3>Evidence repository</h3></div><div class="tablewrap"><table class="tbl"><thead><tr><th>Item</th><th>Type</th><th>Status</th></tr></thead><tbody>${evs.map(e=>`<tr><td class="ttl">${e.name}<div class="sm">${e.id} · ${fmt(e.expires)}</div></td><td class="sm">${e.type}</td><td>${evPill(e.status)}</td></tr>`).join('')||'<tr><td colspan=3 class="muted" style="padding:14px">No evidence linked.</td></tr>'}</tbody></table></div></div>
+ </div>`;
+}
+function evStatusFor(site,reg){const e=EVIDENCE.find(x=>x.site===site&&x.reg===reg);if(!e)return Math.random()>.6?'Missing':'Current';return e.status==='Current'?'Current':e.status==='Expired'||e.status==='Missing'?'Missing':e.status==='Expiring soon'?'Expiring soon':'Pending approval';}
+
+/* ===================== VIEW: Actions ===================== */
+let AC={view:'kanban'};
+ROUTES.actions=()=>{
+ const cols=[['Not started','p-grey'],['In progress','p-blue'],['Awaiting evidence','p-amber'],['Awaiting approval','p-purple'],['Complete','p-green']];
+ const open=ACTIONS.filter(a=>a.status!=='Complete'&&a.status!=='Closed');
+ const overdue=ACTIONS.filter(a=>a.status==='Overdue');
+ return `${crumb('Actions')}
+ <div class="pagehead"><div><h1>Actions &amp; Tasks</h1><p>Assign ownership, deadlines and evidence — monitor closure globally and locally.</p></div>
+   <div class="ph-actions"><button class="chip ${AC.view==='kanban'?'active':''}" onclick="AC.view='kanban';router()">Board</button><button class="chip ${AC.view==='table'?'active':''}" onclick="AC.view='table';router()">Table</button><button class="btn primary">+ New action</button></div></div>
+ <div class="kpis" style="margin-bottom:16px">
+   ${kpi('Open actions',String(open.length),'flat','across 9 sites')}
+   ${kpi('Overdue',String(overdue.length),'dn','escalated to leadership')}
+   ${kpi('Due ≤ 14 days','4','up','2 critical')}
+   ${kpi('Closure rate (90d)','82%','up','+6 pts')}
+ </div>
+ ${overdue.length?`<div class="card" style="margin-bottom:16px;border-left:4px solid var(--red)"><div class="cb" style="display:flex;gap:12px;align-items:center"><span class="pill p-red"><span class="pd"></span>${overdue.length} overdue</span><span class="sm">${overdue.map(a=>a.title).join(' · ')}</span></div></div>`:''}
+ ${AC.view==='kanban'?`<div class="kanban">${cols.map(([st,cl])=>{const items=ACTIONS.filter(a=>a.status===st||(st==='Not started'&&a.status==='Overdue'&&false));const real=ACTIONS.filter(a=>a.status===st);return `<div class="kcol"><div class="kh"><span class="pill ${cl}"><span class="pd"></span>${st}</span><span class="cnt">${real.length}</span></div>${real.map(a=>kcard(a)).join('')||'<div class="muted sm" style="padding:8px">—</div>'}</div>`;}).join('')}
+   <div class="kcol"><div class="kh"><span class="pill p-red"><span class="pd"></span>Overdue</span><span class="cnt">${overdue.length}</span></div>${overdue.map(a=>kcard(a)).join('')}</div></div>`
+ :`<div class="card"><div class="tablewrap"><table class="tbl"><thead><tr><th>Action</th><th>Regulation</th><th>Site</th><th>Priority</th><th>Owner</th><th>Due</th><th>Evidence</th><th>Status</th></tr></thead><tbody>
+   ${ACTIONS.map(a=>`<tr><td class="ttl">${a.title}<div class="sm">${a.id}${a.chg?' · '+a.chg:''}</div></td><td class="sm" onclick="go('baseline/${a.reg}')" style="cursor:pointer;color:var(--blue)">${a.reg}</td><td class="sm">${SITEBY[a.site]?flag(SITEBY[a.site].cc)+' '+SITEBY[a.site].name:'—'}</td><td>${sevPill(a.pri)}</td><td class="sm">${a.owner}</td><td>${fmt(a.due)}</td><td>${a.ev==='Attached'?'<span class="pill p-green"><span class="pd"></span>Attached</span>':a.ev==='Missing'?'<span class="pill p-red"><span class="pd"></span>Missing</span>':'<span class="pill p-grey"><span class="pd"></span>Required</span>'}</td><td>${actPill(a.status)}</td></tr>`).join('')}
+   </tbody></table></div></div>`}`;
+};
+function kcard(a){return `<div class="kcard" style="border-left-color:${a.pri==='Critical'?'var(--red)':a.pri==='High'?'var(--amber)':'var(--blue)'}"><h5>${a.title}</h5><div style="display:flex;gap:5px;flex-wrap:wrap">${sevPill(a.pri)}${a.ev==='Missing'?'<span class="pill p-red"><span class="pd"></span>No evidence</span>':''}</div><div class="meta"><span>${a.id} · ${SITEBY[a.site]?SITEBY[a.site].name:''}</span><span class="av" title="${a.owner}">${initials(a.owner)}</span></div><div class="sm muted" style="margin-top:4px">Due ${fmt(a.due)}</div></div>`;}
+
+/* ===================== VIEW: Evidence ===================== */
+ROUTES.evidence=()=>{
+ const stats={Current:EVIDENCE.filter(e=>e.status==='Current').length,'Pending approval':EVIDENCE.filter(e=>e.status==='Pending approval').length,'Expiring soon':EVIDENCE.filter(e=>e.status==='Expiring soon').length,Expired:EVIDENCE.filter(e=>['Expired','Missing'].includes(e.status)).length};
+ return `${crumb('Evidence')}
+ <div class="pagehead"><div><h1>Evidence Repository</h1><p>Version-controlled proof of compliance — permits, certificates, audits, filings and attestations.</p></div>
+   <div class="ph-actions"><button class="btn">Request evidence</button><button class="btn primary">+ Upload evidence</button></div></div>
+ <div class="kpis" style="margin-bottom:16px">
+   ${kpi('Current & valid',String(stats.Current),'up','of '+EVIDENCE.length+' items')}
+   ${kpi('Pending approval',String(stats['Pending approval']),'flat','awaiting sign-off')}
+   ${kpi('Expiring ≤ 60 days',String(stats['Expiring soon']),'dn','renew now')}
+   ${kpi('Expired / missing',String(stats.Expired),'dn','blocking compliance')}
+ </div>
+ <div class="card"><div class="tablewrap"><table class="tbl"><thead><tr><th>Evidence item</th><th>Type</th><th>Site</th><th>Regulation</th><th>Owner</th><th>Expires</th><th>Status</th></tr></thead><tbody>
+ ${EVIDENCE.map(e=>`<tr><td class="ttl">${e.name}<div class="sm">${e.id}</div></td><td class="sm">${e.type}</td><td class="sm">${SITEBY[e.site]?flag(SITEBY[e.site].cc)+' '+SITEBY[e.site].name:'—'}</td><td class="sm" onclick="go('baseline/${e.reg}')" style="cursor:pointer;color:var(--blue)">${e.reg}</td><td class="sm">${e.by}</td><td>${fmt(e.expires)}</td><td>${evPill(e.status)}</td></tr>`).join('')}
+ </tbody></table></div></div>`;
+};
+
+/* ===================== VIEW: Guides ===================== */
+ROUTES.guides=(arg)=>{
+ if(arg)return guideDetail(arg);
+ return `${crumb('Regulatory Guides')}
+ <div class="pagehead"><div><h1>Regulatory Guides</h1><p>Adapt quickly to new jurisdictions — structured, expert-curated reference that reads like a book.</p></div></div>
+ <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px">
+ ${GUIDES.map(g=>`<div class="card" onclick="go('guides/${g.id}')" style="cursor:pointer" onmouseover="this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.boxShadow='var(--shadow)'"><div class="cb">
+   <div style="display:flex;justify-content:space-between"><span class="pill p-blue"><span class="pd"></span>${flag(jurCC(g.jur))} ${g.jur}</span><span class="sm muted">${g.read}</span></div>
+   <div style="font-weight:700;font-size:15px;margin:10px 0 6px">${g.title}</div>
+   <div class="muted sm">${g.topics}</div>
+   <div class="divider"></div><div class="sm muted">Updated ${fmt(g.updated)} · curated by EHS experts</div>
+ </div></div>`).join('')}
+ </div>`;
+};
+function guideDetail(id){
+ const g=GUIDES.find(x=>x.id===id); if(!g)return `<div class="empty">Guide not found.</div>`;
+ const secs=['Overview','Regulatory system','Key authorities','Legal hierarchy','Main EHS topics','Permits & approvals','Enforcement approach','Reporting requirements','Common high-risk areas','Typical compliance timeline','Glossary','Readiness checklist'];
+ return `${crumb('Regulatory Guides',g.jur)}
+ <div class="pagehead"><div><h1 style="max-width:720px">${g.title}</h1><p>${flag(jurCC(g.jur))} ${g.jur} · ${g.read} · updated ${fmt(g.updated)}</p></div>
+   <div class="ph-actions"><button class="btn">Download PDF</button><button class="btn primary">Ask AI about this guide</button></div></div>
+ <div class="grid" style="grid-template-columns:220px 1fr">
+   <div class="card" style="align-self:start;position:sticky;top:78px"><div class="cb" style="padding:10px"><div class="section-title" style="padding:4px 8px">Contents</div>${secs.map((s,i)=>`<div style="padding:7px 8px;border-radius:6px;font-size:12.5px;${i===0?'background:var(--blue-bg);color:var(--blue);font-weight:700':'color:var(--muted)'}">${s}</div>`).join('')}</div></div>
+   <div class="card"><div class="cb" style="max-width:760px">
+     <h2 style="margin:0 0 6px;font-size:18px">Overview</h2>
+     <p>This guide gives EHS, legal and operations teams a practical orientation to the ${g.jur} regulatory environment as it applies to inspection, testing and manufacturing operations. It is designed to accelerate onboarding, support audit preparation and enable cross-jurisdictional training without prior local expertise.</p>
+     <h3 style="font-size:15px;margin:18px 0 6px">Regulatory system</h3>
+     <p>The framework combines primary legislation, secondary ordinances and technical guidance issued by the competent authorities. Obligations are enforced through permitting, inspection and reporting, with administrative and, in serious cases, criminal sanctions for non-conformity.</p>
+     <h3 style="font-size:15px;margin:18px 0 6px">Key authorities</h3>
+     <p>Responsibilities are split across national environmental, occupational-safety and sector-specific regulators. The guide maps each authority to the obligations Waygate sites must meet, with links to the relevant entries in the Regulatory Baseline.</p>
+     <h3 style="font-size:15px;margin:18px 0 6px">Main EHS topics</h3>
+     <p>${g.topics}. Each topic links to the applicable regulations, the sites affected, and the controls and evidence required to demonstrate compliance.</p>
+     <div class="aibox" style="margin-top:18px"><div class="aih"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg> Ask AI · sourced answers</div><p style="margin:0;font-size:12.5px">Ask a question about ${g.jur} requirements — answers cite the original regulatory text and link directly to the relevant clause in the Baseline. AI never replaces expert legal interpretation.</p></div>
+     <h3 style="font-size:15px;margin:18px 0 6px">Readiness checklist</h3>
+     ${['Identify applicable installations and activities','Confirm permits and licences in force','Map reporting obligations and deadlines','Assign accountable owners per site','Establish evidence and record retention'].map(x=>`<div style="display:flex;gap:9px;padding:6px 0;border-bottom:1px solid var(--line2)"><span style="color:var(--teal)">☐</span> ${x}</div>`).join('')}
+   </div></div>
+ </div>`;
+}
+
+/* ===================== VIEW: Reporting ===================== */
+ROUTES.reporting=()=>{
+ const reports=[['Global EHS compliance scorecard','Group + region + business line','chart'],['Regulatory change impact report','15 changes · 90 days','compare'],['Open & overdue actions','By owner and site','check'],['Compliance by site','18 sites benchmarked','pin'],['Regulatory exposure by jurisdiction','10 countries','radar'],['High-risk obligations','14 critical/high','shield'],['Upcoming legal changes','Forecaster horizon','radar'],['Executive monthly summary','Board HSE committee pack','grid'],['Audit readiness report','Evidence completeness','doc'],['Change response performance','Time-to-close metrics','history']];
+ return `${crumb('Reporting & Analytics')}
+ <div class="pagehead"><div><h1>Reporting &amp; Analytics</h1><p>Centralized, standardized reporting — benchmark performance globally with traceability to the legal text.</p></div>
+   <div class="ph-actions"><button class="btn">PDF</button><button class="btn">Excel</button><button class="btn">CSV</button><button class="btn primary">PowerPoint exec pack</button></div></div>
+ <div class="grid" style="grid-template-columns:2fr 1fr;margin-bottom:16px">
+   <div class="card"><div class="ch"><h3>Action closure rate by region — 12 months</h3></div><div class="cb">${lineChart([62,65,64,68,70,71,73,74,76,78,80,82],560,160,'var(--teal)')}</div></div>
+   <div class="card"><div class="ch"><h3>Regulatory exposure by jurisdiction</h3></div><div class="cb">${barChart([{l:'Germany (EU)',v:14,c:'var(--blue)'},{l:'United States',v:8,c:'var(--blue)'},{l:'China',v:6,c:'var(--red)'},{l:'United Kingdom',v:5,c:'var(--blue)'},{l:'India',v:4,c:'var(--amber)'},{l:'Other',v:13,c:'var(--muted2)'}])}</div></div>
+ </div>
+ <div class="card"><div class="ch"><h3>Report library</h3><span class="sub">Filter by date, site, region, topic, status, risk, owner</span></div>
+   <div class="cb" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">
+   ${reports.map(r=>`<div style="border:1px solid var(--line);border-radius:9px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''" onclick="toast('Generating: ${r[0]}')"><div style="width:38px;height:38px;border-radius:9px;background:var(--blue-bg);color:var(--blue);display:grid;place-items:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[r[2]]}</svg></div><div><div style="font-weight:700;font-size:13.5px">${r[0]}</div><div class="sm muted">${r[1]}</div></div></div>`).join('')}
+   </div></div>`;
+};
+
+/* ===================== VIEW: Administration ===================== */
+ROUTES.admin=()=>{
+ const perms=['View regulatory content','Edit metadata','Create assessments','Approve assessments','Assign actions','Close actions','Upload evidence','Exec reporting','Manage users','Configure alerts','View audit logs'];
+ const matrix={'Platform Administrator':[1,1,1,1,1,1,1,1,1,1,1],'Corporate Compliance Director':[1,1,1,1,1,1,1,1,0,1,1],'Regional HS&E Manager':[1,1,1,0,1,1,1,1,0,1,1],'Site Manager':[1,1,1,0,1,1,1,0,0,0,0],'Regulatory Analyst':[1,1,1,0,0,0,1,0,0,1,0],'Internal Auditor':[1,0,0,0,0,0,0,1,0,0,1],'Read-only Executive':[1,0,0,0,0,0,0,1,0,0,0],'External Expert Reviewer':[1,0,1,1,0,0,0,0,0,0,0]};
+ return `${crumb('Administration')}
+ <div class="pagehead"><div><h1>Administration</h1><p>Users, roles and permissions · role-based access control with full audit logging.</p></div>
+   <div class="ph-actions"><button class="btn">Roles &amp; permissions</button><button class="btn primary">+ Invite user</button></div></div>
+ <div class="card" style="margin-bottom:16px"><div class="ch"><h3>Users</h3><span class="sub">${USERS.length} users</span></div>
+   <div class="tablewrap"><table class="tbl"><thead><tr><th>Name</th><th>Role</th><th>Scope</th><th>Email</th><th>Status</th></tr></thead><tbody>
+   ${USERS.map(u=>`<tr><td><div style="display:flex;align-items:center;gap:9px"><span class="av" style="width:28px;height:28px;border-radius:50%;background:var(--navy3);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:700">${initials(u.name)}</span><b>${u.name}</b></div></td><td class="sm">${u.role}</td><td class="sm">${u.scope}</td><td class="sm">${u.email}</td><td>${u.status==='Active'?'<span class="pill p-green"><span class="pd"></span>Active</span>':'<span class="pill p-amber"><span class="pd"></span>Invited</span>'}</td></tr>`).join('')}
+   </tbody></table></div></div>
+ <div class="card"><div class="ch"><h3>Role permission matrix</h3></div><div class="tablewrap"><table class="tbl"><thead><tr><th>Role</th>${perms.map(p=>`<th style="writing-mode:vertical-rl;transform:rotate(180deg);height:120px;text-transform:none;letter-spacing:0;font-size:10.5px">${p}</th>`).join('')}</tr></thead><tbody>
+   ${Object.entries(matrix).map(([role,vals])=>`<tr><td class="ttl" style="white-space:nowrap">${role}</td>${vals.map(v=>`<td style="text-align:center">${v?'<span style="color:var(--green);font-weight:800">✓</span>':'<span style="color:var(--line)">—</span>'}</td>`).join('')}</tr>`).join('')}
+   </tbody></table></div></div>`;
+};
+
+/* ===================== VIEW: Audit Log ===================== */
+ROUTES.audit=()=>{
+ return `${crumb('Audit Log')}
+ <div class="pagehead"><div><h1>Audit Log</h1><p>Immutable record of every critical action — assessments, approvals, notifications, escalations and evidence.</p></div>
+   <div class="ph-actions"><button class="btn">Export</button><button class="btn">Filter</button></div></div>
+ <div class="card"><div class="tablewrap"><table class="tbl"><thead><tr><th>Timestamp</th><th>User / actor</th><th>Action</th><th>Object</th><th>Type</th></tr></thead><tbody>
+ ${AUDIT.map(a=>`<tr><td class="sm" style="white-space:nowrap;font-variant-numeric:tabular-nums">${a.ts}</td><td><b>${a.user}</b></td><td>${a.action}</td><td class="sm">${a.obj}</td><td><span class="tag">${a.type}</span></td></tr>`).join('')}
+ </tbody></table></div></div>`;
+};
+
+/* ===================== route aliases for detail pages ===================== */
+const _baseFn=ROUTES.baseline;
+ROUTES.baseline=(arg)=>arg?regDetail(arg):_baseFn(arg);
+
+/* toast */
+function toast(msg){let t=document.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);z-index:100;opacity:0;transition:.2s';document.body.appendChild(t);requestAnimationFrame(()=>t.style.opacity='1');setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),250);},2200);}
+window.toast=toast;
+
+/* boot */
+router();
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "name": "compliance-intelligence",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Compliance Intelligence — global regulatory intelligence platform (Waygate Technologies).",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "workers": "tsx workers/index.ts",
+    "demo": "tsx scripts/demo.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:seed": "prisma db seed",
+    "db:setup": "prisma generate && prisma migrate dev --name init && prisma db seed",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install --with-deps chromium"
+  },
+  "prisma": { "seed": "tsx prisma/seed.ts" },
+  "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "bullmq": "^5.21.0",
+    "ioredis": "^5.4.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@vitest/coverage-v8": "^2.1.0",
+    "prisma": "^5.20.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

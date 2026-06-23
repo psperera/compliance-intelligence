@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+platform/node_modules/
+
+# env / secrets
+.env
+.env.local
+platform/.env
+*.pem
+
+# build / cache
+dist/
+.next/
+coverage/
+platform/coverage/
+.vitest/
+
+# test artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+
+# prisma
+platform/prisma/migrations/dev.db*
+
+# os / editor
+.DS_Store
+*.log
+.idea/
+.vscode/
+
+# session screenshots
+Screenshot*.png

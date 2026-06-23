@@ -1,0 +1,35 @@
+# Local infrastructure for Compliance Intelligence.
+#   docker compose up -d
+# Postgres ships the pgvector extension; init.sql enables it on first boot.
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: ci-postgres
+    environment:
+      POSTGRES_USER: ci
+      POSTGRES_PASSWORD: ci
+      POSTGRES_DB: compliance
+    ports:
+      - "5432:5432"
+    volumes:
+      - ci-pgdata:/var/lib/postgresql/data
+      - ./prisma/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ci -d compliance"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: ci-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  ci-pgdata:
