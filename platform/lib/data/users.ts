@@ -1,10 +1,10 @@
 // lib/data/users.ts — the user database (in-memory for this build).
 //
-// Manages who has access, their email, role and scope. Headed by Tony Hammond, Group HS&E
-// Director. The admin UI reads/writes through these functions.
+// State is held on globalThis so it survives Next.js dev hot-reloads and is shared across
+// route handlers (otherwise added/removed users would "disappear" on the next request).
 //
-// PRODUCTION: back with Prisma (User + Role + UserSiteScope/UserRegionScope), and send a real
-// invite email via the EmailProvider when status === "INVITED".
+// PRODUCTION: back with Prisma (User + Role + scope tables) and send a real invite email
+// via the EmailProvider when status === "INVITED".
 
 import type { RoleKey } from "../auth/rbac";
 
@@ -18,12 +18,12 @@ export interface ManagedUser {
   title: string;
   role: RoleKey;
   scopeType: ScopeType;
-  scope: string[];        // region names or site ids when scopeType !== GLOBAL
+  scope: string[];
   status: UserStatus;
   createdAt: string;
 }
 
-let USERS: ManagedUser[] = [
+const SEED: ManagedUser[] = [
   { id: "u-hammond", name: "Tony Hammond", email: "thammond@vassalenterprises.com", title: "Group HS&E Director", role: "PLATFORM_ADMIN", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-04" },
   { id: "u-vogel", name: "Sabine Vogel", email: "s.vogel@waygate.example", title: "Corporate Compliance Director", role: "COMPLIANCE_DIRECTOR", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-06" },
   { id: "u-curtis", name: "Helen Curtis", email: "h.curtis@waygate.example", title: "General Counsel / Legal Policy Lead", role: "LEGAL_LEAD", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-06" },
@@ -39,27 +39,43 @@ let USERS: ManagedUser[] = [
   { id: "u-dla", name: "External Reviewer (DLA)", email: "ehs.review@dla.example", title: "External Expert Reviewer", role: "EXTERNAL_REVIEWER", scopeType: "GLOBAL", scope: [], status: "INVITED", createdAt: "2026-02-01" },
 ];
 
+// persist across hot-reloads / module instances
+const g = globalThis as unknown as { __ciUsers?: ManagedUser[] };
+if (!g.__ciUsers) g.__ciUsers = SEED.map((u) => ({ ...u }));
+const store = () => g.__ciUsers!;
+
 export function listUsers(): ManagedUser[] {
-  return [...USERS].sort((a, b) => a.name.localeCompare(b.name));
+  return [...store()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function addUser(input: Omit<ManagedUser, "id" | "createdAt" | "status"> & { status?: UserStatus }): ManagedUser {
-  if (USERS.some((u) => u.email.toLowerCase() === input.email.toLowerCase())) {
+  if (store().some((u) => u.email.toLowerCase() === input.email.toLowerCase())) {
     throw new Error(`A user with email ${input.email} already exists.`);
   }
   const u: ManagedUser = {
     ...input,
     id: "u-" + Math.random().toString(36).slice(2, 9),
-    status: input.status ?? "INVITED", // new users start invited; PRODUCTION: send invite email
+    status: input.status ?? "INVITED",
     createdAt: new Date().toISOString().slice(0, 10),
   };
-  USERS.push(u);
+  store().push(u);
   return u;
 }
 
 export function updateUser(id: string, patch: Partial<Pick<ManagedUser, "role" | "scopeType" | "scope" | "status" | "title">>): ManagedUser {
-  const u = USERS.find((x) => x.id === id);
-  if (!u) throw new Error("user not found");
+  const u = store().find((x) => x.id === id);
+  if (!u) throw new Error("User not found.");
   Object.assign(u, patch);
+  return u;
+}
+
+export function removeUser(id: string, actingUserId: string): ManagedUser {
+  const u = store().find((x) => x.id === id);
+  if (!u) throw new Error("User not found.");
+  if (id === actingUserId) throw new Error("You can't remove your own account.");
+  if (u.role === "PLATFORM_ADMIN" && store().filter((x) => x.role === "PLATFORM_ADMIN").length <= 1) {
+    throw new Error("Can't remove the last Platform Administrator.");
+  }
+  g.__ciUsers = store().filter((x) => x.id !== id);
   return u;
 }

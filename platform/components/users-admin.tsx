@@ -15,12 +15,21 @@ const statusPill = (s: string) => s === "ACTIVE" ? "p-green" : s === "INVITED" ?
 
 export function UsersAdmin({ canManage }: { canManage: boolean }) {
   const [users, setUsers] = useState<User[]>([]);
+  const [meId, setMeId] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", email: "", title: "", role: "SITE_MANAGER", scopeType: "GLOBAL", scope: "" });
 
-  const load = () => fetch("/api/admin/users").then((r) => r.json()).then((d) => setUsers(d.users ?? []));
+  const load = () => fetch("/api/admin/users").then((r) => r.json()).then((d) => { setUsers(d.users ?? []); setMeId(d.currentUserId ?? ""); });
   useEffect(() => { load(); }, []);
+
+  async function remove(id: string, name: string) {
+    if (!window.confirm(`Remove ${name}? This revokes their access.`)) return;
+    setMsg(null);
+    const res = await fetch(`/api/admin/users?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    const d = await res.json();
+    if (res.ok) { setMsg(`✓ Removed ${d.removed}`); load(); } else setMsg(`✗ ${d.error}`);
+  }
 
   async function addUser() {
     setMsg(null);
@@ -74,8 +83,11 @@ export function UsersAdmin({ canManage }: { canManage: boolean }) {
             <td className="sm">{u.scopeType === "GLOBAL" ? "Global" : `${u.scopeType}: ${u.scope.join(", ")}`}</td>
             <td><span className={`pill ${statusPill(u.status)}`}><span className="pd" />{u.status[0] + u.status.slice(1).toLowerCase()}</span></td>
             {canManage && <td>
-              {u.status !== "ACTIVE" && <button className="btn sm" onClick={() => patch(u.id, { status: "ACTIVE" })}>Activate</button>}
-              {u.status === "ACTIVE" && <button className="btn sm" onClick={() => patch(u.id, { status: "SUSPENDED" })}>Suspend</button>}
+              <div style={{ display: "flex", gap: 6 }}>
+                {u.status !== "ACTIVE" && <button className="btn sm" onClick={() => patch(u.id, { status: "ACTIVE" })}>Activate</button>}
+                {u.status === "ACTIVE" && <button className="btn sm" onClick={() => patch(u.id, { status: "SUSPENDED" })}>Suspend</button>}
+                {u.id !== meId && <button className="btn sm" style={{ color: "var(--red)", borderColor: "#f1c2bf" }} onClick={() => remove(u.id, u.name)}>Remove</button>}
+              </div>
             </td>}
           </tr>
         ))}</tbody>

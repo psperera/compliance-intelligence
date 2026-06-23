@@ -4,10 +4,11 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "../../../../lib/auth/current-user";
 import { can, ROLE_PERMISSIONS, type RoleKey } from "../../../../lib/auth/rbac";
-import { listUsers, addUser, updateUser } from "../../../../lib/data/users";
+import { listUsers, addUser, updateUser, removeUser } from "../../../../lib/data/users";
 
 export async function GET() {
-  return NextResponse.json({ users: listUsers() });
+  const me = await getCurrentUser();
+  return NextResponse.json({ users: listUsers(), currentUserId: me.id, canManage: can(me, "manage_users") });
 }
 
 export async function POST(req: Request) {
@@ -41,5 +42,19 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ ok: true, user });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 404 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  const me = await getCurrentUser();
+  if (!can(me, "manage_users")) return NextResponse.json({ error: "Forbidden: manage_users required" }, { status: 403 });
+  const id = new URL(req.url).searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  try {
+    const user = removeUser(id, me.id);
+    // PRODUCTION: soft-delete (set deletedAt) + AuditLog (category USER).
+    return NextResponse.json({ ok: true, removed: user.name });
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 409 });
   }
 }
