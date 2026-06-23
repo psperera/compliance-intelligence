@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRegulation, getChanges, getActions, siteName, siteCC } from "../../../../lib/data/store";
 import { Crumbs, PageHead, SevPill, StatusPill, ActionPill, flag, fmt, jurCC } from "../../../../components/ui";
+import { SoftButton } from "../../../../components/buttons";
 
 export default async function RegulationDetail({ params }: { params: Promise<{ regId: string }> }) {
   const { regId } = await params;
@@ -14,7 +15,7 @@ export default async function RegulationDetail({ params }: { params: Promise<{ r
     <>
       <Crumbs items={["Regulatory Baseline", reg.id]} />
       <PageHead title={reg.title} subtitle={`${reg.id} · ${reg.agency} · ${flag(jurCC(reg.jur))} ${reg.jur}`}
-        actions={<button className="btn primary">Add to watchlist ★</button>} />
+        actions={<SoftButton className="btn primary" label="Add to watchlist ★" message={`${reg.id} added to your watchlist — you'll be alerted on changes.`} />} />
 
       <div className="grid" style={{ gridTemplateColumns: "2fr 1fr" }}>
         <div className="card">

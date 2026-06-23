@@ -1,6 +1,7 @@
 import { getCurrentUser } from "../../../lib/auth/current-user";
 import { can, ROLE_PERMISSIONS, PERMISSIONS, type RoleKey } from "../../../lib/auth/rbac";
 import { AiProviderMenu } from "../../../components/ai-provider-menu";
+import { UsersAdmin } from "../../../components/users-admin";
 import { Crumbs, PageHead } from "../../../components/ui";
 
 const ROLE_LABELS: Record<RoleKey, string> = {
@@ -26,6 +27,11 @@ export default async function AdminPage() {
         <div className="cb">
           {isAdmin ? <AiProviderMenu /> : <div className="muted">Your role can’t change the AI provider (requires admin).</div>}
         </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="ch"><h3>Users &amp; access</h3><span className="sub">Add users, set emails, assign roles &amp; scope</span></div>
+        <div className="cb"><UsersAdmin canManage={isAdmin} /></div>
       </div>
 
       <div className="card">

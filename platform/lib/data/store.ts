@@ -50,7 +50,7 @@ const SITES: Site[] = [
   { id:"garching",name:"Garching",country:"Germany",cc:"DE",jur:"Germany (EU)",type:"Customer Solution Centre",role:"CSC — X-ray & CT Lab",line:"Customer Solutions",emp:15,score:90,risk:"Low",open:2,permits:3 },
 ];
 
-const REGS: Regulation[] = [
+let REGS: Regulation[] = [
   { id:"DE-TA-LUFT",title:"TA Luft — Technical Instructions on Air Quality Control",jur:"Germany (EU)",topic:"Air Emissions",agency:"BMUV",status:"In force",eff:"2021-12-01",risk:"HIGH",comp:"Partially compliant",owner:"M. Keller",sites:["ahrensburg","wunstorf"],watch:true,changed:"2026-06-12" },
   { id:"DE-RAD-04",title:"Radiation Protection Ordinance (StrlSchV)",jur:"Germany (EU)",topic:"Radiation Safety",agency:"BfS / BMUV",status:"In force",eff:"2018-12-31",risk:"CRITICAL",comp:"Compliant",owner:"A. Brandt",sites:["wunstorf","garching"],watch:true,changed:"2026-05-18" },
   { id:"US-OSHA-1910",title:"OSHA 29 CFR 1910 — Occupational Safety & Health Standards",jur:"United States",topic:"Occupational H&S",agency:"OSHA",status:"In force",eff:"1971-05-29",risk:"HIGH",comp:"Partially compliant",owner:"R. Maddox",sites:["skaneateles","cincinnati","mountolive"],watch:true,changed:"2026-06-02" },
@@ -108,3 +108,22 @@ export async function getRegulationsForSite(siteId: string): Promise<Regulation[
 
 export const siteName = (id: string) => SITES.find((s) => s.id === id)?.name ?? id;
 export const siteCC = (id: string) => SITES.find((s) => s.id === id)?.cc ?? "";
+
+// PRODUCTION: replace with db.regulation.create(...) + AuditLog entry.
+export async function addRegulation(input: {
+  id: string; title: string; jur: string; topic: string; agency: string;
+  risk: Severity; status?: string; eff?: string; owner?: string; sites?: string[];
+}): Promise<Regulation> {
+  if (REGS.some((r) => r.id.toLowerCase() === input.id.toLowerCase())) throw new Error(`Regulation ${input.id} already exists.`);
+  const reg: Regulation = {
+    id: input.id, title: input.title, jur: input.jur, topic: input.topic, agency: input.agency,
+    status: input.status ?? "In force", eff: input.eff ?? new Date().toISOString().slice(0, 10),
+    risk: input.risk, comp: "Under review", owner: input.owner ?? "Unassigned",
+    sites: input.sites ?? [], watch: false, changed: new Date().toISOString().slice(0, 10),
+  };
+  REGS = [reg, ...REGS];
+  return reg;
+}
+
+export const JURISDICTIONS = ["Germany (EU)","United States","Slovakia (EU)","France (EU)","Switzerland","Belgium (EU)","China","India","United Kingdom","Brazil","Singapore","United Arab Emirates","South Korea"];
+export const TOPICS = ["Radiation Safety","Occupational H&S","Process Safety","Chemicals & Hazardous Substances","Waste & Circularity","Air Emissions","Water Discharge","Energy & Carbon","Product Stewardship","Transport & Logistics","Fire Safety","Building & Facilities","Labour & Worker Welfare","Sustainability Disclosure","Emergency Response","Industrial Permits"];

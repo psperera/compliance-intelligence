@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { getSites } from "../../../lib/data/store";
 import { Crumbs, PageHead, RiskPill, flag, scoreColor } from "../../../components/ui";
+import { ExportButton } from "../../../components/buttons";
 
 export default async function SitesPage() {
   const sites = [...(await getSites())].sort((a, b) => a.score - b.score);
   return (
     <>
       <Crumbs items={["Sites"]} />
-      <PageHead title="Sites" subtitle="Site-level accountability across Waygate's 18 locations — from corporate frameworks to local ordinances." />
+      <PageHead title="Sites" subtitle="Site-level accountability across Waygate's 18 locations — from corporate frameworks to local ordinances."
+        actions={<ExportButton rows={sites} filename="sites.csv"
+          columns={[{ key: "name", header: "Site" }, { key: "country", header: "Country" }, { key: "type", header: "Type" }, { key: "line", header: "Business line" }, { key: "emp", header: "Employees" }, { key: "permits", header: "Permits" }, { key: "open", header: "Open actions" }, { key: "risk", header: "Risk" }, { key: "score", header: "Score" }]} />} />
       <div className="card"><div className="tablewrap"><table className="tbl">
         <thead><tr><th>Site</th><th>Country</th><th>Type</th><th>Business line</th><th>Employees</th><th>Permits</th><th>Open actions</th><th>Risk</th><th>Compliance score</th></tr></thead>
         <tbody>{sites.map((s) => (
