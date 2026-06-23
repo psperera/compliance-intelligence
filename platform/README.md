@@ -84,7 +84,17 @@ prisma/            schema + seed (user database) + init.sql
 tests/             vitest unit + playwright e2e
 scripts/demo.ts    end-to-end pipeline demo
 ```
-> Note: the Next.js `app/` pages described in `ARCHITECTURE.md` are not scaffolded yet —
-> the prototype (`../compliance-intelligence.html`) stands in for the UI. The backend
-> services, data model and workers in this folder are real and tested.
+> Note: the Next.js `app/` pages are now scaffolded and wired to the services — run
+> `npm run dev` for the live app (dashboard, baseline, change control with the real diff
+> engine, sites, actions, admin, and the FOM assistant). The single-file
+> `../compliance-intelligence.html` remains as a zero-install preview.
+
+## The live app (Next.js)
+```bash
+npm run dev      # http://localhost:3000
+```
+Pages: Executive Overview, Regulatory Baseline (+ detail), **Change Control** (renders the
+real diff-engine output + AI draft, RBAC-gated approve), Regulatory Forecaster, Sites
+(+ workspace/matrix), Actions, Administration (FOM provider menu + role matrix). The **FOM**
+assistant (bottom-right) uses a local LLM via Ollama by default — see the root `README.md`.
 ```
