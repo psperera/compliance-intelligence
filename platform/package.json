@@ -19,13 +19,16 @@
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install --with-deps chromium"
   },
-  "prisma": { "seed": "tsx prisma/seed.ts" },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@prisma/client": "^5.20.0",
     "bullmq": "^5.21.0",
     "ioredis": "^5.4.1",
+    "jose": "^5.10.0",
     "mammoth": "^1.8.0",
-    "next": "^15.0.0",
+    "next": "^16.2.9",
     "pdf-parse": "^1.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -35,10 +38,10 @@
     "@types/node": "^22.7.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "@vitest/coverage-v8": "^2.1.0",
+    "@vitest/coverage-v8": "^4.1.9",
     "prisma": "^5.20.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
-    "vitest": "^2.1.0"
+    "vitest": "^4.1.9"
   }
 }

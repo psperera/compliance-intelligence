@@ -1,9 +1,18 @@
 // Shared presentational helpers usable from server components (pure, no client hooks).
 import React from "react";
 
-export function flag(cc: string): string {
-  if (!cc) return "";
-  return cc.toUpperCase().replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)));
+// Real flag images render consistently across OSes (Windows has no emoji-flag glyphs).
+export function flag(cc: string) {
+  if (!cc) return null;
+  const code = cc.toLowerCase();
+  return (
+    <img
+      src={`https://flagcdn.com/20x15/${code}.png`}
+      srcSet={`https://flagcdn.com/40x30/${code}.png 2x`}
+      width={20} height={15} alt={cc.toUpperCase()} loading="lazy"
+      style={{ borderRadius: 2, verticalAlign: "middle", display: "inline-block", boxShadow: "0 0 0 1px rgba(0,0,0,.06)" }}
+    />
+  );
 }
 
 export function fmt(d?: string): string {

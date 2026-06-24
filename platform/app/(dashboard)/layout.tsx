@@ -1,9 +1,9 @@
 import { Nav } from "../../components/nav";
 import { Fom } from "../../components/fom";
-import { CURRENT_USER_DISPLAY } from "../../lib/auth/current-user";
+import { getCurrentUserDisplay } from "../../lib/auth/current-user";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const u = CURRENT_USER_DISPLAY;
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const u = await getCurrentUserDisplay();
   return (
     <div className="app">
       <aside className="sidebar">

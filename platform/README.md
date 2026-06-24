@@ -106,6 +106,29 @@ npm run dev      # http://localhost:3000
 ```
 Pages: Executive Overview, Regulatory Baseline (+ detail), **Change Control** (renders the
 real diff-engine output + AI draft, RBAC-gated approve), Regulatory Forecaster, Sites
-(+ workspace/matrix), Actions, Administration (FOM provider menu + role matrix). The **FOM**
+(+ workspace/matrix), Actions, Administration (HS.ai provider menu + role matrix). The **HS.ai**
 assistant (bottom-right) uses a local LLM via Ollama by default — see the root `README.md`.
 ```
+
+---
+
+## Hosting (temporary)
+
+The app is currently reachable for review at **https://hse.next-horizon.ai**.
+
+> ⚠️ **This hostname is temporary.** It's served from a local machine over a Cloudflare Tunnel,
+> gated by Cloudflare Access (sign-in restricted to `@bakerhughes.com` and `@hexagon.com`). It
+> will be replaced once the app is rehosted on permanent infrastructure. Nothing in the code is
+> tied to this hostname — see **`HOSTING.md`** for the full setup, the two-terminal run model
+> (app on port **3100** + `cloudflared` tunnel `hse-nh2`), the Access policy, the
+> application-specific JWT verification env (`CF_ACCESS_TEAM_DOMAIN` / `CF_ACCESS_AUD`), and the
+> `/api/whoami` identity diagnostic.
+
+Quick start for the temporary host (two terminals):
+```bash
+# terminal 1 — app
+cd platform && npm install && npm run build && PORT=3100 npm run start
+# terminal 2 — tunnel
+cloudflared tunnel run --url http://127.0.0.1:3100 hse-nh2
+```
+Then open https://hse.next-horizon.ai and sign in with an allowed-domain email.
