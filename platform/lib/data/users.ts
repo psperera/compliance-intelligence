@@ -26,7 +26,7 @@ export interface ManagedUser {
 
 export const SEED_USERS: ManagedUser[] = [
   { id: "u-hammond", name: "Tony Hammond", email: "tony.hammond@bakerhughes.com", title: "Group HS&E Director", phone: "", role: "PLATFORM_ADMIN", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-04" },
-  { id: "u-perera", name: "Paul Perera", email: "paul.perera@bakerhughes.com", title: "Corporate Compliance Director", phone: "", role: "COMPLIANCE_DIRECTOR", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-06" },
+  { id: "u-perera", name: "Paul Perera", email: "paul.perera@bakerhughes.com", title: "Strategy and Technology Operations Director", phone: "", role: "COMPLIANCE_DIRECTOR", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-06" },
 ];
 
 // persist across hot-reloads / module instances (memory backend)
