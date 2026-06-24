@@ -16,6 +16,7 @@ export interface ManagedUser {
   name: string;
   email: string;
   title: string;
+  phone: string;
   role: RoleKey;
   scopeType: ScopeType;
   scope: string[];
@@ -24,8 +25,8 @@ export interface ManagedUser {
 }
 
 export const SEED_USERS: ManagedUser[] = [
-  { id: "u-hammond", name: "Tony Hammond", email: "tony.hammond@bakerhughes.com", title: "Group HS&E Director", role: "PLATFORM_ADMIN", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-04" },
-  { id: "u-perera", name: "Paul Perera", email: "paul.perera@bakerhughes.com", title: "Corporate Compliance Director", role: "COMPLIANCE_DIRECTOR", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-06" },
+  { id: "u-hammond", name: "Tony Hammond", email: "tony.hammond@bakerhughes.com", title: "Group HS&E Director", phone: "", role: "PLATFORM_ADMIN", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-04" },
+  { id: "u-perera", name: "Paul Perera", email: "paul.perera@bakerhughes.com", title: "Corporate Compliance Director", phone: "", role: "COMPLIANCE_DIRECTOR", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-06" },
 ];
 
 // persist across hot-reloads / module instances (memory backend)
@@ -57,11 +58,12 @@ export async function addUser(input: Omit<ManagedUser, "id" | "createdAt" | "sta
   return u;
 }
 
-export async function updateUser(id: string, patch: Partial<Pick<ManagedUser, "role" | "scopeType" | "scope" | "status" | "title">>): Promise<ManagedUser> {
-  if (USE_DB) return (await pdb()).updateUser(id, patch);
+export async function updateUser(id: string, patch: Partial<Pick<ManagedUser, "role" | "scopeType" | "scope" | "status" | "title" | "email" | "phone" | "name">>): Promise<ManagedUser> {
+  const clean = Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined));
+  if (USE_DB) return (await pdb()).updateUser(id, clean);
   const u = store().find((x) => x.id === id);
   if (!u) throw new Error("User not found.");
-  Object.assign(u, patch);
+  Object.assign(u, clean);
   return u;
 }
 

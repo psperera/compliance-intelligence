@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
   try {
     const user = await addUser({
-      name: b.name, email: b.email, title: b.title ?? "", role: b.role as RoleKey,
+      name: b.name, email: b.email, title: b.title ?? "", phone: b.phone ?? "", role: b.role as RoleKey,
       scopeType: b.scopeType ?? "GLOBAL", scope: Array.isArray(b.scope) ? b.scope : [],
     });
     // PRODUCTION: send invite email via EmailProvider; write AuditLog (category USER).
@@ -37,8 +37,9 @@ export async function PATCH(req: Request) {
   if (!can(me, "manage_users")) return NextResponse.json({ error: "Forbidden: manage_users required" }, { status: 403 });
   const b = await req.json().catch(() => ({}));
   if (!b.id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  if (b.email !== undefined && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(b.email)) return NextResponse.json({ error: "invalid email" }, { status: 400 });
   try {
-    const user = await updateUser(b.id, { role: b.role, scopeType: b.scopeType, scope: b.scope, status: b.status, title: b.title });
+    const user = await updateUser(b.id, { role: b.role, scopeType: b.scopeType, scope: b.scope, status: b.status, title: b.title, email: b.email, phone: b.phone, name: b.name });
     return NextResponse.json({ ok: true, user });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 404 });

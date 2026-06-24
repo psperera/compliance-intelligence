@@ -99,6 +99,7 @@ model AppUser {
   name      String
   email     String   @unique
   title     String
+  phone     String   @default("")
   role      String
   scopeType String
   scope     String[]
