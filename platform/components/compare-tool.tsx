@@ -34,17 +34,29 @@ export function CompareTool() {
   const [res, setRes] = useState<Result | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [extracting, setExtracting] = useState<"A" | "B" | null>(null);
   // save-as-tracked-change state
   const [saveOpen, setSaveOpen] = useState(false);
   const [saved, setSaved] = useState<{ id: string } | null>(null);
   const [sv, setSv] = useState({ title: "", jur: JURS[0], topic: TOPICS[0] });
   const [saving, setSaving] = useState(false);
 
-  function loadFile(e: React.ChangeEvent<HTMLInputElement>, set: (v: string) => void) {
+  async function loadFile(e: React.ChangeEvent<HTMLInputElement>, set: (v: string) => void, which: "A" | "B") {
     const f = e.target.files?.[0]; if (!f) return;
-    const r = new FileReader();
-    r.onload = () => set(String(r.result ?? ""));
-    r.readAsText(f);
+    const ext = f.name.split(".").pop()?.toLowerCase() || "";
+    setErr(null);
+    if (["txt", "md", "markdown", "html", "htm", "xml", "csv"].includes(ext)) {
+      const r = new FileReader(); r.onload = () => set(String(r.result ?? "")); r.readAsText(f); return;
+    }
+    // .docx / .pdf → extract server-side
+    setExtracting(which);
+    try {
+      const fd = new FormData(); fd.append("file", f);
+      const res = await fetch("/api/extract", { method: "POST", body: fd });
+      const d = await res.json();
+      if (res.ok) set(d.text); else setErr(d.error || "Could not read that file.");
+    } catch { setErr("Could not read that file."); }
+    finally { setExtracting(null); }
   }
 
   async function compare() {
@@ -84,17 +96,19 @@ export function CompareTool() {
           </div>
         </div>
         <div className="cb">
-          <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>Paste or upload two versions (clause-numbered text — e.g. <code>§5.2.1 …</code>, <code>Art. 12(3) …</code>, <code>Section 4 …</code>). The deterministic diff engine aligns clauses, marks additions/amendments/removals, and derives severity.</p>
+          <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>Paste or upload two versions — <b>.docx, .pdf</b>, .txt, .md, .html (Word &amp; PDF text is extracted automatically). Clause-numbered text (e.g. <code>§5.2.1 …</code>, <code>Art. 12(3) …</code>, <code>Section 4 …</code>) gives the cleanest clause-level diff. The deterministic engine aligns clauses, marks additions/amendments/removals, and derives severity.</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <div>
               <input style={lbl} value={labelA} onChange={(e) => setLabelA(e.target.value)} />
               <textarea style={ta} value={a} onChange={(e) => setA(e.target.value)} placeholder="Paste the previous / baseline document…" />
-              <input type="file" accept=".txt,.md,.xml,.html" onChange={(e) => loadFile(e, setA)} style={{ fontSize: 12, marginTop: 6 }} />
+              <input type="file" accept=".txt,.md,.html,.htm,.xml,.csv,.doc,.docx,.pdf" onChange={(e) => loadFile(e, setA, "A")} style={{ fontSize: 12, marginTop: 6 }} />
+              {extracting === "A" && <span className="muted" style={{ fontSize: 12, marginLeft: 8 }}>Extracting text…</span>}
             </div>
             <div>
               <input style={lbl} value={labelB} onChange={(e) => setLabelB(e.target.value)} />
               <textarea style={ta} value={b} onChange={(e) => setB(e.target.value)} placeholder="Paste the new / current document…" />
-              <input type="file" accept=".txt,.md,.xml,.html" onChange={(e) => loadFile(e, setB)} style={{ fontSize: 12, marginTop: 6 }} />
+              <input type="file" accept=".txt,.md,.html,.htm,.xml,.csv,.doc,.docx,.pdf" onChange={(e) => loadFile(e, setB, "B")} style={{ fontSize: 12, marginTop: 6 }} />
+              {extracting === "B" && <span className="muted" style={{ fontSize: 12, marginLeft: 8 }}>Extracting text…</span>}
             </div>
           </div>
           {err && <div style={{ color: "var(--red)", fontWeight: 600, fontSize: 12.5, marginTop: 10 }}>✗ {err}</div>}
