@@ -1,7 +1,7 @@
 // POST /api/changes/:changeId/approve
 // Publishes an approved impact assessment. RBAC-enforced server-side (the real boundary).
 import { NextResponse } from "next/server";
-import { getChange } from "../../../../../lib/data/store";
+import { getChange, setChangeStatus } from "../../../../../lib/data/store";
 import { getCurrentUser } from "../../../../../lib/auth/current-user";
 import { can } from "../../../../../lib/auth/rbac";
 
@@ -14,6 +14,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ change
 
   const change = await getChange(changeId);
   if (!change) return NextResponse.json({ error: "change not found" }, { status: 404 });
+  await setChangeStatus(changeId, "Approved");
 
   // PRODUCTION (in one transaction):
   //   db.changeAssessment.update({ lifecycle: "APPROVED" })

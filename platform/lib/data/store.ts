@@ -50,7 +50,7 @@ const SITES: Site[] = [
   { id:"garching",name:"Garching",country:"Germany",cc:"DE",jur:"Germany (EU)",type:"Customer Solution Centre",role:"CSC — X-ray & CT Lab",line:"Customer Solutions",emp:15,score:90,risk:"Low",open:2,permits:3 },
 ];
 
-let REGS: Regulation[] = [
+const SEED_REGS: Regulation[] = [
   { id:"DE-TA-LUFT",title:"TA Luft — Technical Instructions on Air Quality Control",jur:"Germany (EU)",topic:"Air Emissions",agency:"BMUV",status:"In force",eff:"2021-12-01",risk:"HIGH",comp:"Partially compliant",owner:"M. Keller",sites:["ahrensburg","wunstorf"],watch:true,changed:"2026-06-12" },
   { id:"DE-RAD-04",title:"Radiation Protection Ordinance (StrlSchV)",jur:"Germany (EU)",topic:"Radiation Safety",agency:"BfS / BMUV",status:"In force",eff:"2018-12-31",risk:"CRITICAL",comp:"Compliant",owner:"A. Brandt",sites:["wunstorf","garching"],watch:true,changed:"2026-05-18" },
   { id:"US-OSHA-1910",title:"OSHA 29 CFR 1910 — Occupational Safety & Health Standards",jur:"United States",topic:"Occupational H&S",agency:"OSHA",status:"In force",eff:"1971-05-29",risk:"HIGH",comp:"Partially compliant",owner:"R. Maddox",sites:["skaneateles","cincinnati","mountolive"],watch:true,changed:"2026-06-02" },
@@ -70,7 +70,7 @@ let REGS: Regulation[] = [
 ];
 
 // Change events. The TA Luft change carries the version labels the diff engine compares.
-const CHANGES: ChangeEvent[] = [
+const SEED_CHANGES: ChangeEvent[] = [
   { id:"CHG-2038",regId:"DE-TA-LUFT",title:"TA Luft particulate emission limit reduced for surface treatment",jur:"Germany (EU)",topic:"Air Emissions",sev:"CRITICAL",cat:"Tightened requirement",impact:"Immediate action required",status:"Action plan created",eff:"2026-08-15",sites:["ahrensburg","wunstorf"],line:"Manufacturing Operations",owner:"M. Keller",date:"2026-06-12",conf:"High",prevVersion:"v2021.2",currVersion:"v2026.1" },
   { id:"CHG-2041",regId:"UK-RIDDOR",title:"RIDDOR reporting threshold for over-7-day incapacitation revised",jur:"United Kingdom",topic:"Occupational H&S",sev:"HIGH",cat:"Tightened requirement",impact:"Action required before effective date",status:"Expert review required",eff:"2026-09-01",sites:["coventry"],line:"Manufacturing Operations",owner:"J. Whitfield",date:"2026-06-10",conf:"Medium" },
   { id:"CHG-2035",regId:"US-EPA-TRI",title:"TRI Form R submission deadline moved earlier; PFAS threshold added",jur:"United States",topic:"Chemicals & Hazardous Substances",sev:"HIGH",cat:"Reporting change",impact:"Action required before effective date",status:"Approved",eff:"2026-07-01",sites:["skaneateles","cincinnati"],line:"Field Services",owner:"R. Maddox",date:"2026-06-09",conf:"High" },
@@ -81,7 +81,7 @@ const CHANGES: ChangeEvent[] = [
   { id:"CHG-2013",regId:"EU-BATTERY",title:"Batteries Regulation — carbon footprint declaration for industrial cells",jur:"United Kingdom",topic:"Product Stewardship",sev:"MEDIUM",cat:"New obligation",impact:"Action required before effective date",status:"Expert review required",eff:"2026-08-18",sites:["coventry"],line:"Manufacturing Operations",owner:"J. Whitfield",date:"2026-06-13",conf:"Medium" },
 ];
 
-const ACTIONS: ActionItem[] = [
+const SEED_ACTIONS: ActionItem[] = [
   { id:"ACT-881",title:"Install high-efficiency particulate abatement on Line 3",reg:"DE-TA-LUFT",chg:"CHG-2038",site:"ahrensburg",line:"Manufacturing Operations",pri:"CRITICAL",owner:"M. Keller",due:"2026-08-01",status:"In progress",ev:"Required" },
   { id:"ACT-879",title:"Recalibrate continuous dust monitor to 0.10 kg/h threshold",reg:"DE-TA-LUFT",chg:"CHG-2038",site:"wunstorf",line:"Radiography & CT Systems",pri:"HIGH",owner:"A. Brandt",due:"2026-07-20",status:"In progress",ev:"Required" },
   { id:"ACT-876",title:"Update RIDDOR reporting SOP for revised threshold",reg:"UK-RIDDOR",chg:"CHG-2041",site:"coventry",line:"Manufacturing Operations",pri:"HIGH",owner:"J. Whitfield",due:"2026-08-20",status:"Not started",ev:"Required" },
@@ -93,6 +93,19 @@ const ACTIONS: ActionItem[] = [
   { id:"ACT-820",title:"BImSchG permit periodic review filed",reg:"DE-TA-LUFT",chg:"",site:"ahrensburg",line:"Manufacturing Operations",pri:"HIGH",owner:"M. Keller",due:"2026-03-14",status:"Complete",ev:"Attached" },
   { id:"ACT-795",title:"WSH competency training rollout — Singapore",reg:"SG-WSH",chg:"",site:"singapore",line:"Field Services",pri:"MEDIUM",owner:"L. Tan",due:"2026-05-30",status:"Complete",ev:"Attached" },
 ];
+
+// Persist mutable datasets on globalThis so adds/edits survive Next dev hot-reloads and are
+// shared across route handlers. PRODUCTION: replace all of this with Prisma queries.
+const g = globalThis as unknown as { __ci?: { regs: Regulation[]; changes: ChangeEvent[]; actions: ActionItem[] } };
+if (!g.__ci) g.__ci = { regs: SEED_REGS.map((x) => ({ ...x })), changes: SEED_CHANGES.map((x) => ({ ...x })), actions: SEED_ACTIONS.map((x) => ({ ...x })) };
+const REGS = g.__ci.regs;
+const CHANGES = g.__ci.changes;
+const ACTIONS = g.__ci.actions;
+
+function nextRef(prefix: string, existing: { id: string }[]): string {
+  const nums = existing.map((x) => parseInt(x.id.replace(/\D/g, ""), 10)).filter((n) => !isNaN(n));
+  return `${prefix}-${(Math.max(0, ...nums) + 1)}`;
+}
 
 // ---- accessors (async to mirror a DB) ----
 export async function getSites(): Promise<Site[]> { return SITES; }
@@ -121,8 +134,61 @@ export async function addRegulation(input: {
     risk: input.risk, comp: "Under review", owner: input.owner ?? "Unassigned",
     sites: input.sites ?? [], watch: false, changed: new Date().toISOString().slice(0, 10),
   };
-  REGS = [reg, ...REGS];
+  REGS.unshift(reg);
   return reg;
+}
+
+export async function setRegulationWatch(id: string, watch: boolean): Promise<Regulation> {
+  const r = REGS.find((x) => x.id === id);
+  if (!r) throw new Error("Regulation not found.");
+  r.watch = watch;
+  return r;
+}
+
+export async function setChangeStatus(id: string, status: string): Promise<ChangeEvent> {
+  const c = CHANGES.find((x) => x.id === id);
+  if (!c) throw new Error("Change not found.");
+  c.status = status;
+  return c;
+}
+
+export async function addChange(input: {
+  regId: string; title: string; jur: string; topic: string; sev: Severity; cat: string;
+  impact: string; eff: string; sites?: string[]; line?: string; owner?: string; conf?: string;
+  prevVersion?: string; currVersion?: string; prevText?: string; currText?: string;
+}): Promise<ChangeEvent> {
+  const change: ChangeEvent = {
+    id: nextRef("CHG", CHANGES),
+    regId: input.regId, title: input.title, jur: input.jur, topic: input.topic,
+    sev: input.sev, cat: input.cat, impact: input.impact, status: "Expert review required",
+    eff: input.eff, sites: input.sites ?? [], line: input.line ?? "—", owner: input.owner ?? "Unassigned",
+    date: new Date().toISOString().slice(0, 10), conf: input.conf ?? "Medium",
+    prevVersion: input.prevVersion, currVersion: input.currVersion,
+  };
+  CHANGES.unshift(change);
+  // store the compared texts so the detail page can re-render the diff
+  if (input.prevText && input.currText) AD_HOC_VERSIONS[change.id] = { prev: input.prevText, curr: input.currText };
+  return change;
+}
+
+// ad-hoc version texts for changes created from the Compare tool (keyed by change id)
+const gv = globalThis as unknown as { __ciVersions?: Record<string, { prev: string; curr: string }> };
+if (!gv.__ciVersions) gv.__ciVersions = {};
+const AD_HOC_VERSIONS = gv.__ciVersions;
+export async function getAdHocVersions(changeId: string) { return AD_HOC_VERSIONS[changeId]; }
+
+export async function addAction(input: {
+  title: string; reg?: string; chg?: string; site?: string; line?: string;
+  pri: Severity; owner?: string; due?: string; status?: string; ev?: string;
+}): Promise<ActionItem> {
+  const a: ActionItem = {
+    id: nextRef("ACT", ACTIONS), title: input.title, reg: input.reg ?? "", chg: input.chg ?? "",
+    site: input.site ?? "", line: input.line ?? "—", pri: input.pri, owner: input.owner ?? "Unassigned",
+    due: input.due ?? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10),
+    status: input.status ?? "Not started", ev: input.ev ?? "Required",
+  };
+  ACTIONS.unshift(a);
+  return a;
 }
 
 export const JURISDICTIONS = ["Germany (EU)","United States","Slovakia (EU)","France (EU)","Switzerland","Belgium (EU)","China","India","United Kingdom","Brazil","Singapore","United Arab Emirates","South Korea"];

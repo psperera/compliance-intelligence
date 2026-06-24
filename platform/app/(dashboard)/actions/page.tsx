@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { getActions, siteName, siteCC } from "../../../lib/data/store";
+import { getActions, getSites, siteName, siteCC } from "../../../lib/data/store";
 import { Crumbs, PageHead, Kpi, SevPill, ActionPill, flag, fmt } from "../../../components/ui";
-import { ExportButton, SoftButton } from "../../../components/buttons";
+import { ExportButton, AddActionButton } from "../../../components/buttons";
 
 export default async function ActionsPage() {
   const actions = await getActions();
+  const siteOpts = (await getSites()).map((s) => ({ id: s.id, name: s.name }));
   const open = actions.filter((a) => !["Complete", "Closed"].includes(a.status));
   const overdue = actions.filter((a) => a.status === "Overdue");
   const exportRows = actions.map((a) => ({ ...a, site: siteName(a.site) }));
@@ -15,7 +16,7 @@ export default async function ActionsPage() {
         actions={<>
           <ExportButton rows={exportRows} filename="actions.csv"
             columns={[{ key: "id", header: "ID" }, { key: "title", header: "Action" }, { key: "reg", header: "Regulation" }, { key: "site", header: "Site" }, { key: "pri", header: "Priority" }, { key: "owner", header: "Owner" }, { key: "due", header: "Due" }, { key: "status", header: "Status" }, { key: "ev", header: "Evidence" }]} />
-          <SoftButton className="btn primary" label="+ New action" message="New action — opens the action form (wire to /api/actions to persist)." />
+          <AddActionButton sites={siteOpts} />
         </>} />
       <div className="kpis" style={{ marginBottom: 16 }}>
         <Kpi t="Open actions" v={String(open.length)} dir="flat" note="across sites" />

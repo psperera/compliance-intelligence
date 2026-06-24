@@ -95,3 +95,63 @@ function L({ t, wide, children }: { t: string; wide?: boolean; children: React.R
   return <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11.5, fontWeight: 600, color: "var(--muted)", gridColumn: wide ? "1 / -1" : undefined }}>{t}{children}</label>;
 }
 const I: React.CSSProperties = { padding: "8px 10px", border: "1px solid var(--line)", borderRadius: 8, fontSize: 13, color: "var(--ink)", background: "#fff" };
+
+// ---- Add Action modal (POST /api/actions → refresh) ----
+const PRIS = ["CRITICAL", "HIGH", "MEDIUM", "LOW"];
+export function AddActionButton({ sites = [], defaultReg = "", defaultChg = "", defaultSite = "" }: { sites?: { id: string; name: string }[]; defaultReg?: string; defaultChg?: string; defaultSite?: string }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [f, setF] = useState({ title: "", reg: defaultReg, chg: defaultChg, site: defaultSite, pri: "MEDIUM", owner: "", due: "" });
+
+  async function save() {
+    setBusy(true); setErr(null);
+    const res = await fetch("/api/actions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) });
+    const d = await res.json(); setBusy(false);
+    if (res.ok) { setOpen(false); setF({ title: "", reg: defaultReg, chg: defaultChg, site: defaultSite, pri: "MEDIUM", owner: "", due: "" }); toast(`Created ${d.action.id}`); router.refresh(); }
+    else setErr(d.error);
+  }
+
+  return (
+    <>
+      <button className="btn primary" onClick={() => setOpen(true)}>+ New action</button>
+      {open && (
+        <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(14,27,44,.45)", zIndex: 100, display: "grid", placeItems: "center", padding: 16 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 14, width: 560, maxWidth: "100%", boxShadow: "var(--shadow-lg)", overflow: "hidden" }}>
+            <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--line2)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3 style={{ margin: 0, fontSize: 15 }}>New action</h3><button onClick={() => setOpen(false)} style={{ border: "none", background: "transparent", fontSize: 20 }}>×</button>
+            </div>
+            <div style={{ padding: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <L t="Action title *" wide><input style={I} value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder="What needs to be done" /></L>
+              <L t="Related regulation"><input style={I} value={f.reg} onChange={(e) => setF({ ...f, reg: e.target.value })} placeholder="e.g. DE-TA-LUFT" /></L>
+              <L t="Site"><select style={I} value={f.site} onChange={(e) => setF({ ...f, site: e.target.value })}><option value="">—</option>{sites.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></L>
+              <L t="Priority"><select style={I} value={f.pri} onChange={(e) => setF({ ...f, pri: e.target.value })}>{PRIS.map((p) => <option key={p}>{p}</option>)}</select></L>
+              <L t="Owner"><input style={I} value={f.owner} onChange={(e) => setF({ ...f, owner: e.target.value })} placeholder="Accountable owner" /></L>
+              <L t="Due date" wide><input style={I} type="date" value={f.due} onChange={(e) => setF({ ...f, due: e.target.value })} /></L>
+            </div>
+            {err && <div style={{ color: "var(--red)", fontSize: 12.5, fontWeight: 600, padding: "0 18px 8px" }}>✗ {err}</div>}
+            <div style={{ padding: "0 18px 18px", display: "flex", gap: 8 }}>
+              <button className="btn primary" disabled={busy} onClick={save}>{busy ? "Saving…" : "Create action"}</button>
+              <button className="btn" onClick={() => setOpen(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ---- Watchlist toggle (POST /api/regulations/:id/watch) ----
+export function WatchButton({ regId, initialWatch }: { regId: string; initialWatch: boolean }) {
+  const [watch, setWatch] = useState(initialWatch);
+  const [busy, setBusy] = useState(false);
+  async function toggle() {
+    setBusy(true);
+    const res = await fetch(`/api/regulations/${regId}/watch`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ watch: !watch }) });
+    const d = await res.json(); setBusy(false);
+    if (res.ok) { setWatch(d.watch); toast(d.watch ? `${regId} added to your watchlist — you'll be alerted on changes.` : `${regId} removed from your watchlist.`); }
+    else toast(d.error, false);
+  }
+  return <button className={`btn ${watch ? "" : "primary"}`} disabled={busy} onClick={toggle}>{watch ? "★ On watchlist" : "☆ Add to watchlist"}</button>;
+}

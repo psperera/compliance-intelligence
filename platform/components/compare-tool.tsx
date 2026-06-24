@@ -1,8 +1,13 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { DiffView } from "./diff-view";
+import { AiImpact } from "./ai-impact";
 import { SevPill } from "./ui";
 import type { ComparisonResult } from "../lib/diff/types";
+
+const JURS = ["Germany (EU)", "United States", "Slovakia (EU)", "France (EU)", "Switzerland", "Belgium (EU)", "China", "India", "United Kingdom", "Brazil", "Singapore", "United Arab Emirates", "South Korea"];
+const TOPICS = ["Air Emissions", "Occupational H&S", "Radiation Safety", "Chemicals & Hazardous Substances", "Waste & Circularity", "Energy & Carbon", "Process Safety", "Water Discharge", "Product Stewardship", "Industrial Permits", "Sustainability Disclosure"];
 
 type Result = { comparison: ComparisonResult; severity: string; categories: string[]; aiDraft: { summary: string; businessImpact: string; confidence: string } | null; prevLabel: string; currLabel: string };
 
@@ -29,6 +34,11 @@ export function CompareTool() {
   const [res, setRes] = useState<Result | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  // save-as-tracked-change state
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [saved, setSaved] = useState<{ id: string } | null>(null);
+  const [sv, setSv] = useState({ title: "", jur: JURS[0], topic: TOPICS[0] });
+  const [saving, setSaving] = useState(false);
 
   function loadFile(e: React.ChangeEvent<HTMLInputElement>, set: (v: string) => void) {
     const f = e.target.files?.[0]; if (!f) return;
@@ -43,11 +53,26 @@ export function CompareTool() {
       body: JSON.stringify({ prevText: a, currText: b, prevLabel: labelA, currLabel: labelB, title: "the compared document" }) });
     const d = await resp.json();
     setBusy(false);
-    if (resp.ok) setRes(d); else setErr(d.error);
+    if (resp.ok) { setRes(d); setSaved(null); setSaveOpen(false); } else setErr(d.error);
+  }
+
+  async function saveAsChange() {
+    if (!res) return;
+    setSaving(true);
+    const resp = await fetch("/api/changes", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: sv.title || `${labelA} → ${labelB} comparison`, jur: sv.jur, topic: sv.topic,
+        sev: res.severity, cat: res.categories[0] ?? "Amendment", prevText: a, currText: b,
+        prevVersion: labelA, currVersion: labelB,
+      }) });
+    const d = await resp.json(); setSaving(false);
+    if (resp.ok) { setSaved({ id: d.change.id }); setSaveOpen(false); } else setErr(d.error);
   }
 
   const ta: React.CSSProperties = { width: "100%", minHeight: 200, padding: 12, border: "1px solid var(--line)", borderRadius: 8, fontFamily: "ui-monospace,Menlo,monospace", fontSize: 12.5, lineHeight: 1.5, resize: "vertical" };
   const lbl: React.CSSProperties = { padding: "6px 9px", border: "1px solid var(--line)", borderRadius: 7, fontSize: 12.5, fontWeight: 600, width: "100%", marginBottom: 6 };
+  const lblS: React.CSSProperties = { display: "flex", flexDirection: "column", gap: 4, fontSize: 11.5, fontWeight: 600, color: "var(--muted)" };
+  const selS: React.CSSProperties = { padding: "8px 10px", border: "1px solid var(--line)", borderRadius: 8, fontSize: 13, color: "var(--ink)", background: "#fff" };
 
   return (
     <>
@@ -100,12 +125,33 @@ export function CompareTool() {
             </div>
           )}
 
-          {res.aiDraft && (
-            <div className="aibox"><div className="aih">✦ AI-assisted impact summary <span className="pill p-amber"><span className="pd" />Draft · Requires expert review</span><span className="conf" style={{ marginLeft: "auto" }}>Confidence: {res.aiDraft.confidence}</span></div>
-              <p style={{ margin: "0 0 6px", fontSize: 13, lineHeight: 1.6 }}>{res.aiDraft.summary}</p>
-              <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6 }}><b>Likely business impact:</b> {res.aiDraft.businessImpact}</p>
-            </div>
-          )}
+          <div style={{ marginBottom: 16 }}>
+            <AiImpact key={`${a.length}-${b.length}-${res.severity}`}
+              source={{ prevText: a, currText: b, title: sv.title || "the compared document" }}
+              initial={{ summary: res.aiDraft?.summary ?? "Generating analysis…", businessImpact: res.aiDraft?.businessImpact ?? "", confidence: res.aiDraft?.confidence ?? "—" }} />
+          </div>
+
+          <div className="card"><div className="cb">
+            {saved ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <span className="pill p-green"><span className="pd" />Saved as {saved.id}</span>
+                <Link className="btn primary" href={`/change/${saved.id}`}>Open in Change Register →</Link>
+                <Link className="btn" href="/change">View register</Link>
+              </div>
+            ) : !saveOpen ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div><b>Track this comparison</b><div className="muted sm">Save it as a change so it lands in the Change Register with an owner and actions.</div></div>
+                <button className="btn primary" style={{ marginLeft: "auto" }} onClick={() => { setSv({ ...sv, title: `${labelA} → ${labelB}` }); setSaveOpen(true); }}>Save as tracked change</button>
+              </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr auto", gap: 10, alignItems: "end" }}>
+                <label style={lblS}>Title<input style={selS} value={sv.title} onChange={(e) => setSv({ ...sv, title: e.target.value })} /></label>
+                <label style={lblS}>Jurisdiction<select style={selS} value={sv.jur} onChange={(e) => setSv({ ...sv, jur: e.target.value })}>{JURS.map((j) => <option key={j}>{j}</option>)}</select></label>
+                <label style={lblS}>Topic<select style={selS} value={sv.topic} onChange={(e) => setSv({ ...sv, topic: e.target.value })}>{TOPICS.map((t) => <option key={t}>{t}</option>)}</select></label>
+                <button className="btn primary" disabled={saving} onClick={saveAsChange}>{saving ? "Saving…" : "Save"}</button>
+              </div>
+            )}
+          </div></div>
         </>
       )}
     </>
