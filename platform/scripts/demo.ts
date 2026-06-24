@@ -59,19 +59,19 @@ async function main() {
     { id: "WL-01", name: "EU air & emissions — manufacturing", active: true, frequency: "IMMEDIATE",
       rules: [{ field: "jurisdiction", operator: "IN", value: ["Germany (EU)", "France (EU)"] },
               { field: "topic", operator: "IN", value: ["Air Emissions", "Industrial Permits"] }],
-      recipients: [{ email: "m.keller@waygate.example" }, { roleKey: "REGIONAL_HSE_MANAGER" }] },
+      recipients: [{ email: "tony.hammond@bakerhughes.com" }, { roleKey: "REGIONAL_HSE_MANAGER" }] },
     { id: "WL-06", name: "High-risk obligations — group", active: true, frequency: "CRITICAL_ONLY",
       rules: [{ field: "risk", operator: "GTE", value: "HIGH" }],
       recipients: [{ email: "tony.hammond@bakerhughes.com" }] },
     { id: "WL-04", name: "APAC occupational H&S", active: true, frequency: "DAILY_DIGEST",
       rules: [{ field: "jurisdiction", operator: "IN", value: ["Singapore", "South Korea"] }],
-      recipients: [{ email: "l.tan@waygate.example" }] },
+      recipients: [{ email: "tony.hammond@bakerhughes.com" }] },
   ];
 
   const email = new MockEmailProvider();
   const sent = await dispatchForChange(change, {
     email, watchlists,
-    roleEmailMap: { REGIONAL_HSE_MANAGER: ["m.keller@waygate.example", "r.maddox@waygate.example"] },
+    roleEmailMap: { REGIONAL_HSE_MANAGER: ["tony.hammond@bakerhughes.com", "tony.hammond@bakerhughes.com"] },
     siteNameMap: { ahrensburg: "Ahrensburg", wunstorf: "Wunstorf" },
     appBaseUrl: "https://compliance.waygate.example",
   });
@@ -85,7 +85,7 @@ async function main() {
     { ref: "CHG-2038", title: "TA Luft limit", detectedAt: "2026-06-12T09:00:00Z", ownerId: "u-keller", severity: "CRITICAL" },
   ];
   const actions: ActionRecord[] = [
-    { ref: "ACT-840", title: "Water discharge permit variance — Changzhou", dueDate: "2026-06-05", status: "Overdue", ownerName: "Wei Li" },
+    { ref: "ACT-840", title: "Water discharge permit variance — Changzhou", dueDate: "2026-06-05", status: "Overdue", ownerName: "Tony Hammond" },
     { ref: "ACT-881", title: "Install abatement on Line 3", dueDate: "2026-08-01", status: "In progress" },
   ];
   const esc = evaluateEscalations(NOW, changes, actions);
@@ -103,7 +103,7 @@ async function main() {
   const input = {
     period: "WEEKLY" as const, now: NOW, windowStart: new Date("2026-06-16T00:00:00Z"),
     changes: digestChanges, actions: digestActions,
-    audienceLabel: "Regional HS&E leaders", recipients: ["regional-hse@waygate.example"],
+    audienceLabel: "Regional HS&E leaders", recipients: ["tony.hammond@bakerhughes.com"],
   };
   const summary = summariseDigest(input);
   const digestEmail = renderDigestEmail(input, summary);

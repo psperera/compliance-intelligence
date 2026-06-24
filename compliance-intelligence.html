@@ -258,75 +258,75 @@ function reg(id,title,jur,topic,agency,status,eff,risk,comp,owner,site,watch,cha
  return {id,title,jur,topic,agency,status,eff,risk,comp,owner,sites:site,watch,changed};
 }
 const REGS=[
- reg('DE-RAD-04','Radiation Protection Ordinance (StrlSchV) — industrial radiography','Germany (EU)','Radiation Safety','BfS / BMUV','In force','2018-12-31','Critical','Compliant','A. Brandt',['wunstorf','garching'],true,'2026-05-18'),
- reg('US-OSHA-1910','OSHA 29 CFR 1910 — Occupational Safety & Health Standards','United States','Occupational H&S','OSHA','In force','1971-05-29','High','Partially compliant','R. Maddox',['skaneateles','cincinnati','mountolive'],true,'2026-06-02'),
- reg('US-RIDDOR-EQ','Ionizing Radiation rules — industrial X-ray (10 CFR 20)','United States','Radiation Safety','NRC','In force','1991-05-21','Critical','Compliant','R. Maddox',['skaneateles','cincinnati'],true,'2026-04-11'),
- reg('UK-RIDDOR','RIDDOR 2013 — Reporting of Injuries, Diseases & Dangerous Occurrences','United Kingdom','Occupational H&S','HSE','In force','2013-10-01','High','Under review','J. Whitfield',['coventry'],true,'2026-06-10'),
- reg('DE-TA-LUFT','TA Luft — Technical Instructions on Air Quality Control','Germany (EU)','Air Emissions','BMUV','In force','2021-12-01','High','Partially compliant','M. Keller',['ahrensburg','wunstorf'],true,'2026-06-12'),
- reg('US-EPA-TRI','EPCRA §313 — Toxics Release Inventory reporting','United States','Chemicals & Hazardous Substances','US EPA','In force','1987-01-01','High','Under review','R. Maddox',['skaneateles','cincinnati'],true,'2026-06-09'),
- reg('EU-CSRD','Corporate Sustainability Reporting Directive (CSRD/ESRS)','Germany (EU)','Sustainability Disclosure','EU Commission','In force','2024-01-05','High','Partially compliant','S. Vogel',['hurth','wunstorf','ahrensburg','contrex','novemesto','berchem','garching'],true,'2026-06-15'),
- reg('SG-WSH','Workplace Safety & Health Act','Singapore','Occupational H&S','MOM','In force','2006-03-01','Medium','Compliant','L. Tan',['singapore'],true,'2026-05-30'),
- reg('DE-VerpackG','Packaging Act (VerpackG) — superseded provisions','Germany (EU)','Waste & Circularity','ZSVR','Repealed','2019-01-01','Low','Not applicable','M. Keller',[],false,'2025-02-01'),
- reg('CN-EP-LAW','Environmental Protection Law of the PRC','China','Air Emissions','MEE','In force','2015-01-01','High','Partially compliant','W. Li',['changzhou'],true,'2026-05-22'),
- reg('CN-WSAFE','Work Safety Law of the PRC (2021 amendment)','China','Occupational H&S','MEM','In force','2021-09-01','High','Under review','W. Li',['changzhou'],true,'2026-06-08'),
- reg('DE-BImSchG','Federal Immission Control Act (BImSchG) permit','Germany (EU)','Industrial Permits','BMUV','In force','1974-03-15','High','Compliant','M. Keller',['ahrensburg'],true,'2026-03-14'),
- reg('EU-REACH','REACH (EC 1907/2006) — chemicals registration','Germany (EU)','Chemicals & Hazardous Substances','ECHA','In force','2007-06-01','High','Compliant','S. Vogel',['ahrensburg','contrex','wunstorf'],true,'2026-04-28'),
- reg('EU-RoHS','RoHS 3 (2015/863) — restricted substances in EEE','Germany (EU)','Product Stewardship','EU Commission','In force','2019-07-22','Medium','Compliant','S. Vogel',['hurth','wunstorf','skaneateles'],false,'2026-02-19'),
- reg('EU-CLP','CLP Regulation (EC 1272/2008) — classification & labelling','Germany (EU)','Chemicals & Hazardous Substances','ECHA','In force','2009-01-20','Medium','Compliant','S. Vogel',['ahrensburg','contrex'],false,'2026-01-30'),
- reg('FR-ICPE','ICPE — Classified Installations for Environmental Protection','France (EU)','Industrial Permits','DREAL','In force','2013-06-01','Medium','Compliant','P. Moreau',['contrex'],true,'2026-05-04'),
- reg('IN-FACT','Factories Act 1948 & state rules','India','Occupational H&S','DISH','In force','1948-04-01','Medium','Partially compliant','A. Rao',['bengaluru'],true,'2026-06-01'),
- reg('IN-EWASTE','E-Waste Management Rules 2022','India','Waste & Circularity','CPCB','In force','2023-04-01','Medium','Under review','A. Rao',['bengaluru'],true,'2026-05-27'),
- reg('AE-OSHAD','OSHAD-SF — Abu Dhabi OSH framework','United Arab Emirates','Occupational H&S','OSHAD','In force','2017-01-01','Medium','Compliant','K. Haddad',['dubai'],false,'2026-03-22'),
- reg('KR-OSHA','Occupational Safety & Health Act (Serious Accidents Act)','South Korea','Occupational H&S','MOEL','In force','2022-01-27','High','Partially compliant','Y. Park',['pangyo'],true,'2026-06-05'),
- reg('BR-NR12','NR-12 — Machinery & Equipment Safety','Brazil','Occupational H&S','MTE','In force','2010-12-01','Medium','Compliant','C. Almeida',['saopaulo'],false,'2026-02-11'),
+ reg('DE-RAD-04','Radiation Protection Ordinance (StrlSchV) — industrial radiography','Germany (EU)','Radiation Safety','BfS / BMUV','In force','2018-12-31','Critical','Compliant','Tony Hammond',['wunstorf','garching'],true,'2026-05-18'),
+ reg('US-OSHA-1910','OSHA 29 CFR 1910 — Occupational Safety & Health Standards','United States','Occupational H&S','OSHA','In force','1971-05-29','High','Partially compliant','Tony Hammond',['skaneateles','cincinnati','mountolive'],true,'2026-06-02'),
+ reg('US-RIDDOR-EQ','Ionizing Radiation rules — industrial X-ray (10 CFR 20)','United States','Radiation Safety','NRC','In force','1991-05-21','Critical','Compliant','Tony Hammond',['skaneateles','cincinnati'],true,'2026-04-11'),
+ reg('UK-RIDDOR','RIDDOR 2013 — Reporting of Injuries, Diseases & Dangerous Occurrences','United Kingdom','Occupational H&S','HSE','In force','2013-10-01','High','Under review','Tony Hammond',['coventry'],true,'2026-06-10'),
+ reg('DE-TA-LUFT','TA Luft — Technical Instructions on Air Quality Control','Germany (EU)','Air Emissions','BMUV','In force','2021-12-01','High','Partially compliant','Tony Hammond',['ahrensburg','wunstorf'],true,'2026-06-12'),
+ reg('US-EPA-TRI','EPCRA §313 — Toxics Release Inventory reporting','United States','Chemicals & Hazardous Substances','US EPA','In force','1987-01-01','High','Under review','Tony Hammond',['skaneateles','cincinnati'],true,'2026-06-09'),
+ reg('EU-CSRD','Corporate Sustainability Reporting Directive (CSRD/ESRS)','Germany (EU)','Sustainability Disclosure','EU Commission','In force','2024-01-05','High','Partially compliant','Tony Hammond',['hurth','wunstorf','ahrensburg','contrex','novemesto','berchem','garching'],true,'2026-06-15'),
+ reg('SG-WSH','Workplace Safety & Health Act','Singapore','Occupational H&S','MOM','In force','2006-03-01','Medium','Compliant','Tony Hammond',['singapore'],true,'2026-05-30'),
+ reg('DE-VerpackG','Packaging Act (VerpackG) — superseded provisions','Germany (EU)','Waste & Circularity','ZSVR','Repealed','2019-01-01','Low','Not applicable','Tony Hammond',[],false,'2025-02-01'),
+ reg('CN-EP-LAW','Environmental Protection Law of the PRC','China','Air Emissions','MEE','In force','2015-01-01','High','Partially compliant','Tony Hammond',['changzhou'],true,'2026-05-22'),
+ reg('CN-WSAFE','Work Safety Law of the PRC (2021 amendment)','China','Occupational H&S','MEM','In force','2021-09-01','High','Under review','Tony Hammond',['changzhou'],true,'2026-06-08'),
+ reg('DE-BImSchG','Federal Immission Control Act (BImSchG) permit','Germany (EU)','Industrial Permits','BMUV','In force','1974-03-15','High','Compliant','Tony Hammond',['ahrensburg'],true,'2026-03-14'),
+ reg('EU-REACH','REACH (EC 1907/2006) — chemicals registration','Germany (EU)','Chemicals & Hazardous Substances','ECHA','In force','2007-06-01','High','Compliant','Tony Hammond',['ahrensburg','contrex','wunstorf'],true,'2026-04-28'),
+ reg('EU-RoHS','RoHS 3 (2015/863) — restricted substances in EEE','Germany (EU)','Product Stewardship','EU Commission','In force','2019-07-22','Medium','Compliant','Tony Hammond',['hurth','wunstorf','skaneateles'],false,'2026-02-19'),
+ reg('EU-CLP','CLP Regulation (EC 1272/2008) — classification & labelling','Germany (EU)','Chemicals & Hazardous Substances','ECHA','In force','2009-01-20','Medium','Compliant','Tony Hammond',['ahrensburg','contrex'],false,'2026-01-30'),
+ reg('FR-ICPE','ICPE — Classified Installations for Environmental Protection','France (EU)','Industrial Permits','DREAL','In force','2013-06-01','Medium','Compliant','Tony Hammond',['contrex'],true,'2026-05-04'),
+ reg('IN-FACT','Factories Act 1948 & state rules','India','Occupational H&S','DISH','In force','1948-04-01','Medium','Partially compliant','Tony Hammond',['bengaluru'],true,'2026-06-01'),
+ reg('IN-EWASTE','E-Waste Management Rules 2022','India','Waste & Circularity','CPCB','In force','2023-04-01','Medium','Under review','Tony Hammond',['bengaluru'],true,'2026-05-27'),
+ reg('AE-OSHAD','OSHAD-SF — Abu Dhabi OSH framework','United Arab Emirates','Occupational H&S','OSHAD','In force','2017-01-01','Medium','Compliant','Tony Hammond',['dubai'],false,'2026-03-22'),
+ reg('KR-OSHA','Occupational Safety & Health Act (Serious Accidents Act)','South Korea','Occupational H&S','MOEL','In force','2022-01-27','High','Partially compliant','Tony Hammond',['pangyo'],true,'2026-06-05'),
+ reg('BR-NR12','NR-12 — Machinery & Equipment Safety','Brazil','Occupational H&S','MTE','In force','2010-12-01','Medium','Compliant','Tony Hammond',['saopaulo'],false,'2026-02-11'),
  reg('SK-AIR','Act on Air Protection (No. 137/2010)','Slovakia (EU)','Air Emissions','MŽP SR','In force','2010-06-01','Low','Compliant','J. Novak',['novemesto'],false,'2026-01-15'),
- reg('CH-StFV','Major Accidents Ordinance (StFV)','Switzerland','Process Safety','FOEN','In force','1991-04-01','Low','Compliant','T. Frei',['zurich'],false,'2025-12-20'),
- reg('EU-CBAM','Carbon Border Adjustment Mechanism (EU 2023/956)','Germany (EU)','Energy & Carbon','EU Commission','In force','2023-10-01','Medium','Under review','S. Vogel',['ahrensburg','wunstorf','contrex'],true,'2026-06-14'),
- reg('US-DOT-HAZ','49 CFR — Hazardous Materials Transport','United States','Transport & Logistics','PHMSA','In force','1976-01-03','Medium','Compliant','R. Maddox',['skaneateles','cincinnati','mountolive'],false,'2026-02-28'),
- reg('DE-GefStoffV','Hazardous Substances Ordinance (GefStoffV)','Germany (EU)','Chemicals & Hazardous Substances','BAuA','In force','2010-12-01','Medium','Compliant','A. Brandt',['hurth','ahrensburg'],false,'2026-03-05'),
- reg('DE-BetrSichV','Industrial Safety Ordinance (BetrSichV)','Germany (EU)','Process Safety','BAuA','In force','2015-06-01','Medium','Compliant','M. Keller',['ahrensburg','wunstorf'],false,'2026-02-08'),
- reg('EU-WFD','Waste Framework Directive (2008/98/EC)','Germany (EU)','Waste & Circularity','EU Commission','In force','2008-12-12','Low','Compliant','M. Keller',['ahrensburg','hurth'],false,'2026-01-22'),
- reg('SG-EPMA','Environmental Protection & Management Act','Singapore','Air Emissions','NEA','In force','1999-04-01','Low','Compliant','L. Tan',['singapore'],false,'2026-01-09'),
- reg('CN-RAD','Regulations on Radioisotopes & Radiation Devices','China','Radiation Safety','MEE','In force','2005-12-01','High','Under review','W. Li',['changzhou'],true,'2026-06-03'),
- reg('US-CLEAN-AIR','Clean Air Act — Title V permit','United States','Air Emissions','US EPA','In force','1990-11-15','Medium','Compliant','R. Maddox',['skaneateles'],false,'2026-02-14'),
- reg('FR-CODE-TRAV','Code du travail — santé & sécurité','France (EU)','Occupational H&S','DREETS','In force','2008-05-01','Medium','Compliant','P. Moreau',['contrex'],false,'2026-01-18'),
- reg('UK-EPR','Environmental Permitting Regulations 2016','United Kingdom','Industrial Permits','Environment Agency','In force','2016-12-01','Medium','Compliant','J. Whitfield',['coventry'],true,'2026-04-30'),
- reg('UK-COSHH','COSHH 2002 — Control of Substances Hazardous to Health','United Kingdom','Chemicals & Hazardous Substances','HSE','In force','2002-11-21','Medium','Compliant','J. Whitfield',['coventry'],false,'2026-02-02'),
- reg('DE-EnEfG','Energy Efficiency Act (EnEfG)','Germany (EU)','Energy & Carbon','BMWK','In force','2023-11-18','Medium','Under review','S. Vogel',['ahrensburg','hurth','wunstorf'],true,'2026-05-12'),
- reg('IN-AIR-ACT','Air (Prevention & Control of Pollution) Act','India','Air Emissions','CPCB','In force','1981-03-29','Low','Compliant','A. Rao',['bengaluru'],false,'2026-01-25'),
- reg('KR-CHEM','Chemicals Control Act (K-REACH)','South Korea','Chemicals & Hazardous Substances','ME','In force','2015-01-01','Medium','Compliant','Y. Park',['pangyo'],false,'2026-02-20'),
- reg('BR-PNRS','National Solid Waste Policy (PNRS)','Brazil','Waste & Circularity','IBAMA','In force','2010-08-02','Low','Compliant','C. Almeida',['saopaulo'],false,'2026-01-11'),
- reg('AE-FIRE','UAE Fire & Life Safety Code','United Arab Emirates','Fire Safety','Civil Defence','In force','2018-01-01','Medium','Compliant','K. Haddad',['dubai'],false,'2026-03-01'),
- reg('SG-FIRE','SCDF Fire Safety Act','Singapore','Fire Safety','SCDF','In force','1993-04-01','Low','Compliant','L. Tan',['singapore'],false,'2026-01-07'),
- reg('EU-SEVESO','Seveso III Directive (2012/18/EU)','Germany (EU)','Process Safety','EU Commission','In force','2015-06-01','Medium','Compliant','M. Keller',['ahrensburg'],false,'2026-02-26'),
- reg('US-EMERGENCY','EPCRA §302 — Emergency Planning','United States','Emergency Response','US EPA','In force','1986-10-17','Low','Compliant','R. Maddox',['skaneateles','cincinnati'],false,'2026-01-29'),
- reg('DE-AwSV','Ordinance on Installations Handling Substances Hazardous to Water (AwSV)','Germany (EU)','Water Discharge','BMUV','In force','2017-08-01','Low','Compliant','M. Keller',['ahrensburg'],false,'2026-01-14'),
- reg('CN-WATER','Water Pollution Prevention & Control Law','China','Water Discharge','MEE','In force','2018-01-01','Medium','Partially compliant','W. Li',['changzhou'],true,'2026-05-19'),
+ reg('CH-StFV','Major Accidents Ordinance (StFV)','Switzerland','Process Safety','FOEN','In force','1991-04-01','Low','Compliant','Tony Hammond',['zurich'],false,'2025-12-20'),
+ reg('EU-CBAM','Carbon Border Adjustment Mechanism (EU 2023/956)','Germany (EU)','Energy & Carbon','EU Commission','In force','2023-10-01','Medium','Under review','Tony Hammond',['ahrensburg','wunstorf','contrex'],true,'2026-06-14'),
+ reg('US-DOT-HAZ','49 CFR — Hazardous Materials Transport','United States','Transport & Logistics','PHMSA','In force','1976-01-03','Medium','Compliant','Tony Hammond',['skaneateles','cincinnati','mountolive'],false,'2026-02-28'),
+ reg('DE-GefStoffV','Hazardous Substances Ordinance (GefStoffV)','Germany (EU)','Chemicals & Hazardous Substances','BAuA','In force','2010-12-01','Medium','Compliant','Tony Hammond',['hurth','ahrensburg'],false,'2026-03-05'),
+ reg('DE-BetrSichV','Industrial Safety Ordinance (BetrSichV)','Germany (EU)','Process Safety','BAuA','In force','2015-06-01','Medium','Compliant','Tony Hammond',['ahrensburg','wunstorf'],false,'2026-02-08'),
+ reg('EU-WFD','Waste Framework Directive (2008/98/EC)','Germany (EU)','Waste & Circularity','EU Commission','In force','2008-12-12','Low','Compliant','Tony Hammond',['ahrensburg','hurth'],false,'2026-01-22'),
+ reg('SG-EPMA','Environmental Protection & Management Act','Singapore','Air Emissions','NEA','In force','1999-04-01','Low','Compliant','Tony Hammond',['singapore'],false,'2026-01-09'),
+ reg('CN-RAD','Regulations on Radioisotopes & Radiation Devices','China','Radiation Safety','MEE','In force','2005-12-01','High','Under review','Tony Hammond',['changzhou'],true,'2026-06-03'),
+ reg('US-CLEAN-AIR','Clean Air Act — Title V permit','United States','Air Emissions','US EPA','In force','1990-11-15','Medium','Compliant','Tony Hammond',['skaneateles'],false,'2026-02-14'),
+ reg('FR-CODE-TRAV','Code du travail — santé & sécurité','France (EU)','Occupational H&S','DREETS','In force','2008-05-01','Medium','Compliant','Tony Hammond',['contrex'],false,'2026-01-18'),
+ reg('UK-EPR','Environmental Permitting Regulations 2016','United Kingdom','Industrial Permits','Environment Agency','In force','2016-12-01','Medium','Compliant','Tony Hammond',['coventry'],true,'2026-04-30'),
+ reg('UK-COSHH','COSHH 2002 — Control of Substances Hazardous to Health','United Kingdom','Chemicals & Hazardous Substances','HSE','In force','2002-11-21','Medium','Compliant','Tony Hammond',['coventry'],false,'2026-02-02'),
+ reg('DE-EnEfG','Energy Efficiency Act (EnEfG)','Germany (EU)','Energy & Carbon','BMWK','In force','2023-11-18','Medium','Under review','Tony Hammond',['ahrensburg','hurth','wunstorf'],true,'2026-05-12'),
+ reg('IN-AIR-ACT','Air (Prevention & Control of Pollution) Act','India','Air Emissions','CPCB','In force','1981-03-29','Low','Compliant','Tony Hammond',['bengaluru'],false,'2026-01-25'),
+ reg('KR-CHEM','Chemicals Control Act (K-REACH)','South Korea','Chemicals & Hazardous Substances','ME','In force','2015-01-01','Medium','Compliant','Tony Hammond',['pangyo'],false,'2026-02-20'),
+ reg('BR-PNRS','National Solid Waste Policy (PNRS)','Brazil','Waste & Circularity','IBAMA','In force','2010-08-02','Low','Compliant','Tony Hammond',['saopaulo'],false,'2026-01-11'),
+ reg('AE-FIRE','UAE Fire & Life Safety Code','United Arab Emirates','Fire Safety','Civil Defence','In force','2018-01-01','Medium','Compliant','Tony Hammond',['dubai'],false,'2026-03-01'),
+ reg('SG-FIRE','SCDF Fire Safety Act','Singapore','Fire Safety','SCDF','In force','1993-04-01','Low','Compliant','Tony Hammond',['singapore'],false,'2026-01-07'),
+ reg('EU-SEVESO','Seveso III Directive (2012/18/EU)','Germany (EU)','Process Safety','EU Commission','In force','2015-06-01','Medium','Compliant','Tony Hammond',['ahrensburg'],false,'2026-02-26'),
+ reg('US-EMERGENCY','EPCRA §302 — Emergency Planning','United States','Emergency Response','US EPA','In force','1986-10-17','Low','Compliant','Tony Hammond',['skaneateles','cincinnati'],false,'2026-01-29'),
+ reg('DE-AwSV','Ordinance on Installations Handling Substances Hazardous to Water (AwSV)','Germany (EU)','Water Discharge','BMUV','In force','2017-08-01','Low','Compliant','Tony Hammond',['ahrensburg'],false,'2026-01-14'),
+ reg('CN-WATER','Water Pollution Prevention & Control Law','China','Water Discharge','MEE','In force','2018-01-01','Medium','Partially compliant','Tony Hammond',['changzhou'],true,'2026-05-19'),
  reg('SK-WASTE','Waste Act (No. 79/2015)','Slovakia (EU)','Waste & Circularity','MŽP SR','In force','2016-01-01','Low','Compliant','J. Novak',['novemesto'],false,'2025-12-12'),
- reg('EU-MACHINE','Machinery Regulation (EU 2023/1230)','Germany (EU)','Building & Facilities','EU Commission','Enacted','2027-01-20','Medium','Under review','M. Keller',['ahrensburg','contrex','wunstorf'],true,'2026-06-11'),
- reg('US-NIOSH','NIOSH respiratory protection guidance','United States','Occupational H&S','NIOSH','In force','2020-01-01','Low','Compliant','R. Maddox',['skaneateles'],false,'2026-01-20'),
- reg('IN-LABOUR','OSH Code 2020 (labour welfare)','India','Labour & Worker Welfare','MoLE','Enacted','2026-10-01','Medium','Under review','A. Rao',['bengaluru'],true,'2026-06-07'),
- reg('CH-RADIO','Radiological Protection Ordinance (StSV)','Switzerland','Radiation Safety','FOPH','In force','2018-01-01','Low','Compliant','T. Frei',['zurich'],false,'2025-12-18'),
- reg('EU-BATTERY','EU Batteries Regulation (2023/1542)','United Kingdom','Product Stewardship','EU Commission','Enacted','2025-08-18','Medium','Under review','J. Whitfield',['coventry'],true,'2026-06-13'),
+ reg('EU-MACHINE','Machinery Regulation (EU 2023/1230)','Germany (EU)','Building & Facilities','EU Commission','Enacted','2027-01-20','Medium','Under review','Tony Hammond',['ahrensburg','contrex','wunstorf'],true,'2026-06-11'),
+ reg('US-NIOSH','NIOSH respiratory protection guidance','United States','Occupational H&S','NIOSH','In force','2020-01-01','Low','Compliant','Tony Hammond',['skaneateles'],false,'2026-01-20'),
+ reg('IN-LABOUR','OSH Code 2020 (labour welfare)','India','Labour & Worker Welfare','MoLE','Enacted','2026-10-01','Medium','Under review','Tony Hammond',['bengaluru'],true,'2026-06-07'),
+ reg('CH-RADIO','Radiological Protection Ordinance (StSV)','Switzerland','Radiation Safety','FOPH','In force','2018-01-01','Low','Compliant','Tony Hammond',['zurich'],false,'2025-12-18'),
+ reg('EU-BATTERY','EU Batteries Regulation (2023/1542)','United Kingdom','Product Stewardship','EU Commission','Enacted','2025-08-18','Medium','Under review','Tony Hammond',['coventry'],true,'2026-06-13'),
 ];
 
 /* change events: each links to a regulation, with two versions of clause text */
 const CHANGES=[
- {id:'CHG-2041',regId:'UK-RIDDOR',title:'RIDDOR reporting threshold for over-7-day incapacitation revised',jur:'United Kingdom',topic:'Occupational H&S',sev:'High',cat:'Tightened requirement',impact:'Action required before effective date',status:'Expert review required',eff:'2026-09-01',sites:['coventry'],line:'Manufacturing Operations',owner:'J. Whitfield',date:'2026-06-10',conf:'Medium'},
- {id:'CHG-2038',regId:'DE-TA-LUFT',title:'TA Luft particulate emission limit reduced for surface treatment',jur:'Germany (EU)',topic:'Air Emissions',sev:'Critical',cat:'Tightened requirement',impact:'Immediate action required',status:'Action plan created',eff:'2026-08-15',sites:['ahrensburg','wunstorf'],line:'Manufacturing Operations',owner:'M. Keller',date:'2026-06-12',conf:'High'},
- {id:'CHG-2035',regId:'US-EPA-TRI',title:'TRI Form R submission deadline moved earlier; PFAS threshold added',jur:'United States',topic:'Chemicals & Hazardous Substances',sev:'High',cat:'Reporting change',impact:'Action required before effective date',status:'Approved',eff:'2026-07-01',sites:['skaneateles','cincinnati'],line:'Field Services',owner:'R. Maddox',date:'2026-06-09',conf:'High'},
- {id:'CHG-2033',regId:'EU-CSRD',title:'ESRS E1 climate disclosure scope expanded to Scope 3 categories',jur:'Germany (EU)',topic:'Sustainability Disclosure',sev:'High',cat:'Scope change',impact:'Action required before effective date',status:'Expert review required',eff:'2027-01-01',sites:['hurth','wunstorf','ahrensburg'],line:'Digital & AI',owner:'S. Vogel',date:'2026-06-15',conf:'Medium'},
- {id:'CHG-2030',regId:'SG-WSH',title:'WSH guidance update — mandatory radiography competency training',jur:'Singapore',topic:'Occupational H&S',sev:'Medium',cat:'Guidance clarification',impact:'Monitor only',status:'Marked as reviewed',eff:'2026-07-15',sites:['singapore'],line:'Field Services',owner:'L. Tan',date:'2026-05-30',conf:'High'},
- {id:'CHG-2028',regId:'CN-RAD',title:'Radioisotope device licensing renewal period shortened to 3 years',jur:'China',topic:'Radiation Safety',sev:'High',cat:'Permit change',impact:'Immediate action required',status:'Action plan created',eff:'2026-08-01',sites:['changzhou'],line:'Manufacturing Operations',owner:'W. Li',date:'2026-06-03',conf:'High'},
- {id:'CHG-2026',regId:'KR-OSHA',title:'Serious Accidents Act — penalty ceiling raised; CEO duty clarified',jur:'South Korea',topic:'Occupational H&S',sev:'High',cat:'Penalty change',impact:'Expert review required',status:'Expert review required',eff:'2026-09-15',sites:['pangyo'],line:'Customer Solutions',owner:'Y. Park',date:'2026-06-05',conf:'Medium'},
- {id:'CHG-2024',regId:'EU-CBAM',title:'CBAM definitive regime — quarterly embedded-emissions report required',jur:'Germany (EU)',topic:'Energy & Carbon',sev:'Medium',cat:'Reporting change',impact:'Action required before effective date',status:'Action plan created',eff:'2026-12-31',sites:['ahrensburg','wunstorf'],line:'Manufacturing Operations',owner:'S. Vogel',date:'2026-06-14',conf:'High'},
- {id:'CHG-2021',regId:'IN-EWASTE',title:'E-Waste Rules — EPR target raised to 80% with revised record retention',jur:'India',topic:'Waste & Circularity',sev:'Medium',cat:'Tightened requirement',impact:'Action required before effective date',status:'Expert review required',eff:'2026-10-01',sites:['bengaluru'],line:'Digital & AI',owner:'A. Rao',date:'2026-05-27',conf:'Medium'},
- {id:'CHG-2019',regId:'CN-WSAFE',title:'Work Safety Law — dual prevention mechanism made mandatory',jur:'China',topic:'Process Safety',sev:'Medium',cat:'New obligation',impact:'Action required before effective date',status:'Expert review required',eff:'2026-09-01',sites:['changzhou'],line:'Manufacturing Operations',owner:'W. Li',date:'2026-06-08',conf:'Medium'},
- {id:'CHG-2016',regId:'EU-MACHINE',title:'Machinery Regulation replaces Directive — new digital docs & AI provisions',jur:'Germany (EU)',topic:'Building & Facilities',sev:'Medium',cat:'Scope change',impact:'Monitor only',status:'Marked as reviewed',eff:'2027-01-20',sites:['ahrensburg','contrex','wunstorf'],line:'Manufacturing Operations',owner:'M. Keller',date:'2026-06-11',conf:'High'},
- {id:'CHG-2013',regId:'EU-BATTERY',title:'Batteries Regulation — carbon footprint declaration for industrial cells',jur:'United Kingdom',topic:'Product Stewardship',sev:'Medium',cat:'New obligation',impact:'Action required before effective date',status:'Expert review required',eff:'2026-08-18',sites:['coventry'],line:'Manufacturing Operations',owner:'J. Whitfield',date:'2026-06-13',conf:'Medium'},
- {id:'CHG-2010',regId:'DE-EnEfG',title:'EnEfG — energy management system threshold lowered to 7.5 GWh/yr',jur:'Germany (EU)',topic:'Energy & Carbon',sev:'Medium',cat:'Tightened requirement',impact:'Action required before effective date',status:'Action plan created',eff:'2026-07-18',sites:['ahrensburg','wunstorf','hurth'],line:'Manufacturing Operations',owner:'S. Vogel',date:'2026-05-12',conf:'High'},
- {id:'CHG-2007',regId:'US-OSHA-1910',title:'OSHA electronic recordkeeping (Form 300A) e-submission expanded',jur:'United States',topic:'Occupational H&S',sev:'Low',cat:'Administrative change',impact:'Monitor only',status:'Approved',eff:'2026-07-01',sites:['skaneateles','cincinnati','mountolive'],line:'Field Services',owner:'R. Maddox',date:'2026-06-02',conf:'High'},
- {id:'CHG-2004',regId:'IN-LABOUR',title:'OSH Code 2020 — implementation date confirmed; welfare provisions live',jur:'India',topic:'Labour & Worker Welfare',sev:'Medium',cat:'Effective-date change',impact:'Action required before effective date',status:'Expert review required',eff:'2026-10-01',sites:['bengaluru'],line:'Digital & AI',owner:'A. Rao',date:'2026-06-07',conf:'Medium'},
+ {id:'CHG-2041',regId:'UK-RIDDOR',title:'RIDDOR reporting threshold for over-7-day incapacitation revised',jur:'United Kingdom',topic:'Occupational H&S',sev:'High',cat:'Tightened requirement',impact:'Action required before effective date',status:'Expert review required',eff:'2026-09-01',sites:['coventry'],line:'Manufacturing Operations',owner:'Tony Hammond',date:'2026-06-10',conf:'Medium'},
+ {id:'CHG-2038',regId:'DE-TA-LUFT',title:'TA Luft particulate emission limit reduced for surface treatment',jur:'Germany (EU)',topic:'Air Emissions',sev:'Critical',cat:'Tightened requirement',impact:'Immediate action required',status:'Action plan created',eff:'2026-08-15',sites:['ahrensburg','wunstorf'],line:'Manufacturing Operations',owner:'Tony Hammond',date:'2026-06-12',conf:'High'},
+ {id:'CHG-2035',regId:'US-EPA-TRI',title:'TRI Form R submission deadline moved earlier; PFAS threshold added',jur:'United States',topic:'Chemicals & Hazardous Substances',sev:'High',cat:'Reporting change',impact:'Action required before effective date',status:'Approved',eff:'2026-07-01',sites:['skaneateles','cincinnati'],line:'Field Services',owner:'Tony Hammond',date:'2026-06-09',conf:'High'},
+ {id:'CHG-2033',regId:'EU-CSRD',title:'ESRS E1 climate disclosure scope expanded to Scope 3 categories',jur:'Germany (EU)',topic:'Sustainability Disclosure',sev:'High',cat:'Scope change',impact:'Action required before effective date',status:'Expert review required',eff:'2027-01-01',sites:['hurth','wunstorf','ahrensburg'],line:'Digital & AI',owner:'Tony Hammond',date:'2026-06-15',conf:'Medium'},
+ {id:'CHG-2030',regId:'SG-WSH',title:'WSH guidance update — mandatory radiography competency training',jur:'Singapore',topic:'Occupational H&S',sev:'Medium',cat:'Guidance clarification',impact:'Monitor only',status:'Marked as reviewed',eff:'2026-07-15',sites:['singapore'],line:'Field Services',owner:'Tony Hammond',date:'2026-05-30',conf:'High'},
+ {id:'CHG-2028',regId:'CN-RAD',title:'Radioisotope device licensing renewal period shortened to 3 years',jur:'China',topic:'Radiation Safety',sev:'High',cat:'Permit change',impact:'Immediate action required',status:'Action plan created',eff:'2026-08-01',sites:['changzhou'],line:'Manufacturing Operations',owner:'Tony Hammond',date:'2026-06-03',conf:'High'},
+ {id:'CHG-2026',regId:'KR-OSHA',title:'Serious Accidents Act — penalty ceiling raised; CEO duty clarified',jur:'South Korea',topic:'Occupational H&S',sev:'High',cat:'Penalty change',impact:'Expert review required',status:'Expert review required',eff:'2026-09-15',sites:['pangyo'],line:'Customer Solutions',owner:'Tony Hammond',date:'2026-06-05',conf:'Medium'},
+ {id:'CHG-2024',regId:'EU-CBAM',title:'CBAM definitive regime — quarterly embedded-emissions report required',jur:'Germany (EU)',topic:'Energy & Carbon',sev:'Medium',cat:'Reporting change',impact:'Action required before effective date',status:'Action plan created',eff:'2026-12-31',sites:['ahrensburg','wunstorf'],line:'Manufacturing Operations',owner:'Tony Hammond',date:'2026-06-14',conf:'High'},
+ {id:'CHG-2021',regId:'IN-EWASTE',title:'E-Waste Rules — EPR target raised to 80% with revised record retention',jur:'India',topic:'Waste & Circularity',sev:'Medium',cat:'Tightened requirement',impact:'Action required before effective date',status:'Expert review required',eff:'2026-10-01',sites:['bengaluru'],line:'Digital & AI',owner:'Tony Hammond',date:'2026-05-27',conf:'Medium'},
+ {id:'CHG-2019',regId:'CN-WSAFE',title:'Work Safety Law — dual prevention mechanism made mandatory',jur:'China',topic:'Process Safety',sev:'Medium',cat:'New obligation',impact:'Action required before effective date',status:'Expert review required',eff:'2026-09-01',sites:['changzhou'],line:'Manufacturing Operations',owner:'Tony Hammond',date:'2026-06-08',conf:'Medium'},
+ {id:'CHG-2016',regId:'EU-MACHINE',title:'Machinery Regulation replaces Directive — new digital docs & AI provisions',jur:'Germany (EU)',topic:'Building & Facilities',sev:'Medium',cat:'Scope change',impact:'Monitor only',status:'Marked as reviewed',eff:'2027-01-20',sites:['ahrensburg','contrex','wunstorf'],line:'Manufacturing Operations',owner:'Tony Hammond',date:'2026-06-11',conf:'High'},
+ {id:'CHG-2013',regId:'EU-BATTERY',title:'Batteries Regulation — carbon footprint declaration for industrial cells',jur:'United Kingdom',topic:'Product Stewardship',sev:'Medium',cat:'New obligation',impact:'Action required before effective date',status:'Expert review required',eff:'2026-08-18',sites:['coventry'],line:'Manufacturing Operations',owner:'Tony Hammond',date:'2026-06-13',conf:'Medium'},
+ {id:'CHG-2010',regId:'DE-EnEfG',title:'EnEfG — energy management system threshold lowered to 7.5 GWh/yr',jur:'Germany (EU)',topic:'Energy & Carbon',sev:'Medium',cat:'Tightened requirement',impact:'Action required before effective date',status:'Action plan created',eff:'2026-07-18',sites:['ahrensburg','wunstorf','hurth'],line:'Manufacturing Operations',owner:'Tony Hammond',date:'2026-05-12',conf:'High'},
+ {id:'CHG-2007',regId:'US-OSHA-1910',title:'OSHA electronic recordkeeping (Form 300A) e-submission expanded',jur:'United States',topic:'Occupational H&S',sev:'Low',cat:'Administrative change',impact:'Monitor only',status:'Approved',eff:'2026-07-01',sites:['skaneateles','cincinnati','mountolive'],line:'Field Services',owner:'Tony Hammond',date:'2026-06-02',conf:'High'},
+ {id:'CHG-2004',regId:'IN-LABOUR',title:'OSH Code 2020 — implementation date confirmed; welfare provisions live',jur:'India',topic:'Labour & Worker Welfare',sev:'Medium',cat:'Effective-date change',impact:'Action required before effective date',status:'Expert review required',eff:'2026-10-01',sites:['bengaluru'],line:'Digital & AI',owner:'Tony Hammond',date:'2026-06-07',conf:'Medium'},
 ];
 
 /* diff content for the headline change (CHG-2038 TA Luft) used in Change Control */
@@ -348,55 +348,55 @@ const DIFF={
 };
 
 const ACTIONS=[
- {id:'ACT-881',title:'Install high-efficiency particulate abatement on Line 3',reg:'DE-TA-LUFT',chg:'CHG-2038',site:'ahrensburg',line:'Manufacturing Operations',pri:'Critical',owner:'M. Keller',due:'2026-08-01',status:'In progress',ev:'Required'},
- {id:'ACT-879',title:'Recalibrate continuous dust monitor to 0.10 kg/h threshold',reg:'DE-TA-LUFT',chg:'CHG-2038',site:'wunstorf',line:'Radiography & CT Systems',pri:'High',owner:'A. Brandt',due:'2026-07-20',status:'In progress',ev:'Required'},
- {id:'ACT-876',title:'Update RIDDOR reporting SOP for revised threshold',reg:'UK-RIDDOR',chg:'CHG-2041',site:'coventry',line:'Manufacturing Operations',pri:'High',owner:'J. Whitfield',due:'2026-08-20',status:'Not started',ev:'Required'},
- {id:'ACT-872',title:'Submit TRI Form R with new PFAS data',reg:'US-EPA-TRI',chg:'CHG-2035',site:'skaneateles',line:'Field Services',pri:'High',owner:'R. Maddox',due:'2026-06-28',status:'Awaiting approval',ev:'Attached'},
- {id:'ACT-868',title:'Renew radioisotope device licence (3-yr cycle)',reg:'CN-RAD',chg:'CHG-2028',site:'changzhou',line:'Manufacturing Operations',pri:'Critical',owner:'W. Li',due:'2026-07-25',status:'Blocked',ev:'Required'},
- {id:'ACT-865',title:'Map Scope 3 categories for ESRS E1 disclosure',reg:'EU-CSRD',chg:'CHG-2033',site:'hurth',line:'Digital & AI',pri:'High',owner:'S. Vogel',due:'2026-10-15',status:'In progress',ev:'Required'},
- {id:'ACT-861',title:'Deploy CBAM quarterly emissions reporting workflow',reg:'EU-CBAM',chg:'CHG-2024',site:'ahrensburg',line:'Manufacturing Operations',pri:'Medium',owner:'S. Vogel',due:'2026-09-30',status:'In progress',ev:'Required'},
- {id:'ACT-858',title:'Implement dual prevention mechanism register',reg:'CN-WSAFE',chg:'CHG-2019',site:'changzhou',line:'Manufacturing Operations',pri:'Medium',owner:'W. Li',due:'2026-08-15',status:'Not started',ev:'Required'},
- {id:'ACT-855',title:'Establish ISO 50001 energy management system',reg:'DE-EnEfG',chg:'CHG-2010',site:'ahrensburg',line:'Manufacturing Operations',pri:'Medium',owner:'S. Vogel',due:'2026-07-15',status:'Awaiting evidence',ev:'Required'},
- {id:'ACT-852',title:'Revise e-waste EPR record retention to new target',reg:'IN-EWASTE',chg:'CHG-2021',site:'bengaluru',line:'Digital & AI',pri:'Medium',owner:'A. Rao',due:'2026-09-20',status:'Not started',ev:'Required'},
- {id:'ACT-849',title:'CEO duty-of-care attestation under Serious Accidents Act',reg:'KR-OSHA',chg:'CHG-2026',site:'pangyo',line:'Customer Solutions',pri:'High',owner:'Y. Park',due:'2026-09-10',status:'Not started',ev:'Required'},
- {id:'ACT-846',title:'Battery carbon footprint declaration template',reg:'EU-BATTERY',chg:'CHG-2013',site:'coventry',line:'Manufacturing Operations',pri:'Medium',owner:'J. Whitfield',due:'2026-08-10',status:'In progress',ev:'Required'},
- {id:'ACT-843',title:'Update OSHA 300A e-submission for 2025 records',reg:'US-OSHA-1910',chg:'CHG-2007',site:'cincinnati',line:'Customer Solutions',pri:'Low',owner:'R. Maddox',due:'2026-06-30',status:'Awaiting approval',ev:'Attached'},
- {id:'ACT-840',title:'Overdue: water discharge permit variance — Changzhou',reg:'CN-WATER',chg:'',site:'changzhou',line:'Manufacturing Operations',pri:'High',owner:'W. Li',due:'2026-06-05',status:'Overdue',ev:'Missing'},
- {id:'ACT-837',title:'Overdue: COSHH assessment refresh — composites cell',reg:'UK-COSHH',chg:'',site:'coventry',line:'Manufacturing Operations',pri:'Medium',owner:'J. Whitfield',due:'2026-05-28',status:'Overdue',ev:'Missing'},
+ {id:'ACT-881',title:'Install high-efficiency particulate abatement on Line 3',reg:'DE-TA-LUFT',chg:'CHG-2038',site:'ahrensburg',line:'Manufacturing Operations',pri:'Critical',owner:'Tony Hammond',due:'2026-08-01',status:'In progress',ev:'Required'},
+ {id:'ACT-879',title:'Recalibrate continuous dust monitor to 0.10 kg/h threshold',reg:'DE-TA-LUFT',chg:'CHG-2038',site:'wunstorf',line:'Radiography & CT Systems',pri:'High',owner:'Tony Hammond',due:'2026-07-20',status:'In progress',ev:'Required'},
+ {id:'ACT-876',title:'Update RIDDOR reporting SOP for revised threshold',reg:'UK-RIDDOR',chg:'CHG-2041',site:'coventry',line:'Manufacturing Operations',pri:'High',owner:'Tony Hammond',due:'2026-08-20',status:'Not started',ev:'Required'},
+ {id:'ACT-872',title:'Submit TRI Form R with new PFAS data',reg:'US-EPA-TRI',chg:'CHG-2035',site:'skaneateles',line:'Field Services',pri:'High',owner:'Tony Hammond',due:'2026-06-28',status:'Awaiting approval',ev:'Attached'},
+ {id:'ACT-868',title:'Renew radioisotope device licence (3-yr cycle)',reg:'CN-RAD',chg:'CHG-2028',site:'changzhou',line:'Manufacturing Operations',pri:'Critical',owner:'Tony Hammond',due:'2026-07-25',status:'Blocked',ev:'Required'},
+ {id:'ACT-865',title:'Map Scope 3 categories for ESRS E1 disclosure',reg:'EU-CSRD',chg:'CHG-2033',site:'hurth',line:'Digital & AI',pri:'High',owner:'Tony Hammond',due:'2026-10-15',status:'In progress',ev:'Required'},
+ {id:'ACT-861',title:'Deploy CBAM quarterly emissions reporting workflow',reg:'EU-CBAM',chg:'CHG-2024',site:'ahrensburg',line:'Manufacturing Operations',pri:'Medium',owner:'Tony Hammond',due:'2026-09-30',status:'In progress',ev:'Required'},
+ {id:'ACT-858',title:'Implement dual prevention mechanism register',reg:'CN-WSAFE',chg:'CHG-2019',site:'changzhou',line:'Manufacturing Operations',pri:'Medium',owner:'Tony Hammond',due:'2026-08-15',status:'Not started',ev:'Required'},
+ {id:'ACT-855',title:'Establish ISO 50001 energy management system',reg:'DE-EnEfG',chg:'CHG-2010',site:'ahrensburg',line:'Manufacturing Operations',pri:'Medium',owner:'Tony Hammond',due:'2026-07-15',status:'Awaiting evidence',ev:'Required'},
+ {id:'ACT-852',title:'Revise e-waste EPR record retention to new target',reg:'IN-EWASTE',chg:'CHG-2021',site:'bengaluru',line:'Digital & AI',pri:'Medium',owner:'Tony Hammond',due:'2026-09-20',status:'Not started',ev:'Required'},
+ {id:'ACT-849',title:'CEO duty-of-care attestation under Serious Accidents Act',reg:'KR-OSHA',chg:'CHG-2026',site:'pangyo',line:'Customer Solutions',pri:'High',owner:'Tony Hammond',due:'2026-09-10',status:'Not started',ev:'Required'},
+ {id:'ACT-846',title:'Battery carbon footprint declaration template',reg:'EU-BATTERY',chg:'CHG-2013',site:'coventry',line:'Manufacturing Operations',pri:'Medium',owner:'Tony Hammond',due:'2026-08-10',status:'In progress',ev:'Required'},
+ {id:'ACT-843',title:'Update OSHA 300A e-submission for 2025 records',reg:'US-OSHA-1910',chg:'CHG-2007',site:'cincinnati',line:'Customer Solutions',pri:'Low',owner:'Tony Hammond',due:'2026-06-30',status:'Awaiting approval',ev:'Attached'},
+ {id:'ACT-840',title:'Overdue: water discharge permit variance — Changzhou',reg:'CN-WATER',chg:'',site:'changzhou',line:'Manufacturing Operations',pri:'High',owner:'Tony Hammond',due:'2026-06-05',status:'Overdue',ev:'Missing'},
+ {id:'ACT-837',title:'Overdue: COSHH assessment refresh — composites cell',reg:'UK-COSHH',chg:'',site:'coventry',line:'Manufacturing Operations',pri:'Medium',owner:'Tony Hammond',due:'2026-05-28',status:'Overdue',ev:'Missing'},
  // completed
- {id:'ACT-820',title:'BImSchG permit periodic review filed',reg:'DE-BImSchG',chg:'',site:'ahrensburg',line:'Manufacturing Operations',pri:'High',owner:'M. Keller',due:'2026-03-14',status:'Complete',ev:'Attached'},
- {id:'ACT-815',title:'REACH SVHC notification updated',reg:'EU-REACH',chg:'',site:'ahrensburg',line:'Manufacturing Operations',pri:'Medium',owner:'S. Vogel',due:'2026-04-28',status:'Complete',ev:'Attached'},
- {id:'ACT-808',title:'NRC radiation safety audit closeout',reg:'US-RIDDOR-EQ',chg:'',site:'skaneateles',line:'Remote Visual Inspection',pri:'High',owner:'R. Maddox',due:'2026-04-11',status:'Complete',ev:'Attached'},
- {id:'ACT-801',title:'ICPE declaration renewal — Contrexéville',reg:'FR-ICPE',chg:'',site:'contrex',line:'Manufacturing Operations',pri:'Medium',owner:'P. Moreau',due:'2026-05-04',status:'Complete',ev:'Attached'},
- {id:'ACT-795',title:'WSH competency training rollout — Singapore',reg:'SG-WSH',chg:'CHG-2030',site:'singapore',line:'Field Services',pri:'Medium',owner:'L. Tan',due:'2026-05-30',status:'Complete',ev:'Attached'},
+ {id:'ACT-820',title:'BImSchG permit periodic review filed',reg:'DE-BImSchG',chg:'',site:'ahrensburg',line:'Manufacturing Operations',pri:'High',owner:'Tony Hammond',due:'2026-03-14',status:'Complete',ev:'Attached'},
+ {id:'ACT-815',title:'REACH SVHC notification updated',reg:'EU-REACH',chg:'',site:'ahrensburg',line:'Manufacturing Operations',pri:'Medium',owner:'Tony Hammond',due:'2026-04-28',status:'Complete',ev:'Attached'},
+ {id:'ACT-808',title:'NRC radiation safety audit closeout',reg:'US-RIDDOR-EQ',chg:'',site:'skaneateles',line:'Remote Visual Inspection',pri:'High',owner:'Tony Hammond',due:'2026-04-11',status:'Complete',ev:'Attached'},
+ {id:'ACT-801',title:'ICPE declaration renewal — Contrexéville',reg:'FR-ICPE',chg:'',site:'contrex',line:'Manufacturing Operations',pri:'Medium',owner:'Tony Hammond',due:'2026-05-04',status:'Complete',ev:'Attached'},
+ {id:'ACT-795',title:'WSH competency training rollout — Singapore',reg:'SG-WSH',chg:'CHG-2030',site:'singapore',line:'Field Services',pri:'Medium',owner:'Tony Hammond',due:'2026-05-30',status:'Complete',ev:'Attached'},
 ];
 
 const WATCHLISTS=[
- {id:'WL-01',name:'EU air & emissions — manufacturing sites',scope:'Germany, France, Slovakia · Air Emissions, Industrial Permits',freq:'Immediate',regs:8,owner:'M. Keller',recipients:['M. Keller','Ahrensburg HSE','Wunstorf HSE'],active:true},
- {id:'WL-02',name:'Radiation safety — all radiography & CT',scope:'Global · Radiation Safety',freq:'Immediate',regs:6,owner:'A. Brandt',recipients:['A. Brandt','R. Maddox','W. Li'],active:true},
- {id:'WL-03',name:'Sustainability disclosure (CSRD/CBAM/ESRS)',scope:'EU · Sustainability, Energy & Carbon',freq:'Weekly digest',regs:5,owner:'S. Vogel',recipients:['S. Vogel','Group Finance','Exec LT'],active:true},
- {id:'WL-04',name:'APAC occupational H&S',scope:'Singapore, S. Korea, China, India · Occupational H&S',freq:'Daily digest',regs:9,owner:'L. Tan',recipients:['L. Tan','Y. Park','W. Li','A. Rao'],active:true},
- {id:'WL-05',name:'US chemical & TRI reporting',scope:'United States · Chemicals, Reporting',freq:'Immediate',regs:4,owner:'R. Maddox',recipients:['R. Maddox','Cincinnati HSE'],active:true},
+ {id:'WL-01',name:'EU air & emissions — manufacturing sites',scope:'Germany, France, Slovakia · Air Emissions, Industrial Permits',freq:'Immediate',regs:8,owner:'Tony Hammond',recipients:['Tony Hammond','Ahrensburg HSE','Wunstorf HSE'],active:true},
+ {id:'WL-02',name:'Radiation safety — all radiography & CT',scope:'Global · Radiation Safety',freq:'Immediate',regs:6,owner:'Tony Hammond',recipients:['Tony Hammond','Tony Hammond','Tony Hammond'],active:true},
+ {id:'WL-03',name:'Sustainability disclosure (CSRD/CBAM/ESRS)',scope:'EU · Sustainability, Energy & Carbon',freq:'Weekly digest',regs:5,owner:'Tony Hammond',recipients:['Tony Hammond','Group Finance','Exec LT'],active:true},
+ {id:'WL-04',name:'APAC occupational H&S',scope:'Singapore, S. Korea, China, India · Occupational H&S',freq:'Daily digest',regs:9,owner:'Tony Hammond',recipients:['Tony Hammond','Tony Hammond','Tony Hammond','Tony Hammond'],active:true},
+ {id:'WL-05',name:'US chemical & TRI reporting',scope:'United States · Chemicals, Reporting',freq:'Immediate',regs:4,owner:'Tony Hammond',recipients:['Tony Hammond','Cincinnati HSE'],active:true},
  {id:'WL-06',name:'High-risk obligations — group',scope:'Global · Risk = Critical/High',freq:'Daily digest',regs:14,owner:'Tony Hammond',recipients:['Exec LT','Regional HSE Leads'],active:true},
- {id:'WL-07',name:'Coventry battery & composites',scope:'United Kingdom · Product Stewardship, COSHH',freq:'Weekly digest',regs:4,owner:'J. Whitfield',recipients:['J. Whitfield'],active:true},
- {id:'WL-08',name:'China manufacturing — environmental',scope:'China · Air, Water, Waste',freq:'Immediate',regs:5,owner:'W. Li',recipients:['W. Li','Changzhou Plant Mgr'],active:true},
- {id:'WL-09',name:'Process safety (Seveso/StFV/PSM)',scope:'Germany, Switzerland · Process Safety',freq:'Weekly digest',regs:3,owner:'M. Keller',recipients:['M. Keller','T. Frei'],active:false},
+ {id:'WL-07',name:'Coventry battery & composites',scope:'United Kingdom · Product Stewardship, COSHH',freq:'Weekly digest',regs:4,owner:'Tony Hammond',recipients:['Tony Hammond'],active:true},
+ {id:'WL-08',name:'China manufacturing — environmental',scope:'China · Air, Water, Waste',freq:'Immediate',regs:5,owner:'Tony Hammond',recipients:['Tony Hammond','Changzhou Plant Mgr'],active:true},
+ {id:'WL-09',name:'Process safety (Seveso/StFV/PSM)',scope:'Germany, Switzerland · Process Safety',freq:'Weekly digest',regs:3,owner:'Tony Hammond',recipients:['Tony Hammond','Tony Hammond'],active:false},
  {id:'WL-10',name:'Executive monthly horizon',scope:'Global · All forecaster items',freq:'Monthly digest',regs:32,owner:'Tony Hammond',recipients:['Exec LT','Board HSE Committee'],active:true},
 ];
 
 const EVIDENCE=[
- {id:'EV-512',name:'Ahrensburg BImSchG permit certificate 2026',type:'Permit',site:'ahrensburg',reg:'DE-BImSchG',status:'Current',expires:'2029-03-14',by:'M. Keller'},
- {id:'EV-509',name:'NRC radiation safety audit report',type:'Audit report',site:'skaneateles',reg:'US-RIDDOR-EQ',status:'Current',expires:'2027-04-11',by:'R. Maddox'},
- {id:'EV-505',name:'TRI Form R 2025 submission receipt',type:'Filing',site:'skaneateles',reg:'US-EPA-TRI',status:'Pending approval',expires:'2027-07-01',by:'R. Maddox'},
- {id:'EV-501',name:'REACH SVHC declaration of conformity',type:'Declaration',site:'ahrensburg',reg:'EU-REACH',status:'Current',expires:'2027-04-28',by:'S. Vogel'},
- {id:'EV-498',name:'WSH radiography competency certificates',type:'Training record',site:'singapore',reg:'SG-WSH',status:'Current',expires:'2028-05-30',by:'L. Tan'},
- {id:'EV-494',name:'Changzhou radioisotope device licence',type:'Licence',site:'changzhou',reg:'CN-RAD',status:'Expiring soon',expires:'2026-08-01',by:'W. Li'},
- {id:'EV-490',name:'Contrexéville ICPE declaration',type:'Declaration',site:'contrex',reg:'FR-ICPE',status:'Current',expires:'2027-05-04',by:'P. Moreau'},
- {id:'EV-486',name:'COSHH assessment — composites cell',type:'Assessment',site:'coventry',reg:'UK-COSHH',status:'Expired',expires:'2026-05-28',by:'J. Whitfield'},
+ {id:'EV-512',name:'Ahrensburg BImSchG permit certificate 2026',type:'Permit',site:'ahrensburg',reg:'DE-BImSchG',status:'Current',expires:'2029-03-14',by:'Tony Hammond'},
+ {id:'EV-509',name:'NRC radiation safety audit report',type:'Audit report',site:'skaneateles',reg:'US-RIDDOR-EQ',status:'Current',expires:'2027-04-11',by:'Tony Hammond'},
+ {id:'EV-505',name:'TRI Form R 2025 submission receipt',type:'Filing',site:'skaneateles',reg:'US-EPA-TRI',status:'Pending approval',expires:'2027-07-01',by:'Tony Hammond'},
+ {id:'EV-501',name:'REACH SVHC declaration of conformity',type:'Declaration',site:'ahrensburg',reg:'EU-REACH',status:'Current',expires:'2027-04-28',by:'Tony Hammond'},
+ {id:'EV-498',name:'WSH radiography competency certificates',type:'Training record',site:'singapore',reg:'SG-WSH',status:'Current',expires:'2028-05-30',by:'Tony Hammond'},
+ {id:'EV-494',name:'Changzhou radioisotope device licence',type:'Licence',site:'changzhou',reg:'CN-RAD',status:'Expiring soon',expires:'2026-08-01',by:'Tony Hammond'},
+ {id:'EV-490',name:'Contrexéville ICPE declaration',type:'Declaration',site:'contrex',reg:'FR-ICPE',status:'Current',expires:'2027-05-04',by:'Tony Hammond'},
+ {id:'EV-486',name:'COSHH assessment — composites cell',type:'Assessment',site:'coventry',reg:'UK-COSHH',status:'Expired',expires:'2026-05-28',by:'Tony Hammond'},
  {id:'EV-482',name:'Changzhou water discharge monitoring log',type:'Monitoring log',site:'changzhou',reg:'CN-WATER',status:'Missing',expires:'—',by:'—'},
- {id:'EV-478',name:'OSHA 300A log 2025 — Cincinnati',type:'Recordkeeping',site:'cincinnati',reg:'US-OSHA-1910',status:'Pending approval',expires:'2027-02-01',by:'R. Maddox'},
- {id:'EV-474',name:'ISO 14001 certificate — Hürth',type:'Certification',site:'hurth',reg:'EU-WFD',status:'Current',expires:'2027-09-01',by:'A. Brandt'},
- {id:'EV-470',name:'Energy audit report (EnEfG) — Ahrensburg',type:'Audit report',site:'ahrensburg',reg:'DE-EnEfG',status:'Pending approval',expires:'2030-07-18',by:'S. Vogel'},
+ {id:'EV-478',name:'OSHA 300A log 2025 — Cincinnati',type:'Recordkeeping',site:'cincinnati',reg:'US-OSHA-1910',status:'Pending approval',expires:'2027-02-01',by:'Tony Hammond'},
+ {id:'EV-474',name:'ISO 14001 certificate — Hürth',type:'Certification',site:'hurth',reg:'EU-WFD',status:'Current',expires:'2027-09-01',by:'Tony Hammond'},
+ {id:'EV-470',name:'Energy audit report (EnEfG) — Ahrensburg',type:'Audit report',site:'ahrensburg',reg:'DE-EnEfG',status:'Pending approval',expires:'2030-07-18',by:'Tony Hammond'},
 ];
 
 const PERMITS=[
@@ -422,28 +422,20 @@ const GUIDES=[
 
 const USERS=[
  {name:'Tony Hammond',role:'Group HS&E Director',scope:'Global',email:'tony.hammond@bakerhughes.com',status:'Active'},
- {name:'S. Vogel',role:'Corporate Compliance Director',scope:'Global',email:'s.vogel@…',status:'Active'},
- {name:'M. Keller',role:'Regional HS&E Manager — DACH',scope:'Germany, Switzerland',email:'m.keller@…',status:'Active'},
- {name:'R. Maddox',role:'Regional HS&E Manager — Americas',scope:'USA, Brazil',email:'r.maddox@…',status:'Active'},
- {name:'A. Brandt',role:'Regulatory Analyst — Radiation',scope:'Global radiation',email:'a.brandt@…',status:'Active'},
- {name:'W. Li',role:'Site Manager — Changzhou',scope:'Changzhou',email:'w.li@…',status:'Active'},
- {name:'J. Whitfield',role:'Site Manager — Coventry',scope:'Coventry',email:'j.whitfield@…',status:'Active'},
- {name:'L. Tan',role:'Regional HS&E Manager — APAC',scope:'Singapore, S. Korea',email:'l.tan@…',status:'Active'},
- {name:'A. Rao',role:'Business Line Leader — Digital & AI',scope:'Bengaluru',email:'a.rao@…',status:'Active'},
- {name:'External Reviewer (DLA)',role:'External Expert Reviewer',scope:'Read + approve assessments',email:'ehs@dla.example',status:'Invited'},
+ {name:'Paul Perera',role:'Corporate Compliance Director',scope:'Global',email:'paul.perera@bakerhughes.com',status:'Active'},
 ];
 
 const AUDIT=[
- {ts:'2026-06-15 14:22',user:'S. Vogel',action:'Created change assessment',obj:'CHG-2033 ESRS E1 scope expansion',type:'Assessment'},
- {ts:'2026-06-14 09:41',user:'M. Keller',action:'Published approved assessment',obj:'CHG-2038 TA Luft particulate limit',type:'Approval'},
- {ts:'2026-06-14 09:38',user:'External Reviewer (DLA)',action:'Approved impact assessment',obj:'CHG-2038 TA Luft particulate limit',type:'Approval'},
+ {ts:'2026-06-15 14:22',user:'Tony Hammond',action:'Created change assessment',obj:'CHG-2033 ESRS E1 scope expansion',type:'Assessment'},
+ {ts:'2026-06-14 09:41',user:'Tony Hammond',action:'Published approved assessment',obj:'CHG-2038 TA Luft particulate limit',type:'Approval'},
+ {ts:'2026-06-14 09:38',user:'External Reviewer',action:'Approved impact assessment',obj:'CHG-2038 TA Luft particulate limit',type:'Approval'},
  {ts:'2026-06-13 16:05',user:'System',action:'Sent critical alert email',obj:'WL-01 → 3 recipients',type:'Notification'},
- {ts:'2026-06-12 11:50',user:'M. Keller',action:'Assigned action ACT-881',obj:'Abatement system → Ahrensburg',type:'Action'},
+ {ts:'2026-06-12 11:50',user:'Tony Hammond',action:'Assigned action ACT-881',obj:'Abatement system → Ahrensburg',type:'Action'},
  {ts:'2026-06-12 11:20',user:'AI Service',action:'Generated draft impact summary',obj:'CHG-2038 (confidence: High)',type:'AI'},
- {ts:'2026-06-10 08:15',user:'J. Whitfield',action:'Requested legal review',obj:'CHG-2041 RIDDOR threshold',type:'Workflow'},
- {ts:'2026-06-09 15:33',user:'R. Maddox',action:'Uploaded evidence EV-505',obj:'TRI Form R receipt',type:'Evidence'},
+ {ts:'2026-06-10 08:15',user:'Tony Hammond',action:'Requested legal review',obj:'CHG-2041 RIDDOR threshold',type:'Workflow'},
+ {ts:'2026-06-09 15:33',user:'Tony Hammond',action:'Uploaded evidence EV-505',obj:'TRI Form R receipt',type:'Evidence'},
  {ts:'2026-06-05 10:02',user:'System',action:'Escalated overdue action',obj:'ACT-840 → Group HS&E Director',type:'Escalation'},
- {ts:'2026-06-02 13:47',user:'R. Maddox',action:'Marked change as reviewed',obj:'CHG-2007 OSHA e-recordkeeping',type:'Workflow'},
+ {ts:'2026-06-02 13:47',user:'Tony Hammond',action:'Marked change as reviewed',obj:'CHG-2007 OSHA e-recordkeeping',type:'Workflow'},
 ];
 
 /* ===================== helpers ===================== */
@@ -619,7 +611,7 @@ ROUTES.baseline=()=>{
 };
 function blRows(){
  let rows=REGS.filter(r=>{
-   if(BL.view==='mine'&&r.owner!=='M. Keller'&&r.owner!=='S. Vogel')return false;
+   if(BL.view==='mine'&&r.owner!=='Tony Hammond'&&r.owner!=='Tony Hammond')return false;
    if(BL.view==='high'&&!['Critical','High'].includes(r.risk))return false;
    if(BL.view==='changed'&&!(r.changed>='2026-06-01'))return false;
    if(BL.view==='force'&&!(r.status==='Enacted'))return false;
@@ -727,7 +719,7 @@ ROUTES.change=(arg)=>{
      <div class="card" style="margin-bottom:16px"><div class="ch"><h3>Decision &amp; workflow</h3></div><div class="cb">
        <div style="display:flex;flex-direction:column;gap:8px">
          <button class="btn" onclick="toast('Marked as reviewed')">Mark as reviewed</button>
-         <button class="btn" onclick="toast('Legal review requested from External Reviewer (DLA)')">Request legal review</button>
+         <button class="btn" onclick="toast('Legal review requested from External Reviewer')">Request legal review</button>
          <button class="btn primary" onclick="go('actions')">Create action plan</button>
          <button class="btn" onclick="toast('Escalated to Executive LT')">Escalate to executive</button>
          <button class="btn" style="background:var(--green);color:#fff;border-color:var(--green)" onclick="toast('Approved assessment published — audit log updated')">Publish approved assessment</button>
@@ -793,7 +785,7 @@ ROUTES.alerts=()=>{
  <div class="grid" style="grid-template-columns:1fr 1.1fr">
    <div>
      <div class="card" style="margin-bottom:16px"><div class="ch"><h3>Recent notifications</h3></div><div class="cb" style="padding:6px">
-       ${[['Critical','CHG-2038 TA Luft particulate limit','Sent to 3 recipients · 13 Jun','p-red'],['Escalation','ACT-840 overdue 18 days → Group HS&E Director','Auto-escalated · 05 Jun','p-amber'],['High','CHG-2041 RIDDOR threshold revised','Sent to J. Whitfield · 10 Jun','p-amber'],['Digest','APAC weekly H&S digest','Delivered to 4 leaders · 16 Jun','p-blue'],['High','CHG-2026 Serious Accidents Act penalty','Sent to Y. Park · 05 Jun','p-amber']].map(n=>`<div style="display:flex;gap:10px;align-items:start;padding:10px 8px;border-bottom:1px solid var(--line2)"><span class="pill ${n[3]}" style="flex:none"><span class="pd"></span>${n[0]}</span><div><div style="font-weight:600;font-size:13px">${n[1]}</div><div class="sm muted">${n[2]}</div></div></div>`).join('')}
+       ${[['Critical','CHG-2038 TA Luft particulate limit','Sent to 3 recipients · 13 Jun','p-red'],['Escalation','ACT-840 overdue 18 days → Group HS&E Director','Auto-escalated · 05 Jun','p-amber'],['High','CHG-2041 RIDDOR threshold revised','Sent to Tony Hammond · 10 Jun','p-amber'],['Digest','APAC weekly H&S digest','Delivered to 4 leaders · 16 Jun','p-blue'],['High','CHG-2026 Serious Accidents Act penalty','Sent to Tony Hammond · 05 Jun','p-amber']].map(n=>`<div style="display:flex;gap:10px;align-items:start;padding:10px 8px;border-bottom:1px solid var(--line2)"><span class="pill ${n[3]}" style="flex:none"><span class="pd"></span>${n[0]}</span><div><div style="font-weight:600;font-size:13px">${n[1]}</div><div class="sm muted">${n[2]}</div></div></div>`).join('')}
      </div></div>
      <div class="card"><div class="ch"><h3>Notification rules</h3></div><div class="cb" style="font-size:13px">
        ${['Send immediate notification when a Critical change affects a site','Escalate if no owner is assigned within 48 hours','Escalate if an action is overdue by more than 7 days','Send weekly digest to regional HS&E leaders','Send monthly executive summary to corporate leadership'].map(r=>`<div style="display:flex;gap:9px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line2)"><span style="color:var(--green)">✓</span> ${r}</div>`).join('')}
@@ -812,7 +804,7 @@ ROUTES.alerts=()=>{
          <div class="k">Why it matters</div><div>Ahrensburg &amp; Wunstorf coating operations exceed the new trigger and require abatement upgrades before the effective date.</div>
          <div class="k">Affected sites</div><div>Ahrensburg, Wunstorf</div>
          <div class="k">Required action</div><div>Install high-efficiency particulate abatement on Line 3 (ACT-881)</div>
-         <div class="k">Action owner</div><div>M. Keller — Regional HS&amp;E Manager, DACH</div>
+         <div class="k">Action owner</div><div>Tony Hammond — Regional HS&amp;E Manager, DACH</div>
          <div class="k">Due date</div><div><b style="color:var(--red)">01 Aug 2026</b></div>
          <div class="k">Escalation</div><div>Group HS&amp;E Director if unassigned in 48h</div>
        </div>

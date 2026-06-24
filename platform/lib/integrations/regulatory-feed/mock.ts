@@ -53,19 +53,19 @@ const VERSIONS: Record<string, FeedVersionDoc[]> = {
 
 // ---- change register (subset; severity/category are derived by the service from the diff) ----
 const CHANGES: FeedChange[] = [
-  { externalRef:"CHG-2038", regulationRef:"DE-TA-LUFT", title:"TA Luft particulate emission limit reduced for surface treatment", prevVersionLabel:"v2021.2", currVersionLabel:"v2026.1", effectiveAt:"2026-08-15", affectedSites:["ahrensburg","wunstorf"], businessLine:"Manufacturing Operations", proposedOwner:"Martin Keller" },
-  { externalRef:"CHG-2041", regulationRef:"UK-RIDDOR", title:"RIDDOR reporting threshold for over-7-day incapacitation revised", prevVersionLabel:"v2013.1", currVersionLabel:"v2026.1", effectiveAt:"2026-09-01", affectedSites:["coventry"], businessLine:"Manufacturing Operations", proposedOwner:"James Whitfield" },
-  { externalRef:"CHG-2035", regulationRef:"US-EPA-TRI", title:"TRI Form R submission deadline moved earlier; PFAS threshold added", prevVersionLabel:"v2024.1", currVersionLabel:"v2026.1", effectiveAt:"2026-07-01", affectedSites:["skaneateles","cincinnati"], businessLine:"Field Services", proposedOwner:"Ray Maddox" },
-  { externalRef:"CHG-2028", regulationRef:"CN-RAD", title:"Radioisotope device licensing renewal period shortened to 3 years", prevVersionLabel:"v2018.1", currVersionLabel:"v2026.1", effectiveAt:"2026-08-01", affectedSites:["changzhou"], businessLine:"Manufacturing Operations", proposedOwner:"Wei Li" },
+  { externalRef:"CHG-2038", regulationRef:"DE-TA-LUFT", title:"TA Luft particulate emission limit reduced for surface treatment", prevVersionLabel:"v2021.2", currVersionLabel:"v2026.1", effectiveAt:"2026-08-15", affectedSites:["ahrensburg","wunstorf"], businessLine:"Manufacturing Operations", proposedOwner:"Tony Hammond" },
+  { externalRef:"CHG-2041", regulationRef:"UK-RIDDOR", title:"RIDDOR reporting threshold for over-7-day incapacitation revised", prevVersionLabel:"v2013.1", currVersionLabel:"v2026.1", effectiveAt:"2026-09-01", affectedSites:["coventry"], businessLine:"Manufacturing Operations", proposedOwner:"Tony Hammond" },
+  { externalRef:"CHG-2035", regulationRef:"US-EPA-TRI", title:"TRI Form R submission deadline moved earlier; PFAS threshold added", prevVersionLabel:"v2024.1", currVersionLabel:"v2026.1", effectiveAt:"2026-07-01", affectedSites:["skaneateles","cincinnati"], businessLine:"Field Services", proposedOwner:"Tony Hammond" },
+  { externalRef:"CHG-2028", regulationRef:"CN-RAD", title:"Radioisotope device licensing renewal period shortened to 3 years", prevVersionLabel:"v2018.1", currVersionLabel:"v2026.1", effectiveAt:"2026-08-01", affectedSites:["changzhou"], businessLine:"Manufacturing Operations", proposedOwner:"Tony Hammond" },
 ];
 
 // ---- response actions (subset) ----
 const ACTIONS: FeedAction[] = [
-  { externalRef:"ACT-881", title:"Install high-efficiency particulate abatement on Line 3", regulationRef:"DE-TA-LUFT", changeRef:"CHG-2038", siteRef:"ahrensburg", priority:"CRITICAL", status:"In progress", owner:"Martin Keller", dueDate:"2026-08-01", evidence:"Required" },
-  { externalRef:"ACT-879", title:"Recalibrate continuous dust monitor to 0.10 kg/h threshold", regulationRef:"DE-TA-LUFT", changeRef:"CHG-2038", siteRef:"wunstorf", priority:"HIGH", status:"In progress", owner:"Anika Brandt", dueDate:"2026-07-20", evidence:"Required" },
-  { externalRef:"ACT-872", title:"Submit TRI Form R with new PFAS data", regulationRef:"US-EPA-TRI", changeRef:"CHG-2035", siteRef:"skaneateles", priority:"HIGH", status:"Awaiting approval", owner:"Ray Maddox", dueDate:"2026-06-28", evidence:"Attached" },
-  { externalRef:"ACT-868", title:"Renew radioisotope device licence (3-yr cycle)", regulationRef:"CN-RAD", changeRef:"CHG-2028", siteRef:"changzhou", priority:"CRITICAL", status:"Blocked", owner:"Wei Li", dueDate:"2026-07-25", evidence:"Required" },
-  { externalRef:"ACT-840", title:"Overdue: water discharge permit variance — Changzhou", regulationRef:"CN-WATER", siteRef:"changzhou", priority:"HIGH", status:"Overdue", owner:"Wei Li", dueDate:"2026-06-05", evidence:"Missing" },
+  { externalRef:"ACT-881", title:"Install high-efficiency particulate abatement on Line 3", regulationRef:"DE-TA-LUFT", changeRef:"CHG-2038", siteRef:"ahrensburg", priority:"CRITICAL", status:"In progress", owner:"Tony Hammond", dueDate:"2026-08-01", evidence:"Required" },
+  { externalRef:"ACT-879", title:"Recalibrate continuous dust monitor to 0.10 kg/h threshold", regulationRef:"DE-TA-LUFT", changeRef:"CHG-2038", siteRef:"wunstorf", priority:"HIGH", status:"In progress", owner:"Tony Hammond", dueDate:"2026-07-20", evidence:"Required" },
+  { externalRef:"ACT-872", title:"Submit TRI Form R with new PFAS data", regulationRef:"US-EPA-TRI", changeRef:"CHG-2035", siteRef:"skaneateles", priority:"HIGH", status:"Awaiting approval", owner:"Tony Hammond", dueDate:"2026-06-28", evidence:"Attached" },
+  { externalRef:"ACT-868", title:"Renew radioisotope device licence (3-yr cycle)", regulationRef:"CN-RAD", changeRef:"CHG-2028", siteRef:"changzhou", priority:"CRITICAL", status:"Blocked", owner:"Tony Hammond", dueDate:"2026-07-25", evidence:"Required" },
+  { externalRef:"ACT-840", title:"Overdue: water discharge permit variance — Changzhou", regulationRef:"CN-WATER", siteRef:"changzhou", priority:"HIGH", status:"Overdue", owner:"Tony Hammond", dueDate:"2026-06-05", evidence:"Missing" },
 ];
 
 export class MockRegulatoryFeed implements RegulatoryFeedProvider {

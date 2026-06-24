@@ -24,7 +24,7 @@ const change: MatchableChange = {
   effectiveAt: "2026-08-15",
   whatChanged: "Particulate limit halved (10→5 mg/m³); monitoring trigger tightened.",
   whyItMatters: "Coating operations exceed the new trigger and need abatement upgrades.",
-  requiredAction: { title: "Install particulate abatement on Line 3", ref: "ACT-881", owner: "Martin Keller", dueDate: "2026-08-01" },
+  requiredAction: { title: "Install particulate abatement on Line 3", ref: "ACT-881", owner: "Tony Hammond", dueDate: "2026-08-01" },
 };
 
 const wlAir: WatchlistLike = {
@@ -33,7 +33,7 @@ const wlAir: WatchlistLike = {
     { field: "jurisdiction", operator: "IN", value: ["Germany (EU)", "France (EU)"] },
     { field: "topic", operator: "IN", value: ["Air Emissions", "Industrial Permits"] },
   ],
-  recipients: [{ email: "m.keller@waygate.example" }, { roleKey: "REGIONAL_HSE_MANAGER" }],
+  recipients: [{ email: "tony.hammond@bakerhughes.com" }, { roleKey: "REGIONAL_HSE_MANAGER" }],
 };
 const wlHighRisk: WatchlistLike = {
   id: "WL-06", name: "High-risk obligations — group", active: true, frequency: "CRITICAL_ONLY",
@@ -43,7 +43,7 @@ const wlHighRisk: WatchlistLike = {
 const wlAPAC: WatchlistLike = {
   id: "WL-04", name: "APAC occupational H&S", active: true, frequency: "DAILY_DIGEST",
   rules: [{ field: "jurisdiction", operator: "IN", value: ["Singapore", "South Korea"] }],
-  recipients: [{ email: "l.tan@waygate.example" }],
+  recipients: [{ email: "tony.hammond@bakerhughes.com" }],
 };
 const wlPaused: WatchlistLike = { ...wlAir, id: "WL-09", name: "paused", active: false };
 
@@ -88,9 +88,9 @@ describe("matchWatchlists", () => {
 
 describe("resolveRecipients", () => {
   it("expands role keys via the role→email map and dedupes", () => {
-    const emails = resolveRecipients(wlAir, { REGIONAL_HSE_MANAGER: ["m.keller@waygate.example", "r.maddox@waygate.example"] });
-    expect(emails).toContain("r.maddox@waygate.example");
-    expect(emails.filter((e) => e === "m.keller@waygate.example")).toHaveLength(1); // deduped
+    const emails = resolveRecipients(wlAir, { REGIONAL_HSE_MANAGER: ["tony.hammond@bakerhughes.com", "tony.hammond@bakerhughes.com"] });
+    expect(emails).toContain("tony.hammond@bakerhughes.com");
+    expect(emails.filter((e) => e === "tony.hammond@bakerhughes.com")).toHaveLength(1); // deduped
   });
 });
 
@@ -117,7 +117,7 @@ describe("dispatchForChange", () => {
     const sent = await dispatchForChange(change, {
       email,
       watchlists: [wlAir, wlHighRisk, wlAPAC],
-      roleEmailMap: { REGIONAL_HSE_MANAGER: ["r.maddox@waygate.example"] },
+      roleEmailMap: { REGIONAL_HSE_MANAGER: ["tony.hammond@bakerhughes.com"] },
       siteNameMap: { ahrensburg: "Ahrensburg", wunstorf: "Wunstorf" },
     });
     expect(sent).toHaveLength(2); // WL-01 + WL-06
@@ -135,7 +135,7 @@ describe("evaluateEscalations", () => {
     { ref: "CHG-C", title: "Recent unassigned", detectedAt: "2026-06-23T00:00:00Z", ownerId: null, severity: "LOW" }, // 12h
   ];
   const actions: ActionRecord[] = [
-    { ref: "ACT-840", title: "Overdue water permit", dueDate: "2026-06-05", status: "Overdue", ownerName: "Wei Li" }, // 18d
+    { ref: "ACT-840", title: "Overdue water permit", dueDate: "2026-06-05", status: "Overdue", ownerName: "Tony Hammond" }, // 18d
     { ref: "ACT-881", title: "On time", dueDate: "2026-08-01", status: "In progress" },
     { ref: "ACT-820", title: "Done late but closed", dueDate: "2026-05-01", status: "Complete" },
   ];
@@ -164,7 +164,7 @@ describe("digest", () => {
       { ref: "CHG-2", title: "Old low", jurisdiction: "France (EU)", severity: "LOW", detectedAt: "2026-05-01", effectiveAt: "2026-12-01" },
     ],
     actions: [{ ref: "ACT-840", title: "Overdue", status: "Overdue", dueDate: "2026-06-05" }],
-    audienceLabel: "Regional HS&E leaders", recipients: ["regional@waygate.example"],
+    audienceLabel: "Regional HS&E leaders", recipients: ["tony.hammond@bakerhughes.com"],
   };
   const summary = summariseDigest(input);
 
