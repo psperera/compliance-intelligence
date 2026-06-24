@@ -127,7 +127,7 @@ Filterable in the prototype by saved views (*My assigned*, *High-risk*, *Changes
 **Site workspace** (`/sites/changzhou`) shows the site's compliance matrix — every requirement,
 its regulation, control status, evidence and risk.
 
-**FOM assistant** answers grounded questions with citations — try:
+**HS.ai assistant** answers grounded questions with citations — try:
 - "What changed in TA Luft and which sites are affected?"
 - "Which radiation safety regulations apply to Changzhou?"
 - "What's overdue and who owns it?"
@@ -142,14 +142,14 @@ curl -X POST http://localhost:3000/api/assistant -H 'Content-Type: application/j
 
 ---
 
-## FOM — AI compliance assistant
+## HS.ai — AI compliance assistant
 
-**FOM** (Field Operations Mentor) is the in-app helper that guides users through the regulatory
+**HS.ai** is the in-app helper that guides users through the regulatory
 record. It answers **only** from the loaded data and **cites the regulation / change IDs** it used.
 
 ### Local-first by default (Ollama)
 
-FOM defaults to a **local LLM via [Ollama](https://ollama.com)** so regulatory content never
+HS.ai defaults to a **local LLM via [Ollama](https://ollama.com)** so regulatory content never
 leaves your machine:
 
 ```bash
@@ -157,11 +157,11 @@ ollama serve
 ollama pull llama3.1     # default model
 ```
 Set `OLLAMA_URL` (default `http://localhost:11434`) if it runs elsewhere. If no LLM is
-reachable, FOM degrades gracefully to a deterministic, record-based answer — it never goes dark.
+reachable, HS.ai degrades gracefully to a deterministic, record-based answer — it never goes dark.
 
 ### Switching providers (admin menu)
 
-Administrators choose the provider in **Administration → FOM AI assistant provider**:
+Administrators choose the provider in **Administration → HS.ai AI assistant provider**:
 
 | Provider | Notes | Env |
 |---|---|---|

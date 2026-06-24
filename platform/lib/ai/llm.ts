@@ -1,4 +1,4 @@
-// lib/ai/llm.ts — multi-provider LLM layer powering the FOM assistant.
+// lib/ai/llm.ts — multi-provider LLM layer powering the HS.ai assistant.
 //
 // Default provider is a LOCAL LLM via Ollama (no data leaves the machine) — the right
 // default for regulatory/compliance content. Admins can switch to OpenAI, Claude

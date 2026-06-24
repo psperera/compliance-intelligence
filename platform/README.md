@@ -49,11 +49,22 @@ an overdue-action escalation, and a weekly digest summary.
 ## 4. Full data layer (Postgres + Redis)
 ```bash
 cp .env.example .env
-docker compose up -d            # postgres(pgvector) + redis
+docker compose up -d            # postgres + redis
 npm run db:setup                # prisma generate + migrate + seed
+# then make the app read/write Postgres instead of memory:
+echo 'DATA_BACKEND=prisma' >> .env
+npm run dev
 ```
-`db:setup` loads the **user database** (Tony Hammond, Group HS&E Director + 16
-teammates), the 10 roles + permission matrix, and all 18 Waygate sites.
+`db:setup` loads the **user database** (Tony Hammond, Group HS&E Director + team),
+all 18 Waygate sites, regulations, changes and actions into Postgres.
+
+**Persistence backend.** The app defaults to an in-memory store (`DATA_BACKEND=memory`)
+so it runs with zero setup. Set `DATA_BACKEND=prisma` (after `db:setup`) to persist
+regulations, changes, actions, users and the AI-impact cache in Postgres — data then
+survives restarts and is shared across processes. Prisma is loaded lazily, so memory mode
+never needs a database or a generated client. The focused app schema is
+`prisma/schema.prisma`; the comprehensive enterprise design is preserved in
+`prisma/schema.architecture.prisma.reference`.
 
 Then run the background workers (ingest, notification, escalation timers, digests):
 ```bash

@@ -23,7 +23,7 @@ export default async function AdminPage() {
       <PageHead title="Administration" subtitle="AI assistant configuration · roles & permissions · audit." />
 
       <div className="card" style={{ marginBottom: 16 }}>
-        <div className="ch"><h3>FOM — AI assistant provider</h3><span className="sub">Local LLM by default; switch to a cloud provider</span></div>
+        <div className="ch"><h3>HS.ai — AI assistant provider</h3><span className="sub">Local LLM by default; switch to a cloud provider</span></div>
         <div className="cb">
           {isAdmin ? <AiProviderMenu /> : <div className="muted">Your role can’t change the AI provider (requires admin).</div>}
         </div>

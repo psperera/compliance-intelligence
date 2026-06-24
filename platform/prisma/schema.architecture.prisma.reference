@@ -1,0 +1,885 @@
+// Compliance Intelligence — PostgreSQL / Prisma schema
+// Tenant: Waygate Technologies. Owner: Tony Hammond, Group HS&E Director.
+//
+// Principles:
+//  - UUID primary keys, created/updated timestamps everywhere.
+//  - Soft deletion (deletedAt) on user-managed entities; regulatory versions & audit are immutable.
+//  - Multi-tenant via organisationId on every domain row.
+//  - Raw regulatory diff is stored separately from AI interpretation.
+//  - pgvector embeddings for semantic search; tsvector (raw SQL/migration) for full-text.
+//  - audit_log is append-only (enforced by DB grants in migration, not shown here).
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector"), pg_trgm, uuidOssp(map: "uuid-ossp")]
+}
+
+// ───────────────────────────── Tenancy & org structure ─────────────────────────────
+
+model Organisation {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  businessLines BusinessLine[]
+  regions       Region[]
+  sites         Site[]
+  users         User[]
+  regulations   Regulation[]
+  watchlists    Watchlist[]
+  auditLogs     AuditLog[]
+}
+
+model Region {
+  id             String       @id @default(uuid())
+  organisationId String
+  name           String // e.g. "Europe (DACH)", "Americas", "APAC / MENAT"
+  createdAt      DateTime     @default(now())
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  jurisdictions  Jurisdiction[]
+  sites          Site[]
+
+  @@unique([organisationId, name])
+}
+
+model BusinessLine {
+  id             String       @id @default(uuid())
+  organisationId String
+  name           String // "Radiography & CT Systems", "Ultrasound Technologies", ...
+  createdAt      DateTime     @default(now())
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  sites          Site[]
+
+  @@unique([organisationId, name])
+}
+
+model Jurisdiction {
+  id         String   @id @default(uuid())
+  name       String   @unique // "Germany (EU)", "United States", "Singapore", ...
+  countryISO String // "DE", "US", "SG"
+  isEU       Boolean  @default(false)
+  regionId   String?
+  region     Region?  @relation(fields: [regionId], references: [id])
+
+  sites       Site[]
+  regulations Regulation[]
+  guides      RegulatoryGuide[]
+}
+
+model Site {
+  id             String        @id @default(uuid())
+  organisationId String
+  name           String // "Hürth", "Skaneateles", "Changzhou"
+  country        String
+  countryISO     String
+  siteType       SiteType
+  role           String // "Ultrasound HQ", "Manufacturing", "MENAT Regional Office"
+  employees      Int?
+  jurisdictionId String
+  regionId       String?
+  businessLineId String?
+  complianceScore Int          @default(0) // 0–100, materialised by ComplianceScoreService
+  riskRating     RiskLevel     @default(MEDIUM)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+
+  organisation   Organisation  @relation(fields: [organisationId], references: [id])
+  jurisdiction   Jurisdiction  @relation(fields: [jurisdictionId], references: [id])
+  region         Region?       @relation(fields: [regionId], references: [id])
+  businessLine   BusinessLine? @relation(fields: [businessLineId], references: [id])
+
+  activities       FacilityActivity[]
+  requirements     ComplianceRequirement[]
+  actions          Action[]
+  evidence         EvidenceItem[]
+  permits          Permit[]
+  auditFindings    AuditFinding[]
+  regulationLinks  RegulationSite[]
+  changeLinks      ChangeEventSite[]
+  responsibleUsers SiteResponsibility[]
+
+  @@index([organisationId])
+  @@index([jurisdictionId])
+}
+
+enum SiteType {
+  TECHNOLOGY_CENTRE
+  MANUFACTURING
+  OFFICE
+  CUSTOMER_SOLUTION_CENTRE
+  SPOKE_PARTNER
+}
+
+model FacilityActivity {
+  id        String   @id @default(uuid())
+  siteId    String
+  name      String // "Industrial radiography", "Surface coating", "Battery testing"
+  site      Site     @relation(fields: [siteId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+// ───────────────────────────── Users, roles, RBAC ─────────────────────────────
+
+model User {
+  id             String       @id @default(uuid())
+  organisationId String
+  name           String
+  email          String       @unique
+  title          String? // free-text job title, e.g. "Group HS&E Director"
+  roleId         String
+  status         UserStatus   @default(ACTIVE)
+  // scope: global users have no site/region restriction; others are limited.
+  scopeType      ScopeType    @default(GLOBAL)
+  lastActiveAt   DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  role           Role         @relation(fields: [roleId], references: [id])
+
+  scopedRegions     UserRegionScope[]
+  scopedSites       UserSiteScope[]
+  ownedRegulations  Regulation[]        @relation("RegulationOwner")
+  ownedActions      Action[]            @relation("ActionOwner")
+  contributedActions ActionContributor[]
+  authoredAssessments ChangeAssessment[] @relation("AssessmentAuthor")
+  approvals         ApprovalDecision[]
+  watchlists        Watchlist[]
+  notificationPrefs NotificationPreference[]
+  comments          ActionComment[]
+  uploadedEvidence  EvidenceItem[]      @relation("EvidenceUploader")
+  responsibilities  SiteResponsibility[]
+
+  @@index([organisationId])
+  @@index([roleId])
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+}
+
+enum ScopeType {
+  GLOBAL
+  REGION
+  SITE
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  key         String           @unique // PLATFORM_ADMIN, COMPLIANCE_DIRECTOR, ...
+  name        String
+  description String?
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id    String           @id @default(uuid())
+  key   String           @unique // view_content, edit_metadata, approve_assessment, ...
+  name  String
+  roles RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+}
+
+model UserRegionScope {
+  userId   String
+  regionId String
+  user     User   @relation(fields: [userId], references: [id])
+  @@id([userId, regionId])
+}
+
+model UserSiteScope {
+  userId String
+  siteId String
+  user   User   @relation(fields: [userId], references: [id])
+  @@id([userId, siteId])
+}
+
+model SiteResponsibility {
+  id     String @id @default(uuid())
+  siteId String
+  userId String
+  role   String // "Site Manager", "Local HSE Lead"
+  site   Site   @relation(fields: [siteId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([siteId, userId, role])
+}
+
+// ───────────────────────────── Regulatory content & versioning ─────────────────────────────
+
+model RegulatorAgency {
+  id          String       @id @default(uuid())
+  name        String // "BfS", "OSHA", "MEE"
+  jurisdiction String
+  regulations Regulation[]
+}
+
+model RegulatoryTopic {
+  id          String       @id @default(uuid())
+  name        String       @unique // "Radiation Safety", "Air Emissions", ...
+  regulations Regulation[]
+}
+
+model Regulation {
+  id             String        @id @default(uuid())
+  organisationId String
+  externalRef    String // "DE-TA-LUFT", "US-EPA-TRI"
+  title          String
+  citation       String?
+  jurisdictionId String
+  topicId        String
+  agencyId       String?
+  status         RegStatus     @default(IN_FORCE)
+  riskRating     RiskLevel     @default(MEDIUM)
+  complianceStatus ComplianceStatus @default(UNDER_REVIEW)
+  effectiveDate  DateTime?
+  lastChangedAt  DateTime?
+  nextReviewAt   DateTime?
+  sourceUrl      String?
+  language       String        @default("en")
+  ownerId        String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+
+  organisation Organisation     @relation(fields: [organisationId], references: [id])
+  jurisdiction Jurisdiction     @relation(fields: [jurisdictionId], references: [id])
+  topic        RegulatoryTopic  @relation(fields: [topicId], references: [id])
+  agency       RegulatorAgency? @relation(fields: [agencyId], references: [id])
+  owner        User?            @relation("RegulationOwner", fields: [ownerId], references: [id])
+
+  versions     RegulationVersion[]
+  changeEvents ChangeEvent[]
+  siteLinks    RegulationSite[]
+  requirements ComplianceRequirement[]
+  actions      Action[]
+  policies     PolicyLink[]
+  permits      Permit[]
+  tags         RegulationTag[]
+
+  @@unique([organisationId, externalRef])
+  @@index([jurisdictionId])
+  @@index([topicId])
+  @@index([status])
+}
+
+enum RegStatus {
+  PROPOSED
+  DRAFT
+  ENACTED
+  IN_FORCE
+  UNDER_REVIEW
+  REPEALED
+}
+
+enum RiskLevel {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  INFORMATIONAL
+}
+
+enum ComplianceStatus {
+  COMPLIANT
+  PARTIALLY_COMPLIANT
+  NON_COMPLIANT
+  NOT_APPLICABLE
+  EVIDENCE_MISSING
+  UNDER_REVIEW
+  AWAITING_LEGAL_INTERPRETATION
+}
+
+model RegulationTag {
+  regulationId String
+  tag          String
+  regulation   Regulation @relation(fields: [regulationId], references: [id])
+  @@id([regulationId, tag])
+}
+
+model RegulationSite {
+  regulationId String
+  siteId       String
+  applicability String     @default("APPLICABLE") // APPLICABLE | MONITOR | NOT_APPLICABLE
+  regulation   Regulation @relation(fields: [regulationId], references: [id])
+  site         Site       @relation(fields: [siteId], references: [id])
+  @@id([regulationId, siteId])
+}
+
+// One regulation → many versions; immutable once ingested.
+model RegulationVersion {
+  id           String        @id @default(uuid())
+  regulationId String
+  versionLabel String // "v2021.2", "v2026.1"
+  status       VersionStatus @default(INGESTED)
+  publishedAt  DateTime?
+  effectiveAt  DateTime?
+  language     String        @default("en")
+  rawSourceKey String? // object-storage key of original document
+  ingestedAt   DateTime      @default(now())
+
+  regulation       Regulation         @relation(fields: [regulationId], references: [id])
+  clauses          RegulationClause[]
+  comparisonsAsOld ChangeComparison[] @relation("ComparisonPrev")
+  comparisonsAsNew ChangeComparison[] @relation("ComparisonCurr")
+
+  @@unique([regulationId, versionLabel])
+  @@index([regulationId])
+}
+
+enum VersionStatus {
+  INGESTED
+  PARSED
+  COMPARED
+  APPROVED
+  SUPERSEDED
+}
+
+// One version → many clauses (Section › Clause › Paragraph), numbering preserved.
+model RegulationClause {
+  id          String   @id @default(uuid())
+  versionId   String
+  clauseNo    String // "§5.2.1"
+  parentNo    String? // for hierarchy
+  ordinal     Int // stable ordering within version
+  heading     String?
+  text        String   @db.Text
+  embedding   Unsupported("vector(1536)")? // pgvector for semantic search
+  createdAt   DateTime @default(now())
+
+  version         RegulationVersion @relation(fields: [versionId], references: [id])
+  changedInEvents ClauseChange[]
+
+  @@unique([versionId, clauseNo])
+  @@index([versionId])
+}
+
+// ───────────────────────────── Change detection & assessment ─────────────────────────────
+
+// Raw, immutable diff between two versions. Source of truth — never edited by AI.
+model ChangeComparison {
+  id            String   @id @default(uuid())
+  prevVersionId String
+  currVersionId String
+  diffStats     Json // {added, deleted, amended, moved, unchanged}
+  rawDiff       Json // full token-level diff payload
+  createdAt     DateTime @default(now())
+
+  prevVersion RegulationVersion @relation("ComparisonPrev", fields: [prevVersionId], references: [id])
+  currVersion RegulationVersion @relation("ComparisonCurr", fields: [currVersionId], references: [id])
+  changeEvent ChangeEvent?
+
+  @@unique([prevVersionId, currVersionId])
+}
+
+model ChangeEvent {
+  id             String          @id @default(uuid())
+  organisationId String
+  externalRef    String // "CHG-2038"
+  regulationId   String
+  comparisonId   String?         @unique
+  title          String
+  category       ChangeCategory
+  severity       RiskLevel
+  complianceImpact ComplianceImpact
+  status         ChangeStatus    @default(EXPERT_REVIEW_REQUIRED)
+  effectiveAt    DateTime?
+  detectedAt     DateTime        @default(now())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  regulation  Regulation        @relation(fields: [regulationId], references: [id])
+  comparison  ChangeComparison? @relation(fields: [comparisonId], references: [id])
+  clauseChanges ClauseChange[]
+  assessment  ChangeAssessment?
+  actions     Action[]
+  siteLinks   ChangeEventSite[]
+
+  @@unique([organisationId, externalRef])
+  @@index([regulationId])
+  @@index([severity])
+  @@index([status])
+}
+
+enum ChangeCategory {
+  NEW_OBLIGATION
+  REMOVED_OBLIGATION
+  TIGHTENED_REQUIREMENT
+  REDUCED_REQUIREMENT
+  REPORTING_CHANGE
+  PERMIT_CHANGE
+  INSPECTION_ENFORCEMENT_CHANGE
+  DEFINITIONS_CHANGE
+  SCOPE_CHANGE
+  PENALTY_CHANGE
+  EFFECTIVE_DATE_CHANGE
+  GUIDANCE_CLARIFICATION
+  ADMINISTRATIVE_CHANGE
+}
+
+enum ComplianceImpact {
+  IMMEDIATE_ACTION_REQUIRED
+  ACTION_REQUIRED_BEFORE_EFFECTIVE_DATE
+  MONITOR_ONLY
+  NO_COMPANY_IMPACT
+  EXPERT_REVIEW_REQUIRED
+}
+
+enum ChangeStatus {
+  DETECTED
+  EXPERT_REVIEW_REQUIRED
+  REVIEWED
+  ACTION_PLAN_CREATED
+  APPROVED
+  ESCALATED
+  SUPERSEDED
+}
+
+model ClauseChange {
+  id           String     @id @default(uuid())
+  changeEventId String
+  clauseId     String?
+  clauseNo     String
+  changeType   ClauseChangeType
+  prevText     String?    @db.Text
+  currText     String?    @db.Text
+  tokenDiff    Json? // word-level spans for highlighting
+  changeEvent  ChangeEvent @relation(fields: [changeEventId], references: [id])
+  clause       RegulationClause? @relation(fields: [clauseId], references: [id])
+
+  @@index([changeEventId])
+}
+
+enum ClauseChangeType {
+  ADDED
+  DELETED
+  AMENDED
+  MOVED
+  UNCHANGED
+}
+
+// AI / human interpretation — stored SEPARATELY from the raw diff. Never auto-approved.
+model ChangeAssessment {
+  id             String           @id @default(uuid())
+  changeEventId  String           @unique
+  summary        String           @db.Text // plain-English explanation
+  businessImpact String?          @db.Text
+  materiality    String?          @db.Text
+  lifecycle      AssessmentLifecycle @default(DRAFT)
+  aiAssisted     Boolean          @default(true)
+  confidence     ConfidenceLevel  @default(HUMAN_CONFIRMATION_REQUIRED)
+  authorId       String? // human author / reviewer
+  aiModel        String? // provenance, e.g. "anthropic:claude-..."
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  changeEvent ChangeEvent       @relation(fields: [changeEventId], references: [id])
+  author      User?             @relation("AssessmentAuthor", fields: [authorId], references: [id])
+  approvals   ApprovalDecision[]
+}
+
+enum AssessmentLifecycle {
+  DRAFT
+  AI_ASSISTED
+  REQUIRES_EXPERT_REVIEW
+  APPROVED
+  SUPERSEDED
+}
+
+enum ConfidenceLevel {
+  HIGH
+  MEDIUM
+  LOW
+  HUMAN_CONFIRMATION_REQUIRED
+}
+
+model ChangeEventSite {
+  changeEventId String
+  siteId        String
+  changeEvent   ChangeEvent @relation(fields: [changeEventId], references: [id])
+  site          Site        @relation(fields: [siteId], references: [id])
+  @@id([changeEventId, siteId])
+}
+
+// ───────────────────────────── Approvals ─────────────────────────────
+
+model ApprovalWorkflow {
+  id        String             @id @default(uuid())
+  name      String // "Impact assessment approval"
+  steps     Json // ordered steps + required permission per step
+  decisions ApprovalDecision[]
+}
+
+model ApprovalDecision {
+  id           String          @id @default(uuid())
+  workflowId   String?
+  assessmentId String?
+  approverId   String
+  decision     ApprovalOutcome
+  note         String?
+  decidedAt    DateTime        @default(now())
+
+  workflow   ApprovalWorkflow? @relation(fields: [workflowId], references: [id])
+  assessment ChangeAssessment? @relation(fields: [assessmentId], references: [id])
+  approver   User              @relation(fields: [approverId], references: [id])
+}
+
+enum ApprovalOutcome {
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+}
+
+// ───────────────────────────── Watchlists, alerts, notifications ─────────────────────────────
+
+model Watchlist {
+  id             String         @id @default(uuid())
+  organisationId String
+  name           String
+  ownerId        String
+  frequency      AlertFrequency @default(WEEKLY_DIGEST)
+  active         Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+
+  organisation Organisation    @relation(fields: [organisationId], references: [id])
+  owner        User            @relation(fields: [ownerId], references: [id])
+  rules        WatchlistRule[]
+  alerts       Alert[]
+  recipients   WatchlistRecipient[]
+}
+
+model WatchlistRule {
+  id          String    @id @default(uuid())
+  watchlistId String
+  field       String // jurisdiction | topic | regulation | agency | site | businessLine | risk | status | keyword | policyArea
+  operator    String // IN | EQUALS | CONTAINS | GTE
+  value       Json
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
+}
+
+model WatchlistRecipient {
+  watchlistId String
+  // recipient may be a user, a role, or an external email/list
+  userId      String?
+  roleKey     String?
+  email       String?
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
+
+  @@id([watchlistId, userId, roleKey, email])
+}
+
+enum AlertFrequency {
+  IMMEDIATE
+  DAILY_DIGEST
+  WEEKLY_DIGEST
+  MONTHLY_DIGEST
+  CRITICAL_ONLY
+}
+
+model Alert {
+  id            String      @id @default(uuid())
+  watchlistId   String?
+  changeEventId String?
+  severity      RiskLevel
+  channel       AlertChannel
+  subject       String
+  body          Json // rendered payload (regulation, what changed, why, sites, action, owner, due, link)
+  status        AlertStatus @default(QUEUED)
+  sentAt        DateTime?
+  createdAt     DateTime    @default(now())
+
+  watchlist Watchlist? @relation(fields: [watchlistId], references: [id])
+}
+
+enum AlertChannel {
+  IN_APP
+  EMAIL
+  SLACK
+  TEAMS
+  EXEC_ESCALATION
+}
+
+enum AlertStatus {
+  QUEUED
+  SENT
+  FAILED
+  ESCALATED
+}
+
+model NotificationPreference {
+  id        String         @id @default(uuid())
+  userId    String
+  channel   AlertChannel
+  frequency AlertFrequency
+  enabled   Boolean        @default(true)
+  user      User           @relation(fields: [userId], references: [id])
+
+  @@unique([userId, channel])
+}
+
+// ───────────────────────────── Actions, evidence, compliance ─────────────────────────────
+
+model Action {
+  id             String       @id @default(uuid())
+  organisationId String
+  externalRef    String // "ACT-881"
+  title          String
+  description    String?      @db.Text
+  regulationId   String?
+  changeEventId  String?
+  siteId         String?
+  businessLineId String?
+  priority       RiskLevel    @default(MEDIUM)
+  status         ActionStatus @default(NOT_STARTED)
+  ownerId        String?
+  dueDate        DateTime?
+  evidenceRequired Boolean    @default(true)
+  approvalRequired Boolean    @default(false)
+  completedAt    DateTime?
+  completionNote String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+
+  regulation  Regulation?  @relation(fields: [regulationId], references: [id])
+  changeEvent ChangeEvent? @relation(fields: [changeEventId], references: [id])
+  site        Site?        @relation(fields: [siteId], references: [id])
+  owner       User?        @relation("ActionOwner", fields: [ownerId], references: [id])
+  contributors ActionContributor[]
+  comments    ActionComment[]
+  evidence    EvidenceItem[]
+  dependsOn   ActionDependency[] @relation("Dependent")
+  blocks      ActionDependency[] @relation("Blocker")
+
+  @@unique([organisationId, externalRef])
+  @@index([status])
+  @@index([siteId])
+  @@index([ownerId])
+}
+
+enum ActionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  AWAITING_EVIDENCE
+  AWAITING_APPROVAL
+  BLOCKED
+  COMPLETE
+  OVERDUE
+  CLOSED
+}
+
+model ActionContributor {
+  actionId String
+  userId   String
+  action   Action @relation(fields: [actionId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
+  @@id([actionId, userId])
+}
+
+model ActionDependency {
+  dependentId String
+  blockerId   String
+  dependent   Action @relation("Dependent", fields: [dependentId], references: [id])
+  blocker     Action @relation("Blocker", fields: [blockerId], references: [id])
+  @@id([dependentId, blockerId])
+}
+
+model ActionComment {
+  id        String   @id @default(uuid())
+  actionId  String
+  userId    String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  action    Action   @relation(fields: [actionId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model EvidenceItem {
+  id           String         @id @default(uuid())
+  organisationId String
+  externalRef  String // "EV-512"
+  name         String
+  type         String // Permit, Audit report, Filing, Certification, Monitoring log...
+  siteId       String?
+  regulationId String?
+  actionId     String?
+  status       EvidenceStatus @default(CURRENT)
+  storageKey   String? // object storage key
+  version      Int            @default(1)
+  expiresAt    DateTime?
+  uploadedById String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
+
+  site       Site?   @relation(fields: [siteId], references: [id])
+  action     Action? @relation(fields: [actionId], references: [id])
+  uploadedBy User?   @relation("EvidenceUploader", fields: [uploadedById], references: [id])
+
+  @@unique([organisationId, externalRef])
+}
+
+enum EvidenceStatus {
+  CURRENT
+  PENDING_APPROVAL
+  EXPIRING_SOON
+  EXPIRED
+  MISSING
+  SUPERSEDED
+}
+
+model Permit {
+  id           String      @id @default(uuid())
+  siteId       String
+  regulationId String?
+  name         String
+  status       PermitStatus @default(ACTIVE)
+  issuedAt     DateTime?
+  expiresAt    DateTime?
+  site         Site        @relation(fields: [siteId], references: [id])
+  regulation   Regulation? @relation(fields: [regulationId], references: [id])
+}
+
+enum PermitStatus {
+  ACTIVE
+  RENEWAL_DUE
+  VARIANCE_PENDING
+  EXPIRED
+}
+
+model Policy {
+  id             String       @id @default(uuid())
+  organisationId String
+  name           String // "Emissions Management Policy"
+  links          PolicyLink[]
+}
+
+model PolicyLink {
+  policyId     String
+  regulationId String
+  policy       Policy     @relation(fields: [policyId], references: [id])
+  regulation   Regulation @relation(fields: [regulationId], references: [id])
+  @@id([policyId, regulationId])
+}
+
+model InternalControl {
+  id           String  @id @default(uuid())
+  name         String
+  description  String?
+  effectiveness String // EFFECTIVE | NEEDS_IMPROVEMENT | INEFFECTIVE
+}
+
+model ComplianceRequirement {
+  id           String           @id @default(uuid())
+  siteId       String
+  regulationId String
+  requirement  String
+  requirementType String // obligation | reporting | permit | training...
+  ownerName    String?
+  controlStatus ComplianceStatus @default(UNDER_REVIEW)
+  evidenceStatus EvidenceStatus  @default(MISSING)
+  riskRating   RiskLevel        @default(MEDIUM)
+  lastVerifiedAt DateTime?
+  nextReviewAt DateTime?
+
+  site        Site                  @relation(fields: [siteId], references: [id])
+  regulation  Regulation            @relation(fields: [regulationId], references: [id])
+  assessments ComplianceAssessment[]
+
+  @@index([siteId])
+}
+
+model ComplianceAssessment {
+  id            String           @id @default(uuid())
+  requirementId String
+  status        ComplianceStatus
+  note          String?
+  assessedAt    DateTime         @default(now())
+  requirement   ComplianceRequirement @relation(fields: [requirementId], references: [id])
+}
+
+model AuditFinding {
+  id        String   @id @default(uuid())
+  siteId    String
+  title     String
+  severity  RiskLevel
+  status    String // OPEN | CLOSED
+  foundAt   DateTime @default(now())
+  site      Site     @relation(fields: [siteId], references: [id])
+}
+
+// ───────────────────────────── Guides & search ─────────────────────────────
+
+model RegulatoryGuide {
+  id             String       @id @default(uuid())
+  organisationId String?
+  title          String
+  jurisdictionId String
+  topicsSummary  String
+  body           Json // structured sections (overview, authorities, hierarchy, ...)
+  readingMinutes Int?
+  updatedAt      DateTime     @updatedAt
+  embedding      Unsupported("vector(1536)")?
+  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+}
+
+// Denormalised search index across entity types (keyword + semantic). Full-text tsvector
+// column + GIN index added via raw migration; embedding for semantic ranking.
+model SearchIndex {
+  id         String   @id @default(uuid())
+  entityType String // REGULATION | CLAUSE | CHANGE | ACTION | EVIDENCE | POLICY | GUIDE | REQUIREMENT
+  entityId   String
+  title      String
+  excerpt    String   @db.Text
+  citation   String?
+  jurisdiction String?
+  embedding  Unsupported("vector(1536)")?
+  updatedAt  DateTime @updatedAt
+
+  @@index([entityType])
+}
+
+// ───────────────────────────── Audit (append-only) ─────────────────────────────
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  organisationId String
+  occurredAt     DateTime @default(now())
+  actorType      String // USER | SYSTEM | AI_SERVICE
+  actorId        String?
+  actorName      String
+  action         String // "Published approved assessment", "Assigned action ACT-881"
+  objectType     String
+  objectId       String?
+  objectLabel    String
+  category       String // Assessment | Approval | Notification | Action | Evidence | Escalation | AI | Workflow
+  before         Json?
+  after          Json?
+  confidence     ConfidenceLevel?
+
+  organisation Organisation @relation(fields: [organisationId], references: [id])
+
+  @@index([organisationId, occurredAt])
+  @@index([objectType, objectId])
+}

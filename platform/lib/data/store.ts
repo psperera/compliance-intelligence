@@ -29,7 +29,7 @@ export interface ActionItem {
   pri: Severity; owner: string; due: string; status: string; ev: string;
 }
 
-const SITES: Site[] = [
+export const SITES: Site[] = [
   { id:"hurth",name:"Hürth",country:"Germany",cc:"DE",jur:"Germany (EU)",type:"Technology Centre",role:"Ultrasound HQ",line:"Ultrasound Technologies",emp:224,score:91,risk:"Medium",open:6,permits:5 },
   { id:"wunstorf",name:"Wunstorf",country:"Germany",cc:"DE",jur:"Germany (EU)",type:"Technology Centre",role:"Radiography HQ & R&D",line:"Radiography & CT Systems",emp:162,score:84,risk:"High",open:11,permits:7 },
   { id:"skaneateles",name:"Skaneateles",country:"USA",cc:"US",jur:"United States",type:"Technology Centre",role:"RVI HQ & R&D",line:"Remote Visual Inspection",emp:169,score:88,risk:"Medium",open:7,permits:4 },
@@ -50,7 +50,7 @@ const SITES: Site[] = [
   { id:"garching",name:"Garching",country:"Germany",cc:"DE",jur:"Germany (EU)",type:"Customer Solution Centre",role:"CSC — X-ray & CT Lab",line:"Customer Solutions",emp:15,score:90,risk:"Low",open:2,permits:3 },
 ];
 
-const SEED_REGS: Regulation[] = [
+export const SEED_REGS: Regulation[] = [
   { id:"DE-TA-LUFT",title:"TA Luft — Technical Instructions on Air Quality Control",jur:"Germany (EU)",topic:"Air Emissions",agency:"BMUV",status:"In force",eff:"2021-12-01",risk:"HIGH",comp:"Partially compliant",owner:"M. Keller",sites:["ahrensburg","wunstorf"],watch:true,changed:"2026-06-12" },
   { id:"DE-RAD-04",title:"Radiation Protection Ordinance (StrlSchV)",jur:"Germany (EU)",topic:"Radiation Safety",agency:"BfS / BMUV",status:"In force",eff:"2018-12-31",risk:"CRITICAL",comp:"Compliant",owner:"A. Brandt",sites:["wunstorf","garching"],watch:true,changed:"2026-05-18" },
   { id:"US-OSHA-1910",title:"OSHA 29 CFR 1910 — Occupational Safety & Health Standards",jur:"United States",topic:"Occupational H&S",agency:"OSHA",status:"In force",eff:"1971-05-29",risk:"HIGH",comp:"Partially compliant",owner:"R. Maddox",sites:["skaneateles","cincinnati","mountolive"],watch:true,changed:"2026-06-02" },
@@ -70,7 +70,7 @@ const SEED_REGS: Regulation[] = [
 ];
 
 // Change events. The TA Luft change carries the version labels the diff engine compares.
-const SEED_CHANGES: ChangeEvent[] = [
+export const SEED_CHANGES: ChangeEvent[] = [
   { id:"CHG-2038",regId:"DE-TA-LUFT",title:"TA Luft particulate emission limit reduced for surface treatment",jur:"Germany (EU)",topic:"Air Emissions",sev:"CRITICAL",cat:"Tightened requirement",impact:"Immediate action required",status:"Action plan created",eff:"2026-08-15",sites:["ahrensburg","wunstorf"],line:"Manufacturing Operations",owner:"M. Keller",date:"2026-06-12",conf:"High",prevVersion:"v2021.2",currVersion:"v2026.1" },
   { id:"CHG-2041",regId:"UK-RIDDOR",title:"RIDDOR reporting threshold for over-7-day incapacitation revised",jur:"United Kingdom",topic:"Occupational H&S",sev:"HIGH",cat:"Tightened requirement",impact:"Action required before effective date",status:"Expert review required",eff:"2026-09-01",sites:["coventry"],line:"Manufacturing Operations",owner:"J. Whitfield",date:"2026-06-10",conf:"Medium" },
   { id:"CHG-2035",regId:"US-EPA-TRI",title:"TRI Form R submission deadline moved earlier; PFAS threshold added",jur:"United States",topic:"Chemicals & Hazardous Substances",sev:"HIGH",cat:"Reporting change",impact:"Action required before effective date",status:"Approved",eff:"2026-07-01",sites:["skaneateles","cincinnati"],line:"Field Services",owner:"R. Maddox",date:"2026-06-09",conf:"High" },
@@ -81,7 +81,7 @@ const SEED_CHANGES: ChangeEvent[] = [
   { id:"CHG-2013",regId:"EU-BATTERY",title:"Batteries Regulation — carbon footprint declaration for industrial cells",jur:"United Kingdom",topic:"Product Stewardship",sev:"MEDIUM",cat:"New obligation",impact:"Action required before effective date",status:"Expert review required",eff:"2026-08-18",sites:["coventry"],line:"Manufacturing Operations",owner:"J. Whitfield",date:"2026-06-13",conf:"Medium" },
 ];
 
-const SEED_ACTIONS: ActionItem[] = [
+export const SEED_ACTIONS: ActionItem[] = [
   { id:"ACT-881",title:"Install high-efficiency particulate abatement on Line 3",reg:"DE-TA-LUFT",chg:"CHG-2038",site:"ahrensburg",line:"Manufacturing Operations",pri:"CRITICAL",owner:"M. Keller",due:"2026-08-01",status:"In progress",ev:"Required" },
   { id:"ACT-879",title:"Recalibrate continuous dust monitor to 0.10 kg/h threshold",reg:"DE-TA-LUFT",chg:"CHG-2038",site:"wunstorf",line:"Radiography & CT Systems",pri:"HIGH",owner:"A. Brandt",due:"2026-07-20",status:"In progress",ev:"Required" },
   { id:"ACT-876",title:"Update RIDDOR reporting SOP for revised threshold",reg:"UK-RIDDOR",chg:"CHG-2041",site:"coventry",line:"Manufacturing Operations",pri:"HIGH",owner:"J. Whitfield",due:"2026-08-20",status:"Not started",ev:"Required" },
@@ -107,17 +107,23 @@ function nextRef(prefix: string, existing: { id: string }[]): string {
   return `${prefix}-${(Math.max(0, ...nums) + 1)}`;
 }
 
+// Backend switch: in-memory (default) or Prisma/Postgres (DATA_BACKEND=prisma). Prisma is
+// loaded via dynamic import so the default mode never requires a generated client / DB.
+const USE_DB = process.env.DATA_BACKEND === "prisma";
+const pdb = () => import("./prisma-store");
+
 // ---- accessors (async to mirror a DB) ----
+// Sites are static reference data — always in memory (keeps siteName/siteCC synchronous).
 export async function getSites(): Promise<Site[]> { return SITES; }
 export async function getSite(id: string): Promise<Site | undefined> { return SITES.find((s) => s.id === id); }
-export async function getRegulations(): Promise<Regulation[]> { return REGS; }
-export async function getRegulation(id: string): Promise<Regulation | undefined> { return REGS.find((r) => r.id === id); }
-export async function getChanges(): Promise<ChangeEvent[]> { return CHANGES; }
-export async function getChange(id: string): Promise<ChangeEvent | undefined> { return CHANGES.find((c) => c.id === id); }
-export async function getActions(): Promise<ActionItem[]> { return ACTIONS; }
-export async function getActionsForSite(siteId: string): Promise<ActionItem[]> { return ACTIONS.filter((a) => a.site === siteId); }
-export async function getActionsForChange(chgId: string): Promise<ActionItem[]> { return ACTIONS.filter((a) => a.chg === chgId); }
-export async function getRegulationsForSite(siteId: string): Promise<Regulation[]> { return REGS.filter((r) => r.sites.includes(siteId)); }
+export async function getRegulations(): Promise<Regulation[]> { return USE_DB ? (await pdb()).getRegulations() : REGS; }
+export async function getRegulation(id: string): Promise<Regulation | undefined> { return USE_DB ? (await pdb()).getRegulation(id) : REGS.find((r) => r.id === id); }
+export async function getChanges(): Promise<ChangeEvent[]> { return USE_DB ? (await pdb()).getChanges() : CHANGES; }
+export async function getChange(id: string): Promise<ChangeEvent | undefined> { return USE_DB ? (await pdb()).getChange(id) : CHANGES.find((c) => c.id === id); }
+export async function getActions(): Promise<ActionItem[]> { return USE_DB ? (await pdb()).getActions() : ACTIONS; }
+export async function getActionsForSite(siteId: string): Promise<ActionItem[]> { return USE_DB ? (await pdb()).getActionsForSite(siteId) : ACTIONS.filter((a) => a.site === siteId); }
+export async function getActionsForChange(chgId: string): Promise<ActionItem[]> { return USE_DB ? (await pdb()).getActionsForChange(chgId) : ACTIONS.filter((a) => a.chg === chgId); }
+export async function getRegulationsForSite(siteId: string): Promise<Regulation[]> { return USE_DB ? (await pdb()).getRegulationsForSite(siteId) : REGS.filter((r) => r.sites.includes(siteId)); }
 
 export const siteName = (id: string) => SITES.find((s) => s.id === id)?.name ?? id;
 export const siteCC = (id: string) => SITES.find((s) => s.id === id)?.cc ?? "";
@@ -127,18 +133,23 @@ export async function addRegulation(input: {
   id: string; title: string; jur: string; topic: string; agency: string;
   risk: Severity; status?: string; eff?: string; owner?: string; sites?: string[];
 }): Promise<Regulation> {
-  if (REGS.some((r) => r.id.toLowerCase() === input.id.toLowerCase())) throw new Error(`Regulation ${input.id} already exists.`);
   const reg: Regulation = {
     id: input.id, title: input.title, jur: input.jur, topic: input.topic, agency: input.agency,
     status: input.status ?? "In force", eff: input.eff ?? new Date().toISOString().slice(0, 10),
     risk: input.risk, comp: "Under review", owner: input.owner ?? "Unassigned",
     sites: input.sites ?? [], watch: false, changed: new Date().toISOString().slice(0, 10),
   };
+  if (USE_DB) {
+    if (await (await pdb()).getRegulation(input.id)) throw new Error(`Regulation ${input.id} already exists.`);
+    return (await pdb()).addRegulation(reg);
+  }
+  if (REGS.some((r) => r.id.toLowerCase() === input.id.toLowerCase())) throw new Error(`Regulation ${input.id} already exists.`);
   REGS.unshift(reg);
   return reg;
 }
 
 export async function setRegulationWatch(id: string, watch: boolean): Promise<Regulation> {
+  if (USE_DB) return (await pdb()).setRegulationWatch(id, watch);
   const r = REGS.find((x) => x.id === id);
   if (!r) throw new Error("Regulation not found.");
   r.watch = watch;
@@ -146,6 +157,7 @@ export async function setRegulationWatch(id: string, watch: boolean): Promise<Re
 }
 
 export async function setChangeStatus(id: string, status: string): Promise<ChangeEvent> {
+  if (USE_DB) return (await pdb()).setChangeStatus(id, status);
   const c = CHANGES.find((x) => x.id === id);
   if (!c) throw new Error("Change not found.");
   c.status = status;
@@ -157,14 +169,18 @@ export async function addChange(input: {
   impact: string; eff: string; sites?: string[]; line?: string; owner?: string; conf?: string;
   prevVersion?: string; currVersion?: string; prevText?: string; currText?: string;
 }): Promise<ChangeEvent> {
+  const id = USE_DB ? await (await pdb()).nextChangeRef() : nextRef("CHG", CHANGES);
   const change: ChangeEvent = {
-    id: nextRef("CHG", CHANGES),
+    id,
     regId: input.regId, title: input.title, jur: input.jur, topic: input.topic,
     sev: input.sev, cat: input.cat, impact: input.impact, status: "Expert review required",
     eff: input.eff, sites: input.sites ?? [], line: input.line ?? "—", owner: input.owner ?? "Unassigned",
     date: new Date().toISOString().slice(0, 10), conf: input.conf ?? "Medium",
     prevVersion: input.prevVersion, currVersion: input.currVersion,
   };
+  if (USE_DB) {
+    return (await pdb()).createChange({ ...change, prevText: input.prevText, currText: input.currText });
+  }
   CHANGES.unshift(change);
   // store the compared texts so the detail page can re-render the diff
   if (input.prevText && input.currText) AD_HOC_VERSIONS[change.id] = { prev: input.prevText, curr: input.currText };
@@ -175,18 +191,31 @@ export async function addChange(input: {
 const gv = globalThis as unknown as { __ciVersions?: Record<string, { prev: string; curr: string }> };
 if (!gv.__ciVersions) gv.__ciVersions = {};
 const AD_HOC_VERSIONS = gv.__ciVersions;
-export async function getAdHocVersions(changeId: string) { return AD_HOC_VERSIONS[changeId]; }
+export async function getAdHocVersions(changeId: string) { return USE_DB ? (await pdb()).getAdHocVersions(changeId) : AD_HOC_VERSIONS[changeId]; }
+
+// cache of generated AI impact analyses, keyed by changeId or a text hash
+const gc = globalThis as unknown as { __ciImpact?: Record<string, unknown> };
+if (!gc.__ciImpact) gc.__ciImpact = {};
+const IMPACT_CACHE = gc.__ciImpact;
+export async function getCachedImpact(key: string): Promise<unknown | undefined> { return USE_DB ? (await pdb()).getCachedImpact(key) : IMPACT_CACHE[key]; }
+export async function setCachedImpact(key: string, value: unknown): Promise<void> { if (USE_DB) { await (await pdb()).setCachedImpact(key, value); return; } IMPACT_CACHE[key] = value; }
+export function hashText(s: string): string {
+  let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
 
 export async function addAction(input: {
   title: string; reg?: string; chg?: string; site?: string; line?: string;
   pri: Severity; owner?: string; due?: string; status?: string; ev?: string;
 }): Promise<ActionItem> {
+  const id = USE_DB ? await (await pdb()).nextActionRef() : nextRef("ACT", ACTIONS);
   const a: ActionItem = {
-    id: nextRef("ACT", ACTIONS), title: input.title, reg: input.reg ?? "", chg: input.chg ?? "",
+    id, title: input.title, reg: input.reg ?? "", chg: input.chg ?? "",
     site: input.site ?? "", line: input.line ?? "—", pri: input.pri, owner: input.owner ?? "Unassigned",
     due: input.due ?? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10),
     status: input.status ?? "Not started", ev: input.ev ?? "Required",
   };
+  if (USE_DB) return (await pdb()).createAction(a);
   ACTIONS.unshift(a);
   return a;
 }

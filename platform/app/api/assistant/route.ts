@@ -1,14 +1,14 @@
-// POST /api/assistant — FOM (Field Operations Mentor), the AI compliance helper.
+// POST /api/assistant — HS.ai, the AI compliance helper.
 //
 // Builds a grounded context from the regulatory record, asks the selected LLM (Ollama by
 // default) to answer using ONLY that context with citations, and degrades gracefully to a
-// deterministic keyword search if no LLM is reachable — so FOM always returns something useful.
+// deterministic keyword search if no LLM is reachable — so HS.ai always returns something useful.
 
 import { NextResponse } from "next/server";
 import { getRegulations, getChanges, siteName } from "../../../lib/data/store";
 import { chat, getLlmConfig, LlmUnavailableError, PROVIDER_LABELS, type ChatMessage } from "../../../lib/ai/llm";
 
-const SYSTEM = `You are FOM (Field Operations Mentor), the AI compliance assistant for Waygate Technologies'
+const SYSTEM = `You are HS.ai, the AI compliance assistant for Waygate Technologies'
 Compliance Intelligence platform. You guide HS&E, EHS, legal and site users.
 Rules:
 - Answer ONLY from the CONTEXT provided. Do not invent regulations, numbers, or dates.

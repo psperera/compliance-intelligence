@@ -8,7 +8,7 @@ import { listUsers, addUser, updateUser, removeUser } from "../../../../lib/data
 
 export async function GET() {
   const me = await getCurrentUser();
-  return NextResponse.json({ users: listUsers(), currentUserId: me.id, canManage: can(me, "manage_users") });
+  return NextResponse.json({ users: await listUsers(), currentUserId: me.id, canManage: can(me, "manage_users") });
 }
 
 export async function POST(req: Request) {
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(b.email)) return NextResponse.json({ error: "invalid email" }, { status: 400 });
 
   try {
-    const user = addUser({
+    const user = await addUser({
       name: b.name, email: b.email, title: b.title ?? "", role: b.role as RoleKey,
       scopeType: b.scopeType ?? "GLOBAL", scope: Array.isArray(b.scope) ? b.scope : [],
     });
@@ -38,7 +38,7 @@ export async function PATCH(req: Request) {
   const b = await req.json().catch(() => ({}));
   if (!b.id) return NextResponse.json({ error: "id required" }, { status: 400 });
   try {
-    const user = updateUser(b.id, { role: b.role, scopeType: b.scopeType, scope: b.scope, status: b.status, title: b.title });
+    const user = await updateUser(b.id, { role: b.role, scopeType: b.scopeType, scope: b.scope, status: b.status, title: b.title });
     return NextResponse.json({ ok: true, user });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 404 });
@@ -51,7 +51,7 @@ export async function DELETE(req: Request) {
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
   try {
-    const user = removeUser(id, me.id);
+    const user = await removeUser(id, me.id);
     // PRODUCTION: soft-delete (set deletedAt) + AuditLog (category USER).
     return NextResponse.json({ ok: true, removed: user.name });
   } catch (e) {

@@ -21,7 +21,7 @@ export function AiProviderMenu() {
     setBusy(true); setMsg(null);
     const res = await fetch("/api/admin/ai-provider", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ provider }) });
     const d = await res.json();
-    if (res.ok) { setCfg(d.config); setMsg(`FOM now using ${labels[d.config.provider]} (${d.config.model}).`); }
+    if (res.ok) { setCfg(d.config); setMsg(`HS.ai now using ${labels[d.config.provider]} (${d.config.model}).`); }
     else setMsg(`✗ ${d.error}`);
     setBusy(false);
   }

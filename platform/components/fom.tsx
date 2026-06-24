@@ -1,9 +1,9 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 
-// FOM — Field Operations Mentor. AI compliance assistant that guides users with answers
-// grounded in the regulatory record. Backed by /api/assistant (local LLM via Ollama by
-// default; switchable in Administration). Degrades to a record-based answer if no LLM.
+// HS.ai — AI compliance assistant that guides users with answers grounded in the regulatory
+// record. Backed by /api/assistant (local LLM via Ollama by default; switchable in
+// Administration). Degrades to a record-based answer if no LLM.
 type Msg = { role: "user" | "fom"; text: string; provider?: string; degraded?: boolean; notice?: string };
 
 const SUGGESTIONS = [
@@ -14,7 +14,7 @@ const SUGGESTIONS = [
 
 export function Fom() {
   const [open, setOpen] = useState(false);
-  const [msgs, setMsgs] = useState<Msg[]>([{ role: "fom", text: "Hi, I'm FOM — your compliance assistant. Ask about regulations, changes, sites or actions. I answer from the regulatory record and cite my sources." }]);
+  const [msgs, setMsgs] = useState<Msg[]>([{ role: "fom", text: "Hi, I'm HS.ai — your compliance assistant. Ask about regulations, changes, sites or actions. I answer from the regulatory record and cite my sources." }]);
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -36,18 +36,18 @@ export function Fom() {
 
   return (
     <>
-      <button onClick={() => setOpen(!open)} aria-label="Open FOM assistant"
+      <button onClick={() => setOpen(!open)} aria-label="Open HS.ai assistant"
         style={{ position: "fixed", right: 22, bottom: 22, zIndex: 60, width: 56, height: 56, borderRadius: "50%", border: "none",
-          background: "linear-gradient(135deg,#6d4bb6,#1f5fd6)", color: "#fff", fontWeight: 800, fontSize: 16, boxShadow: "0 8px 28px rgba(31,95,214,.45)" }}>
-        FOM
+          background: "linear-gradient(135deg,#6d4bb6,#1f5fd6)", color: "#fff", fontWeight: 800, fontSize: 14, boxShadow: "0 8px 28px rgba(31,95,214,.45)" }}>
+        HS.ai
       </button>
 
       {open && (
         <div style={{ position: "fixed", right: 22, bottom: 88, zIndex: 60, width: 380, maxWidth: "calc(100vw - 32px)", height: 520, maxHeight: "calc(100vh - 130px)",
           background: "#fff", border: "1px solid var(--line)", borderRadius: 14, boxShadow: "var(--shadow-lg)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ background: "linear-gradient(135deg,#6d4bb6,#1f5fd6)", color: "#fff", padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ fontWeight: 800 }}>FOM</div>
-            <div style={{ fontSize: 11.5, opacity: .9 }}>Field Operations Mentor · AI compliance assistant</div>
+            <div style={{ fontWeight: 800 }}>HS.ai</div>
+            <div style={{ fontSize: 11.5, opacity: .9 }}>AI compliance assistant</div>
             <button onClick={() => setOpen(false)} style={{ marginLeft: "auto", background: "transparent", border: "none", color: "#fff", fontSize: 18 }}>×</button>
           </div>
 
@@ -78,7 +78,7 @@ export function Fom() {
 
           <div style={{ display: "flex", gap: 8, padding: 10, borderTop: "1px solid var(--line)" }}>
             <input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Enter" && ask(q)}
-              placeholder="Ask FOM…" style={{ flex: 1, padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 9, fontSize: 13 }} />
+              placeholder="Ask HS.ai…" style={{ flex: 1, padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 9, fontSize: 13 }} />
             <button className="btn primary" onClick={() => ask(q)} disabled={busy}>Send</button>
           </div>
         </div>

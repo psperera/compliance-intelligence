@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="content">{children}</main>
       </div>
 
-      {/* FOM — AI compliance assistant (local LLM via Ollama by default) */}
+      {/* HS.ai — AI compliance assistant (local LLM via Ollama by default) */}
       <Fom />
     </div>
   );

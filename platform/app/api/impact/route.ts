@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { parseDocument } from "../../../lib/diff/parse";
 import { compareVersions } from "../../../lib/diff/diff";
 import type { ComparisonResult } from "../../../lib/diff/types";
-import { getChange, getAdHocVersions } from "../../../lib/data/store";
+import { getChange, getAdHocVersions, getCachedImpact, setCachedImpact, hashText } from "../../../lib/data/store";
 import { mockRegulatoryFeed } from "../../../lib/integrations/regulatory-feed/mock";
 import { llmAiProvider } from "../../../lib/integrations/ai/llm-provider";
 import { getLlmConfig, PROVIDER_LABELS } from "../../../lib/ai/llm";
@@ -31,6 +31,13 @@ export async function POST(req: Request) {
   let title = b.title || "the compared document";
   let sites: string[] = b.candidateSites ?? [];
 
+  // cache key: by changeId, or by a hash of the two texts
+  const cacheKey = b.changeId ? `chg:${b.changeId}` : (b.prevText && b.currText ? `cmp:${hashText(b.prevText + "|" + b.currText)}` : null);
+  if (cacheKey && !b.regenerate) {
+    const cached = await getCachedImpact(cacheKey);
+    if (cached) return NextResponse.json({ ...(cached as object), cached: true });
+  }
+
   if (b.changeId) {
     const r = await comparisonFromChange(b.changeId);
     if (!r) return NextResponse.json({ error: "No comparable versions for this change." }, { status: 409 });
@@ -44,9 +51,12 @@ export async function POST(req: Request) {
   const draft = await llmAiProvider.draftImpact({ regulationTitle: title, comparison: cmp, candidateSites: sites });
   const cfg = getLlmConfig();
   const degraded = draft.aiModel.startsWith("fallback");
-  return NextResponse.json({
+  const payload = {
     summary: draft.summary, businessImpact: draft.businessImpact, confidence: draft.confidence,
     categories: draft.suggestedCategories, model: draft.aiModel,
     provider: degraded ? "Deterministic fallback" : PROVIDER_LABELS[cfg.provider], degraded,
-  });
+  };
+  // cache successful LLM results (not the deterministic fallback)
+  if (cacheKey && !degraded) await setCachedImpact(cacheKey, payload);
+  return NextResponse.json(payload);
 }
