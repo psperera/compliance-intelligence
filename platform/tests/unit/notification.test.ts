@@ -38,7 +38,7 @@ const wlAir: WatchlistLike = {
 const wlHighRisk: WatchlistLike = {
   id: "WL-06", name: "High-risk obligations — group", active: true, frequency: "CRITICAL_ONLY",
   rules: [{ field: "risk", operator: "GTE", value: "HIGH" }],
-  recipients: [{ email: "thammond@vassalenterprises.com" }],
+  recipients: [{ email: "tony.hammond@bakerhughes.com" }],
 };
 const wlAPAC: WatchlistLike = {
   id: "WL-04", name: "APAC occupational H&S", active: true, frequency: "DAILY_DIGEST",
@@ -123,7 +123,7 @@ describe("dispatchForChange", () => {
     expect(sent).toHaveLength(2); // WL-01 + WL-06
     expect(email.outbox).toHaveLength(2);
     expect(email.outbox[0].subject).toContain("Action required");
-    expect(email.outbox.flatMap((m) => m.to)).toContain("thammond@vassalenterprises.com");
+    expect(email.outbox.flatMap((m) => m.to)).toContain("tony.hammond@bakerhughes.com");
   });
 });
 

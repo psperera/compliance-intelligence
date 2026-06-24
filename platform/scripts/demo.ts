@@ -62,7 +62,7 @@ async function main() {
       recipients: [{ email: "m.keller@waygate.example" }, { roleKey: "REGIONAL_HSE_MANAGER" }] },
     { id: "WL-06", name: "High-risk obligations — group", active: true, frequency: "CRITICAL_ONLY",
       rules: [{ field: "risk", operator: "GTE", value: "HIGH" }],
-      recipients: [{ email: "thammond@vassalenterprises.com" }] },
+      recipients: [{ email: "tony.hammond@bakerhughes.com" }] },
     { id: "WL-04", name: "APAC occupational H&S", active: true, frequency: "DAILY_DIGEST",
       rules: [{ field: "jurisdiction", operator: "IN", value: ["Singapore", "South Korea"] }],
       recipients: [{ email: "l.tan@waygate.example" }] },

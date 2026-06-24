@@ -24,7 +24,7 @@ export interface ManagedUser {
 }
 
 export const SEED_USERS: ManagedUser[] = [
-  { id: "u-hammond", name: "Tony Hammond", email: "thammond@vassalenterprises.com", title: "Group HS&E Director", role: "PLATFORM_ADMIN", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-04" },
+  { id: "u-hammond", name: "Tony Hammond", email: "tony.hammond@bakerhughes.com", title: "Group HS&E Director", role: "PLATFORM_ADMIN", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-04" },
   { id: "u-vogel", name: "Sabine Vogel", email: "s.vogel@waygate.example", title: "Corporate Compliance Director", role: "COMPLIANCE_DIRECTOR", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-06" },
   { id: "u-curtis", name: "Helen Curtis", email: "h.curtis@waygate.example", title: "General Counsel / Legal Policy Lead", role: "LEGAL_LEAD", scopeType: "GLOBAL", scope: [], status: "ACTIVE", createdAt: "2026-01-06" },
   { id: "u-keller", name: "Martin Keller", email: "m.keller@waygate.example", title: "Regional HS&E Manager — DACH", role: "REGIONAL_HSE_MANAGER", scopeType: "REGION", scope: ["Europe (DACH)"], status: "ACTIVE", createdAt: "2026-01-08" },
