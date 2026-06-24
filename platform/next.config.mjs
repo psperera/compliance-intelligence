@@ -5,6 +5,6 @@ const nextConfig = {
 
   // Hosted behind Cloudflare at hse.next-horizon.ai (see HOSTING.md). Allow that origin for
   // dev cross-origin requests, and accept Server Actions proxied through the Cloudflare host.
-  allowedDevOrigins: ["hse.next-horizon.ai", "next-horizon.ai"],
+  allowedDevOrigins: ["hse.next-horizon.ai", "next-horizon.ai", "10.0.0.3", "localhost"],
 };
 export default nextConfig;

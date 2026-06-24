@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getChange, getActionsForChange, siteName, siteCC } from "../../../../lib/data/store";
-import { ChangeDetectionService } from "../../../../lib/services/change-detection.service";
+import { getChange, getActionsForChange, getAdHocVersions, getRegulation, siteName, siteCC } from "../../../../lib/data/store";
+import { deriveSeverity } from "../../../../lib/services/change-detection.service";
+import { parseDocument } from "../../../../lib/diff/parse";
+import { compareVersions } from "../../../../lib/diff/diff";
+import type { ComparisonResult } from "../../../../lib/diff/types";
 import { mockRegulatoryFeed } from "../../../../lib/integrations/regulatory-feed/mock";
 import { mockAiProvider } from "../../../../lib/integrations/ai/mock";
 import { getCurrentUser } from "../../../../lib/auth/current-user";
@@ -20,15 +23,34 @@ export default async function ChangeDetail({ params }: { params: Promise<{ chang
   const canApprove = can(user, "approve_assessment");
   const actions = await getActionsForChange(changeId);
 
-  // Run the REAL diff engine + change-detection service when source versions exist.
-  let detection: Awaited<ReturnType<ChangeDetectionService["analyze"]>> | null = null;
-  if (change.prevVersion && change.currVersion) {
+  // Build the side-by-side comparison: from saved Compare-tool texts (ad-hoc changes) or
+  // from ingested regulation versions (seeded changes).
+  type Detection = { comparison: ComparisonResult; severity: string; complianceImpact: string; categories: string[]; aiDraft: { summary: string; businessImpact: string; confidence: string; aiModel: string } };
+  let detection: Detection | null = null;
+  let comparison: ComparisonResult | null = null;
+
+  const adhoc = await getAdHocVersions(change.id);
+  if (adhoc) {
+    comparison = compareVersions(parseDocument(change.prevVersion || "A", adhoc.prev), parseDocument(change.currVersion || "B", adhoc.curr));
+  } else if (change.prevVersion && change.currVersion) {
     const versions = await mockRegulatoryFeed.getVersions(change.regId);
-    if (versions.find((v) => v.versionLabel === change.prevVersion) && versions.find((v) => v.versionLabel === change.currVersion)) {
-      const detector = new ChangeDetectionService(mockRegulatoryFeed, mockAiProvider);
-      detection = await detector.analyze(change.regId, change.prevVersion, change.currVersion);
-    }
+    const p = versions.find((v) => v.versionLabel === change.prevVersion);
+    const c = versions.find((v) => v.versionLabel === change.currVersion);
+    if (p && c) comparison = compareVersions(parseDocument(p.versionLabel, p.rawText), parseDocument(c.versionLabel, c.rawText));
   }
+  if (comparison) {
+    const aiDraft = await mockAiProvider.draftImpact({ regulationTitle: change.title, comparison, candidateSites: change.sites });
+    detection = {
+      comparison,
+      severity: deriveSeverity(comparison),
+      complianceImpact: change.impact,
+      categories: change.cat ? [change.cat] : ["Amendment"],
+      aiDraft: { summary: aiDraft.summary, businessImpact: aiDraft.businessImpact, confidence: aiDraft.confidence, aiModel: aiDraft.aiModel },
+    };
+  }
+
+  // only link the regulation id when a real regulation exists (ad-hoc comparisons have none)
+  const reg = change.regId && change.regId !== "AD-HOC" ? await getRegulation(change.regId) : undefined;
 
   return (
     <>
@@ -39,7 +61,7 @@ export default async function ChangeDetail({ params }: { params: Promise<{ chang
       <div className="card" style={{ marginBottom: 16, borderLeft: `4px solid ${change.sev === "CRITICAL" ? "var(--red)" : change.sev === "HIGH" ? "var(--amber)" : "var(--blue)"}` }}>
         <div className="cb" style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
           <div style={{ flex: 1, minWidth: 280 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".5px", color: "var(--muted)" }}>{change.id} · <Link href={`/baseline/${change.regId}`} style={{ color: "var(--blue)" }}>{change.regId}</Link></div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".5px", color: "var(--muted)" }}>{change.id} · {reg ? <Link href={`/baseline/${change.regId}`} style={{ color: "var(--blue)" }}>{change.regId}</Link> : <span>{change.regId === "AD-HOC" ? "Ad-hoc comparison" : change.regId}</span>}</div>
             <div style={{ fontSize: 17, fontWeight: 700, margin: "3px 0" }}>{change.title}</div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6 }}>
               <SevPill s={change.sev} /><span className="tag">{change.cat}</span><StatusPill s={change.status} />
